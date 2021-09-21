@@ -20,13 +20,14 @@ public class ServiceImplementation implements PrateekGupta.User.Service.Service 
     public List<DTO> getAllUsers() {
         List<DTO> dtoList=new ArrayList<>();
         List<User> usersList=userRepository.findAll();
+
         for (User user:usersList){
             DTO dto=new DTO();
             dto.setId(user.getId());
-            dto.setFirstName(user.getFirstName());
-            dto.setLastName(user.getLastName());
+            dto.setFirstname(user.getFirstname());
+            dto.setLastname(user.getLastname());
             dto.setEmail(user.getEmail());
-            dto.setMobileNumber(user.getMobileNumber());
+            dto.setMobile_number(user.getMobile_number());
             dtoList.add(dto);
         }
         return dtoList;
@@ -34,13 +35,13 @@ public class ServiceImplementation implements PrateekGupta.User.Service.Service 
 
     @Override
     public DTO getUser(int id) {
-        User user=userRepository.getOne(id);
+        User user=userRepository.getById(id);
         DTO dto=new DTO();
         dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
+        dto.setFirstname(user.getFirstname());
+        dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
-        dto.setMobileNumber(user.getMobileNumber());
+        dto.setMobile_number(user.getMobile_number());
         return dto;
     }
 
@@ -49,10 +50,10 @@ public class ServiceImplementation implements PrateekGupta.User.Service.Service 
         User user=new User();
 
         user.setId(dto.getId());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
+        user.setFirstname(dto.getFirstname());
+        user.setLastname(dto.getLastname());
         user.setEmail(dto.getEmail());
-        user.setMobileNumber(dto.getMobileNumber());
+        user.setMobile_number(dto.getMobile_number());
 
         userRepository.save(user);
 
@@ -61,13 +62,13 @@ public class ServiceImplementation implements PrateekGupta.User.Service.Service 
 
     @Override
     public String updateUser(DTO dto) {
-        User user=userRepository.getOne(dto.getId());
+        User user=userRepository.getById(dto.getId());
 
         user.setId(dto.getId());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
+        user.setFirstname(dto.getFirstname());
+        user.setLastname(dto.getLastname());
         user.setEmail(dto.getEmail());
-        user.setMobileNumber(dto.getMobileNumber());
+        user.setMobile_number(dto.getMobile_number());
 
         userRepository.save(user);
 
@@ -77,7 +78,8 @@ public class ServiceImplementation implements PrateekGupta.User.Service.Service 
     @Override
     public ResponseEntity<HttpStatus> deleteUser(int id) {
         try{
-            userRepository.delete(userRepository.getOne(id));
+
+            userRepository.delete(userRepository.getById(id));
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception exception){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

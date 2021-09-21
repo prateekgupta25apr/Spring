@@ -36,7 +36,7 @@ public class Controller {
     }
 
     @DeleteMapping("delete/{id}")
-    ResponseEntity<HttpStatus> deleteUser(int id){
+    ResponseEntity<HttpStatus> deleteUser(@PathVariable int id){
         return service.deleteUser(id);
     }
 }

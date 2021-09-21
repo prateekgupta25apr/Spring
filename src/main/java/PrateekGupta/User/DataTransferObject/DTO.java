@@ -4,10 +4,10 @@ public class DTO {
 
     Integer id;
 
-    String firstName;
-    String lastName;
+    String firstname;
+    String lastname;
     String email;
-    int mobileNumber;
+    String mobile_number;
 
     public Integer getId() {
         return id;
@@ -17,20 +17,20 @@ public class DTO {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getEmail() {
@@ -41,11 +41,11 @@ public class DTO {
         this.email = email;
     }
 
-    public int getMobileNumber() {
-        return mobileNumber;
+    public String getMobile_number() {
+        return mobile_number;
     }
 
-    public void setMobileNumber(int mobileNumber) {
-        this.mobileNumber = mobileNumber;
+    public void setMobile_number(String mobile_number) {
+        this.mobile_number = mobile_number;
     }
 }

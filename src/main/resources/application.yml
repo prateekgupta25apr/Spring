@@ -1,0 +1,25 @@
+# For application.properties
+#spring.datasource.url=mysql://localhost:3306/learning
+#spring.datasource.username=root
+#spring.datasource.password=@@Pg25@@
+#spring.datasource.driver-class-name=com.mysql.jdbc.cj.Driver
+#spring.jpa.hibernate=none
+#spring.jpa.show-sql=false
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+# server.port=7979
+
+# For application.yml
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: "@@Pg25@@"
+    url: jdbc:mysql://localhost:3306/users
+    username: root
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+    ddl-auto: none
+    show-sql: false
+
+server:
+  port: 2525
