@@ -12,7 +12,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: "@@Pg25@@"
+    password: "root"
     url: jdbc:mysql://localhost:3306/users
     username: root
   jpa:
