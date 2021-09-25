@@ -1,7 +1,7 @@
 # For application.properties
 #spring.datasource.url=mysql://localhost:3306/learning
 #spring.datasource.username=root
-#spring.datasource.password=@@Pg25@@
+#spring.datasource.password=root
 #spring.datasource.driver-class-name=com.mysql.jdbc.cj.Driver
 #spring.jpa.hibernate=none
 #spring.jpa.show-sql=false
