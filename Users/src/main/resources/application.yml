@@ -1,4 +1,4 @@
-# For application.properties
+# For .properties
 #spring.datasource.url=mysql://localhost:3306/users
 #spring.datasource.username=root
 #spring.datasource.password=root
