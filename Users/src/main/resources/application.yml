@@ -1,5 +1,5 @@
 # For application.properties
-#spring.datasource.url=mysql://localhost:3306/learning
+#spring.datasource.url=mysql://localhost:3306/users
 #spring.datasource.username=root
 #spring.datasource.password=root
 #spring.datasource.driver-class-name=com.mysql.jdbc.cj.Driver
@@ -8,7 +8,7 @@
 #spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
 # server.port=7979
 
-# For application.yml
+# For .yml
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
