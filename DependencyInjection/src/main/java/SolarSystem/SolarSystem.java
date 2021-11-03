@@ -2,6 +2,9 @@ package SolarSystem;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -22,8 +25,7 @@ public class SolarSystem {
     }
 
     public static void main(String[] args) {
-        Resource resource=new ClassPathResource("solarSystem.xml");
-        BeanFactory factory=new XmlBeanFactory(resource);
-        factory.getBean("solarSystem");
+        new ClassPathXmlApplicationContext("solarSystem.xml")
+                .getBean("solarSystem");
     }
 }
