@@ -4,13 +4,11 @@
        xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans
    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean id="laptop" class="Laptop.Laptop">
-        <constructor-arg value="Lenovo"/>
-        <constructor-arg ref="os"/>
+    <bean id="state" class="State.State">
+        <constructor-arg name="name" value="ktk"/>
+        <constructor-arg name="city" ref="city"/>
     </bean>
-    <bean id="os" class="Laptop.OS">
-        <constructor-arg value="Windows"/>
+    <bean id="city" class="State.City">
+        <property name="name" value="bangalore"/>
     </bean>
-
-
 </beans>

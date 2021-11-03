@@ -7,4 +7,11 @@ public class OS {
         System.out.println("OS constructor called");
         this.brand = brand;
     }
+
+    @Override
+    public String toString() {
+        return "OS{" +
+                "brand='" + brand + '\'' +
+                '}';
+    }
 }
