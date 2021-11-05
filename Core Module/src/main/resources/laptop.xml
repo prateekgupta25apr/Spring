@@ -4,7 +4,13 @@
        xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans
    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean id="laptop" class="Laptop.Laptop" autowire="byName"/>
+    <bean id="laptopAutowireConstructor" class="Laptop.Laptop" autowire="constructor"/>
+    <bean id="laptopAutowireByName" class="Laptop.Laptop" autowire="byName"/>
+    <bean id="laptopProperty" class="Laptop.Laptop">
+        <property name="brandName" ref="brandName"/>
+        <property name="version" ref="version"/>
+        <property name="osName" ref="osName"/>
+    </bean>
     <bean id="osName" class="Laptop.OS" autowire="constructor"/>
 
     <bean id="brand" class="java.lang.String">

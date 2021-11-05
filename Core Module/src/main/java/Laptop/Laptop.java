@@ -1,39 +1,39 @@
 package Laptop;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
+@Getter
+@Setter
+@ToString
 public class Laptop {
     String brandName;
     int version;
     OS osName;
 
-
     public static void main(String[] args) {
-        System.out.println(new
-                ClassPathXmlApplicationContext("laptop.xml")
-                .getBean("laptop"));
+
+        System.out.println("Autowire Constructor: " +
+                new ClassPathXmlApplicationContext("laptop.xml")
+                        .getBean("laptopAutowireConstructor"));
+
+        System.out.println("Autowire ByName: " +
+                new ClassPathXmlApplicationContext("laptop.xml")
+                        .getBean("laptopAutowireByName"));
+
+        System.out.println("Property tags: " +
+                new ClassPathXmlApplicationContext("laptop.xml")
+                        .getBean("laptopProperty"));
     }
 
-    @Override
-    public String toString() {
-        return "Laptop{" +
-                "brand='" + brandName + '\'' +
-                ", version=" + version +
-                ", osName=" + osName +
-                '}';
+    public Laptop() {
     }
 
-    public void setBrandName(String brandName) {
-        System.out.println("called");
+    public Laptop(String brandName, int version, OS osName) {
         this.brandName = brandName;
-    }
-
-    public void setVersion(int version) {
         this.version = version;
-    }
-
-    public void setOsName(OS os) {
-        this.osName = os;
+        this.osName = osName;
     }
 }
