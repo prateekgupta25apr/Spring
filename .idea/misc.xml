@@ -4,6 +4,10 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/Users/pom.xml" />
+        <option value="$PROJECT_DIR$/Mobiles/pom.xml" />
+        <option value="$PROJECT_DIR$/MVC Module/pom.xml" />
+        <option value="$PROJECT_DIR$/ORM Module/pom.xml" />
+        <option value="$PROJECT_DIR$/Core Module/pom.xml" />
       </list>
     </option>
   </component>

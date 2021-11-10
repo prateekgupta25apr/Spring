@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Spring Boot.iml" filepath="$PROJECT_DIR$/.idea/Spring Boot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Core Module/CoreModule.iml" filepath="$PROJECT_DIR$/Core Module/CoreModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MVC Module/MVCModule.iml" filepath="$PROJECT_DIR$/MVC Module/MVCModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Mobiles/Mobiles.iml" filepath="$PROJECT_DIR$/Mobiles/Mobiles.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ORM Module/ORMModule.iml" filepath="$PROJECT_DIR$/ORM Module/ORMModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Spring.iml" filepath="$PROJECT_DIR$/.idea/Spring.iml" />
       <module fileurl="file://$PROJECT_DIR$/Users/User.iml" filepath="$PROJECT_DIR$/Users/User.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Users/Users.iml" filepath="$PROJECT_DIR$/Users/Users.iml" />
     </modules>
   </component>
 </project>

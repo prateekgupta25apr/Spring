@@ -6,19 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Users" />
+        <module name="Mobiles" />
+        <module name="ORMModule" />
+        <module name="MVCModule" />
         <module name="User" />
+        <module name="CoreModule" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="User" target="16" />
-      <module name="Users" target="16" />
+      <module name="CoreModule" target="16" />
+      <module name="Mobiles" target="17" />
+      <module name="MVCModule" target="16" />
+      <module name="ORMModule" target="16" />
+      <module name="User" target="1.5" />
     </bytecodeTargetLevel>
-  </component>
-  <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="User" options="-parameters" />
-      <module name="Users" options="-parameters" />
-    </option>
   </component>
 </project>
