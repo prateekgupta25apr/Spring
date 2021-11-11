@@ -21,7 +21,9 @@
         <a class="btn btn-outline-primary" href="save">Register details of a mobile</a>
     </div>
     <div class="col-4">
-        <a class="btn btn-outline-primary">Get details of a mobile by price</a>
+        <a class="btn btn-outline-primary" href="get-by-price">
+        Get details of a mobile by price
+        </a>
     </div>
     <div class="col-4">
     <a class="btn btn-outline-primary">Get details of a mobile by brand name</a>

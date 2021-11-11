@@ -1,6 +1,7 @@
 package org.prateekgupta.controller;
 
 import org.apache.log4j.Logger;
+import org.prateekgupta.dto.GetByPriceDTO;
 import org.prateekgupta.dto.MobileDTO;
 import org.prateekgupta.service.MobileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,17 @@ public class MobileController {
         String message=service.save(dto);
         logger.info(message);
         modelAndView.addObject("message",message);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "get-by-price",method = RequestMethod.GET)
+    ModelAndView getByPrice(){
+        return new ModelAndView("getByPrice.jsp");
+    }
+    @RequestMapping(value = "get-by-price",method = RequestMethod.POST)
+    ModelAndView getByPrice(GetByPriceDTO dto){
+        ModelAndView modelAndView=new ModelAndView("getByPrice.jsp");
+        modelAndView.addObject("data",service.getByPrice(dto));
         return modelAndView;
     }
 

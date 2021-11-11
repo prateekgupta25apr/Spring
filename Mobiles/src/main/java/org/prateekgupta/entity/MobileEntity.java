@@ -5,9 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @javax.persistence.Entity
@@ -15,6 +13,10 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Table
+@NamedQueries({
+        @NamedQuery(name = "getByPrice",
+                query = "from MobileEntity where price<:maxPrice and price>:minPrice"),
+})
 public class MobileEntity {
     @Id
     @GenericGenerator(name = "autoincrement", strategy = "increment")
