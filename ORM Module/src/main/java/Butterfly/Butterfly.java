@@ -7,19 +7,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.util.Scanner;
 
 public class Butterfly {
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         byte userChoice;
         char userWish;
         do {
-            System.out.println("""
-                    Enter
-                    1. To save details of a Butterfly
-                    2. To get a Butterfly's details by id""");
+            System.out.println("Enter 1. To save details of a Butterfly 2. To get a Butterfly's details by id");
             userChoice = scanner.nextByte();
             scanner.nextLine();
             switch (userChoice) {
-                case 1->{
+                case 1 :
                     DTO dto=new DTO();
                     System.out.println("Enter id of the Butterfly");
                     dto.setId(scanner.nextInt());
@@ -42,14 +39,14 @@ public class Butterfly {
                     Service service = (Service) new ClassPathXmlApplicationContext(
                             "butterfly.xml").getBean("service");
                     System.out.println(service.save(dto));
-                }
-                case 2->{
-                    Service service = (Service) new ClassPathXmlApplicationContext(
+                
+                case 2:
+                    Service service2 = (Service) new ClassPathXmlApplicationContext(
                             "butterfly.xml").getBean("service");
                     System.out.println("Enter id of the Butterfly");
-                    service.getById(scanner.nextInt());
+                    service2.getById(scanner.nextInt());
                     scanner.nextLine();
-                }
+                
             }
             System.out.println("Enter Y/y to continue or any other character to exit");
             userWish = scanner.nextLine().charAt(0);

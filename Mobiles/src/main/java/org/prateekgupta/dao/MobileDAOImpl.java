@@ -5,9 +5,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.prateekgupta.entity.MobileEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.PersistenceException;
 
+@Component
 public class MobileDAOImpl implements MobileDAO{
 
     @Autowired

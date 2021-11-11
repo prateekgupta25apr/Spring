@@ -14,15 +14,33 @@ public class MobileController {
     @Autowired
     MobileService service;
 
+    static Logger logger =Logger.getLogger(MobileController.class);
+
+    @RequestMapping(value = "save",method = RequestMethod.GET)
+    ModelAndView save(){
+        return new ModelAndView("save.jsp");
+    }
+
     @RequestMapping(value = "save", method = RequestMethod.POST)
     ModelAndView save(MobileDTO dto){
+        logger.info(dto);
         ModelAndView modelAndView=new ModelAndView("result.jsp");
-        modelAndView.addObject("message",service.save(dto));
+        String message=service.save(dto);
+        logger.info(message);
+        modelAndView.addObject("message",message);
         return modelAndView;
     }
 
     public static void main(String[] args) {
-        Logger logger =Logger.getLogger(MobileController.class);
+
         logger.info("Hi");
+
+        logger.trace("I am TRACE");
+        logger.warn("I am WARN");
+        logger.debug("I am DEBUG");
+        logger.info("I am INFO");
+        logger.fatal("I am FATAL");
+        logger.error("I am ERROR");
+
     }
 }
