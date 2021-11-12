@@ -14,31 +14,19 @@
     <%@ page isELIgnored="false"%>
 </head>
 <body>
-<div class="text-right">
-<a href="/Mobiles" class="btn btn-primary">Back to home</a>
-</div>
 <div class="container">
-    <form method="POST" action="get-by-price">
+    <form method="POST" action="get-by-brand-name">
         <br><br>
-        <h1><b>Get mobiles details by price</b></h1>
+        <h1><b>Get mobiles details by brand name</b></h1>
         <br>
 
         <div class="form-row">
             <div class="form-group col-4">
-                <label for="min_price_input">Minimum Price</label>
+                <label for="brand_name_input">Brand Name</label>
             </div>
             <div class="form-group col-8">
-                <input type="text" name="minPrice" class="form-control"
-                       id="min_price_input" placeholder="Enter Minimum Price">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-4">
-                <label for="max_price_input">Minimum Price</label>
-            </div>
-            <div class="form-group col-8">
-                <input type="text" name="maxPrice" class="form-control"
-                       id="max_price_input" placeholder="Enter Maximum Price">
+                <input type="text" name="brandName" class="form-control"
+                       id="brand_name_input" placeholder="Enter Brand Name">
             </div>
         </div>
         <div class="form-row">

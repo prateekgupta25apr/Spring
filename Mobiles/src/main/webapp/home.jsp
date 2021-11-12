@@ -25,14 +25,16 @@
         Get details of a mobile by price
         </a>
     </div>
-    <div class="col-4">
-    <a class="btn btn-outline-primary">Get details of a mobile by brand name</a>
+    <div class="col-4" >
+    <a class="btn btn-outline-primary" href="get-by-brand-name">Get details of a mobile by brand name</a>
     </div>
     <div class="col-6">
-        <a class="btn btn-outline-primary">Update price of a mobile by model number</a>
+        <a class="btn btn-outline-primary" href="update-price-by-model-number">
+        Update price of a mobile by model number</a>
     </div>
     <div class="col-6">
-        <a class="btn btn-outline-primary">Update availability of a mobile by model name</a>
+        <a class="btn btn-outline-primary" href="update-availability-by-model-name">
+        Update availability of a mobile by model name</a>
     </div>
 </div>
 </div>

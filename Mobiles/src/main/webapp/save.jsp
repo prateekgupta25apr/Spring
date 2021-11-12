@@ -14,7 +14,9 @@
     <title>Registration</title>
 </head>
 <body>
-
+<div class="text-right">
+<a href="/Mobiles" class="btn btn-primary">Back to home</a>
+</div>
 <div class="container">
     <form method="POST" action="save">
         <br><br>

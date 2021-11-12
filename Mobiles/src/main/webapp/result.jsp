@@ -13,7 +13,10 @@
     <%@ page isELIgnored="false"%>
 </head>
 <body>
-<h1 class="alert alert-primary text-center" style="margin-top:15%;">
+<div class="text-right">
+<a href="/Mobiles" class="btn btn-primary">Back to home</a>
+</div>
+<h1 class="alert alert-primary text-center" style="margin-top:15%;margin-bottom:15%;">
 ${message}
 </h1>
 </body>

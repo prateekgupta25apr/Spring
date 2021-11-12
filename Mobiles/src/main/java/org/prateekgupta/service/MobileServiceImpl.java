@@ -1,8 +1,7 @@
 package org.prateekgupta.service;
 
 import org.prateekgupta.dao.MobileDAO;
-import org.prateekgupta.dto.GetByPriceDTO;
-import org.prateekgupta.dto.MobileDTO;
+import org.prateekgupta.dto.*;
 import org.prateekgupta.entity.MobileEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +34,32 @@ public class MobileServiceImpl implements MobileService{
             mobileDTOList.add(mobileDTO);
         }
         return mobileDTOList;
+    }
+
+    @Override
+    public List<MobileDTO> getByBrandName(GetByBrandNameDTO dto) {
+        List<MobileDTO> mobileDTOList=new ArrayList<>();
+
+        List<MobileEntity> mobileEntityList=dao.getByBrandName(dto);
+        for (MobileEntity mobileEntity : mobileEntityList) {
+            MobileDTO mobileDTO=new MobileDTO();
+            BeanUtils.copyProperties(mobileEntity, mobileDTO);
+            mobileDTOList.add(mobileDTO);
+        }
+        return mobileDTOList;
+    }
+
+    @Override
+    public MobileDTO updatePriceByModelNumber(UpdatePriceByModelNumberDTO dto) {
+        MobileDTO mobileDTO=new MobileDTO();
+        BeanUtils.copyProperties(dao.updatePriceBuModelNumber(dto),mobileDTO);
+        return mobileDTO;
+    }
+
+    @Override
+    public MobileDTO updateAvailabilityByModelName(UpdateAvailabilityByModelNameDTO dto) {
+        MobileDTO mobileDTO=new MobileDTO();
+        BeanUtils.copyProperties(dao.updateAvailabilityBuModelName(dto),mobileDTO);
+        return mobileDTO;
     }
 }

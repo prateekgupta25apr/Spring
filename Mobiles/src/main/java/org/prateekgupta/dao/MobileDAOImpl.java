@@ -4,7 +4,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.prateekgupta.dto.GetByBrandNameDTO;
 import org.prateekgupta.dto.GetByPriceDTO;
+import org.prateekgupta.dto.UpdateAvailabilityByModelNameDTO;
+import org.prateekgupta.dto.UpdatePriceByModelNumberDTO;
 import org.prateekgupta.entity.MobileEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,6 +53,85 @@ public class MobileDAOImpl implements MobileDAO{
             query.setParameter("minPrice",dto.getMinPrice());
             result=(List<MobileEntity>) query.list();
 //            System.out.println(result);
+            transaction.commit();
+        }
+        catch (PersistenceException e){
+        }
+        finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<MobileEntity> getByBrandName(GetByBrandNameDTO dto) {
+        Session session=null;
+        List<MobileEntity> result=null;
+        try{
+            session= factory.openSession();
+            Transaction transaction= session.beginTransaction();
+            Query query= session.createNamedQuery("getByBrandName");
+            query.setParameter("providedBrandName",dto.getBrandName());
+            result=(List<MobileEntity>) query.list();
+//            System.out.println(result);
+            transaction.commit();
+        }
+        catch (PersistenceException e){
+        }
+        finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public MobileEntity updatePriceBuModelNumber(UpdatePriceByModelNumberDTO dto) {
+        Session session=null;
+        MobileEntity result=null;
+        try{
+            session= factory.openSession();
+            Transaction transaction= session.beginTransaction();
+            Query query= session.createNamedQuery("updatePriceByModelNumber");
+            query.setParameter("providedModelNumber",dto.getModelNumber());
+            query.setParameter("providedPrice",dto.getPrice());
+            query.executeUpdate();
+            query=session.createNamedQuery("getByModelNumber");
+            query.setParameter("providedModelNumber",dto.getModelNumber());
+            result=(MobileEntity) query.uniqueResult();
+
+//            System.out.println(result);
+            transaction.commit();
+        }
+        catch (PersistenceException e){
+        }
+        finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public MobileEntity updateAvailabilityBuModelName(UpdateAvailabilityByModelNameDTO dto) {
+        Session session=null;
+        MobileEntity result=null;
+        try{
+            session= factory.openSession();
+            Transaction transaction= session.beginTransaction();
+            Query query= session.createNamedQuery("updateAvailabilityByModelName");
+            query.setParameter("providedAvailability",dto.getAvailability());
+            query.setParameter("providedModelName",dto.getModelName());
+            query.executeUpdate();
+            query=session.createNamedQuery("getByModelName");
+            query.setParameter("providedModelName",dto.getModelName());
+            result=(MobileEntity) query.uniqueResult();
+
+            System.out.println(result);
             transaction.commit();
         }
         catch (PersistenceException e){
