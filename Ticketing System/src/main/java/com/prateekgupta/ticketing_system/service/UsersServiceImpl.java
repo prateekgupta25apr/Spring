@@ -82,6 +82,43 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public Object updateUser(UsersDTO dto) {
-        return null;
+        UsersEntity entity = repo.getById(dto.getId());
+        if (dto.getFirstName() != null) {
+            entity.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getMiddleName() != null) {
+            entity.setMiddleName(dto.getMiddleName());
+        }
+
+        if (dto.getLastName() != null) {
+            entity.setLastName(dto.getLastName());
+        }
+
+        if (dto.getEmail() != null) {
+            entity.setEmail(dto.getEmail());
+        }
+
+        if (dto.getContactNumber() != 0) {
+            if (dto.getContactNumber() < 6000000000L) {
+                logger.warn("Contact Number not found");
+                return "Please enter contact number";
+            } else entity.setContactNumber(dto.getContactNumber());
+        }
+
+        if (dto.getCity() != null) {
+            entity.setCity(dto.getCity());
+        }
+
+        if (dto.getState()!=null){
+            entity.setState(dto.getState());
+        }
+
+        if (dto.getCountry() != null) {
+            entity.setCountry(dto.getCountry());
+        }
+
+        repo.save(entity);
+        return "User details updated";
     }
 }
