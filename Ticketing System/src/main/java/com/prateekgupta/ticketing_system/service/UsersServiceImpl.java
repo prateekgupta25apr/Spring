@@ -20,6 +20,9 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     UsersRepo repo;
 
+    @Autowired
+    MappingService mappingService;
+
     @Override
     public Object addUser(UsersDTO dto) {
         if (dto.getFirstName() == null) {
@@ -87,6 +90,7 @@ public class UsersServiceImpl implements UsersService {
             entity.setFirstName(dto.getFirstName());
         }
 
+
         if (dto.getMiddleName() != null) {
             entity.setMiddleName(dto.getMiddleName());
         }
@@ -119,6 +123,7 @@ public class UsersServiceImpl implements UsersService {
         }
 
         repo.save(entity);
+        mappingService.updateUserDetails(entity);
         return "User details updated";
     }
 }

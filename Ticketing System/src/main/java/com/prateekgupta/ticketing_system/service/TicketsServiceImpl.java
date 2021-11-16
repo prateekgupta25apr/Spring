@@ -203,6 +203,7 @@ public class TicketsServiceImpl implements TicketsService {
         }
 
         repo.save(entity);
+        mappingService.updateTicketDetails(entity);
         return "Ticket updated successfully";
     }
 }

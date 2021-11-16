@@ -20,7 +20,7 @@ public class MappingEntity {
     @Id
     @GenericGenerator(name = "autoincrement",strategy = "increment")
     @GeneratedValue(generator = "autoincrement")
-    private int id;
+    private int ticketId;
     private String firstName;
     private String middleName;
     private String lastName;
