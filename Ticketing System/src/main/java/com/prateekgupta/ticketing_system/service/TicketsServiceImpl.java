@@ -3,6 +3,7 @@ package com.prateekgupta.ticketing_system.service;
 import com.prateekgupta.ticketing_system.dto.TicketsDTO;
 import com.prateekgupta.ticketing_system.entity.TicketsEntity;
 import com.prateekgupta.ticketing_system.repository.TicketsRepo;
+import com.prateekgupta.ticketing_system.repository.UsersRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +18,12 @@ public class TicketsServiceImpl implements TicketsService {
 
     @Autowired
     TicketsRepo repo;
+
+    @Autowired
+    MappingService mappingService;
+
+    @Autowired
+    UsersRepo usersRepo;
 
     private final Logger logger = LoggerFactory.getLogger(TicketsServiceImpl.class);
 
@@ -105,6 +112,7 @@ public class TicketsServiceImpl implements TicketsService {
             return "An internal issue occurred.Please try again";
         }
         repo.save(entity);
+        mappingService.addMapping(usersRepo.getById(entity.getUserId()),entity);
         return "Ticket added successfully";
     }
 
