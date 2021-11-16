@@ -13,4 +13,6 @@ public class Entity {
     private int id;
     private String name;
     private String location;
+    private short year;
+    private int entryFee;
 }

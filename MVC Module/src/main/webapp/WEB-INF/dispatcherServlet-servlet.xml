@@ -14,7 +14,7 @@
     <mvc:annotation-driven/>
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/monuments"/>
         <property name="username" value="root"/>
         <property name="password" value="root"/>
     </bean>

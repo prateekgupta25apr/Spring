@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class Controller {
     @Autowired
     Service service;
-    @RequestMapping(value = "/welcome", method = RequestMethod.GET)
-    String printWelcome(){
+    @RequestMapping(value = "save", method = RequestMethod.GET)
+    String save(){
         System.out.println("Controller called");
-        return service.printWelcome();
+        return service.save();
     }
 }
