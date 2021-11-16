@@ -25,6 +25,7 @@ public class TicketController {
             return "Please enter necessary details";
         }
         logger.info("Proceeding to service layer");
+        logger.info(dto.toString());
         return service.addTicket(dto);
     }
 

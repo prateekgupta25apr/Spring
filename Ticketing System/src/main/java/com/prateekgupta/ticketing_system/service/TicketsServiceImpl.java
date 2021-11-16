@@ -2,6 +2,7 @@ package com.prateekgupta.ticketing_system.service;
 
 import com.prateekgupta.ticketing_system.dto.TicketsDTO;
 import com.prateekgupta.ticketing_system.entity.TicketsEntity;
+import com.prateekgupta.ticketing_system.entity.UsersEntity;
 import com.prateekgupta.ticketing_system.repository.TicketsRepo;
 import com.prateekgupta.ticketing_system.repository.UsersRepo;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,10 +103,21 @@ public class TicketsServiceImpl implements TicketsService {
             }
         }
 
-        if (dto.getUserId()<=0){
+        UsersEntity usersEntity;
+        if (dto.getUserId() <= 0) {
             logger.warn("User Id not found");
             return "Please enter your User Id";
+        } else {
+            try {
+                usersEntity = usersRepo.getById(dto.getUserId());
+
+                logger.info(usersEntity+"");
+            } catch (EntityNotFoundException e) {
+                logger.error("Invalid User Id");
+                return "Please enter valid user id";
+            }
         }
+
         try {
             BeanUtils.copyProperties(dto, entity);
         } catch (IllegalArgumentException e) {
@@ -112,7 +125,8 @@ public class TicketsServiceImpl implements TicketsService {
             return "An internal issue occurred.Please try again";
         }
         repo.save(entity);
-        mappingService.addMapping(usersRepo.getById(entity.getUserId()),entity);
+
+        mappingService.addMapping(usersEntity, entity);
         return "Ticket added successfully";
     }
 
@@ -198,7 +212,7 @@ public class TicketsServiceImpl implements TicketsService {
             }
         }
 
-        if (dto.getUserId()>0){
+        if (dto.getUserId() > 0) {
             entity.setUserId(dto.getUserId());
         }
 
