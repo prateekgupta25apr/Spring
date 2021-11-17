@@ -111,7 +111,11 @@ public class TicketsServiceImpl implements TicketsService {
             try {
                 usersEntity = usersRepo.getById(dto.getUserId());
 
-                logger.info(usersEntity+"");
+                logger.info("A ticket added by the " +
+                        usersEntity.getFirstName() + " " +
+                        usersEntity.getMiddleName() + " " +
+                        usersEntity.getLastName() +
+                        " with id " + usersEntity.getId());
             } catch (EntityNotFoundException e) {
                 logger.error("Invalid User Id");
                 return "Please enter valid user id";
@@ -148,7 +152,23 @@ public class TicketsServiceImpl implements TicketsService {
 
     @Override
     public Object updateTickets(TicketsDTO dto) {
-        TicketsEntity entity = repo.getById(dto.getId());
+        TicketsEntity entity;
+        if (dto.getId() <= 0) {
+            logger.warn("Ticket Id not found");
+            return "Please enter valid ticket id";
+        } else {
+            try {
+                entity = repo.getById(dto.getId());
+                logger.info("Details update request for the ticket with id " +
+                        entity.getId() + "by " +
+                        usersRepo.getById(entity.getUserId()).getFirstName() + " " +
+                        usersRepo.getById(entity.getUserId()).getMiddleName() + " " +
+                        usersRepo.getById(entity.getUserId()).getLastName());
+            } catch (EntityNotFoundException e) {
+                logger.error("Invalid Ticket id provided");
+                return "Please enter valid ticket id";
+            }
+        }
 
         if (dto.getProductName() != null) {
             entity.setProductName(dto.getProductName());

@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +86,25 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public Object updateUser(UsersDTO dto) {
-        UsersEntity entity = repo.getById(dto.getId());
+        UsersEntity entity;
+        if (dto.getId() <= 0) {
+            logger.warn("User Id not found");
+            return "Please enter valid user id";
+        } else {
+            try {
+                entity = repo.getById(dto.getId());
+                logger.info("User details update request received from " +
+                        entity.getFirstName() + " "+
+                        entity.getMiddleName()+" "+
+                        entity.getLastName()+" "+
+                        " with id "+entity.getId()
+                );
+            } catch (EntityNotFoundException e) {
+                logger.warn("Invalid User Id provided");
+                return "Please enter valid user id";
+            }
+        }
+
         if (dto.getFirstName() != null) {
             entity.setFirstName(dto.getFirstName());
         }
@@ -114,7 +133,7 @@ public class UsersServiceImpl implements UsersService {
             entity.setCity(dto.getCity());
         }
 
-        if (dto.getState()!=null){
+        if (dto.getState() != null) {
             entity.setState(dto.getState());
         }
 
