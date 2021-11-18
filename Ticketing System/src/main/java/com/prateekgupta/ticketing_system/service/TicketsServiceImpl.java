@@ -109,13 +109,8 @@ public class TicketsServiceImpl implements TicketsService {
             return "Please enter your User Id";
         } else {
             try {
-                usersEntity = usersRepo.getById(dto.getUserId());
-
-                logger.info("A ticket added by the " +
-                        usersEntity.getFirstName() + " " +
-                        usersEntity.getMiddleName() + " " +
-                        usersEntity.getLastName() +
-                        " with id " + usersEntity.getId());
+                usersEntity = usersRepo.findById(dto.getUserId());
+                if (usersEntity == null) throw new EntityNotFoundException();
             } catch (EntityNotFoundException e) {
                 logger.error("Invalid User Id");
                 return "Please enter valid user id";
@@ -158,12 +153,8 @@ public class TicketsServiceImpl implements TicketsService {
             return "Please enter valid ticket id";
         } else {
             try {
-                entity = repo.getById(dto.getId());
-                logger.info("Details update request for the ticket with id " +
-                        entity.getId() + "by " +
-                        usersRepo.getById(entity.getUserId()).getFirstName() + " " +
-                        usersRepo.getById(entity.getUserId()).getMiddleName() + " " +
-                        usersRepo.getById(entity.getUserId()).getLastName());
+                entity = repo.findById(dto.getId());
+                if (entity == null) throw new EntityNotFoundException();
             } catch (EntityNotFoundException e) {
                 logger.error("Invalid Ticket id provided");
                 return "Please enter valid ticket id";
@@ -239,5 +230,18 @@ public class TicketsServiceImpl implements TicketsService {
         repo.save(entity);
         mappingService.updateTicketDetails(entity);
         return "Ticket updated successfully";
+    }
+
+    @Override
+    public Object deleteTickets(TicketsDTO dto) {
+        try {
+            TicketsEntity entity = repo.findById(dto.getId());
+            if (entity == null) throw new EntityNotFoundException();
+            repo.delete(entity);
+            return "Ticket deleted successfully";
+        } catch (EntityNotFoundException e) {
+            logger.error("Invalid Ticket id provided");
+            return "Please enter valid ticket id";
+        }
     }
 }

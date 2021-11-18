@@ -1,0 +1,60 @@
+ 1. JPA Repository provides many built-in methods for managing database but if we
+    want then we can ask JPA Repositories to create more customized methods for us and the
+    best thing is we don't even have to provide implementation for those methods, JPA will
+    provide implementation for those methods just by reading the names.
+
+    As JPA Repositories provide implementation for a method just by reading the name
+    of the method, so we have to give name to the methods properly by following some
+    naming convention
+    1. getBy**
+       The getBy** naming convention is used to get a reference to an entity object by
+       taking value of a column as argument like getById(int id), getByName(String name),
+       etc.
+       But the thing is getBy** methods just get reference to the entity object
+       without actually going to the database, and it goes actually goes to the database
+       when we call any method of the entity object and in case if no such entity if
+       found then getBy** method throws the EntityNotFoundException.
+       So getBy** methods may throw EntityNotFoundException when we first try to call
+       any method on the entity object returned by getBy** method and not when the
+       getBy** method is called itself.
+
+    2. findBy**
+       The findBy** naming convention is used to get a reference to an entity object
+       by taking value of a column as argument like findById(int id),
+       findByName(String name), etc.
+       But the thing is findBy** methods actually goes to the database and gets
+       reference to an entity object or returns null. And if we try to call any method
+       on the entity object which is returned by findBy** methods then we may get
+       NullPointerException if entity object is null.
+
+    3. findAllBy**
+       The findAllBy** naming convention works same as findBy** naming convention only
+       but returns a list of entity object instead of just one object.
+
+ 2. ExceptionHandler annotation
+    To handle exceptions in the Controller we use @ExceptionHandler annotations.
+
+    Syntax to use @ExceptionHandler annotation is,
+        @ExceptionHandler({ExceptionClass1.class,ExceptionClass2.class})
+        returnType methodName(){.....}
+
+    Now if any of the Exception whose class name is provided in the @ExceptionHandler
+    annotation occurs in the Controller then the methodName() method will be called
+    and according to the returnType of methodName(), data will be returned to the client.
+
+ 3. @RequestBody annotation
+    @RequestBody annotation is used to convert JSON data to Java data.
+
+    And if we are expecting an array of JSON objects in the Request Body then we have to
+    pass a List of DTOs as argument to the corresponding method of the url, annotated
+    with @RequestBody.
+
+ 4. HttpMessageNotReadableException
+    When @RequestBody annotation cannot convert JSON data to Java data, then we get
+    HttpMessageNotReadableException.
+
+    Possible reasons for conversion error
+    1. String value provided for int values
+    2. Specified date format not provided
+
+ 5.

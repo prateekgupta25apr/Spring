@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -92,13 +93,8 @@ public class UsersServiceImpl implements UsersService {
             return "Please enter valid user id";
         } else {
             try {
-                entity = repo.getById(dto.getId());
-                logger.info("User details update request received from " +
-                        entity.getFirstName() + " "+
-                        entity.getMiddleName()+" "+
-                        entity.getLastName()+" "+
-                        " with id "+entity.getId()
-                );
+                entity = repo.findById(dto.getId());
+                if (entity == null) throw new EntityNotFoundException();
             } catch (EntityNotFoundException e) {
                 logger.warn("Invalid User Id provided");
                 return "Please enter valid user id";
@@ -108,7 +104,6 @@ public class UsersServiceImpl implements UsersService {
         if (dto.getFirstName() != null) {
             entity.setFirstName(dto.getFirstName());
         }
-
 
         if (dto.getMiddleName() != null) {
             entity.setMiddleName(dto.getMiddleName());
@@ -143,6 +138,140 @@ public class UsersServiceImpl implements UsersService {
 
         repo.save(entity);
         mappingService.updateUserDetails(entity);
+        return "User details updated";
+    }
+
+    @Override
+    public Object deleteUser(UsersDTO dto) {
+        try {
+            UsersEntity entity = repo.findById(dto.getId());
+            if (entity == null) throw new EntityNotFoundException();
+            repo.delete(entity);
+            return "User details deleted successfully";
+        } catch (EntityNotFoundException e) {
+            logger.warn("Invalid User Id provided");
+            return "Please enter valid user id";
+        }
+    }
+
+    @Override
+    public Object getUserById(UsersDTO dto) {
+        try {
+            UsersEntity entity = repo.findById(dto.getId());
+            if (entity == null) throw new EntityNotFoundException();
+            return entity;
+        } catch (EntityNotFoundException e) {
+            logger.warn("Invalid User Id provided");
+            return "Please enter valid user id";
+        }
+    }
+
+    @Override
+    public Object addAll(List<UsersDTO> dtos) {
+        for (int i = 0; i < dtos.size(); i++) {
+            UsersDTO dto = dtos.get(i);
+            if (dto.getFirstName() == null) {
+                logger.warn("First name not found for object " + (i + 1));
+                return "Please provide first name for object " + (i + 1);
+            }
+
+            if (dto.getLastName() == null) {
+                logger.warn("Last name not found" + " for object " + (i + 1));
+                return "Please provide lastname" + " for object " + (i + 1);
+            }
+
+            if (dto.getEmail() == null) {
+                logger.warn("Email not found" + " for object " + (i + 1));
+                return "Please enter email" + " for object " + (i + 1);
+            }
+
+            if (dto.getContactNumber() < 6000000000L) {
+                logger.warn("Contact Number not found" + " for object " + (i + 1));
+                return "Please enter contact number" + " for object " + (i + 1);
+            }
+
+            if (dto.getCity() == null) {
+                logger.warn("City not found" + " for object " + (i + 1));
+                return "Please enter your city name" + " for object " + (i + 1);
+            }
+
+            if (dto.getCountry() == null) {
+                logger.warn("Country not found" + " for object " + (i + 1));
+                return "Please enter your country name" + " for object " + (i + 1);
+            }
+        }
+        List<UsersEntity> entities = new ArrayList<>();
+        try {
+            for (UsersDTO dto : dtos) {
+                UsersEntity entity = new UsersEntity();
+                BeanUtils.copyProperties(dto, entity);
+                entities.add(entity);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
+            return "An internal issue occurred.Please try again";
+        }
+
+        repo.saveAll(entities);
+        return "All user details saved successfully";
+    }
+
+    @Override
+    public Object updateAll(List<UsersDTO> dtos) {
+        for (int i = 0; i < dtos.size(); i++) {
+            UsersDTO dto = dtos.get(i);
+            UsersEntity entity;
+            if (dto.getId() <= 0) {
+                logger.warn("User Id not found" + " for object " + (i + 1));
+                return "Please enter valid user id" + " for object " + (i + 1);
+            } else {
+                try {
+                    entity = repo.findById(dto.getId());
+                    if (entity == null) throw new EntityNotFoundException();
+                } catch (EntityNotFoundException e) {
+                    logger.warn("Invalid User Id provided" + " for object " + (i + 1));
+                    return "Please enter valid user id" + " for object " + (i + 1);
+                }
+            }
+
+            if (dto.getFirstName() != null) {
+                entity.setFirstName(dto.getFirstName());
+            }
+
+            if (dto.getMiddleName() != null) {
+                entity.setMiddleName(dto.getMiddleName());
+            }
+
+            if (dto.getLastName() != null) {
+                entity.setLastName(dto.getLastName());
+            }
+
+            if (dto.getEmail() != null) {
+                entity.setEmail(dto.getEmail());
+            }
+
+            if (dto.getContactNumber() != 0) {
+                if (dto.getContactNumber() < 6000000000L) {
+                    logger.warn("Contact Number not found" + " for object " + (i + 1));
+                    return "Please enter contact number" + " for object " + (i + 1);
+                } else entity.setContactNumber(dto.getContactNumber());
+            }
+
+            if (dto.getCity() != null) {
+                entity.setCity(dto.getCity());
+            }
+
+            if (dto.getState() != null) {
+                entity.setState(dto.getState());
+            }
+
+            if (dto.getCountry() != null) {
+                entity.setCountry(dto.getCountry());
+            }
+
+            repo.save(entity);
+            mappingService.updateUserDetails(entity);
+        }
         return "User details updated";
     }
 }
