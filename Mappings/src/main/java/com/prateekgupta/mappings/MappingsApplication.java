@@ -27,22 +27,22 @@ public class MappingsApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		BasicDetails basicDetails = new BasicDetails();
+
 		AddressDetails addressDetails = new AddressDetails();
-		addressDetails.setId(1);
-		addressDetails.setFlatNo("107");
-		addressDetails.setStreetName("laxmipura");
-		addressDetails.setCity("bangalore");
+		addressDetails.setId(2);
+		addressDetails.setFlatNo("319");
+		addressDetails.setStreetName("bel circle");
+		addressDetails.setCity("pune");
 		addressDetails.setState("karnataka");
 		addressDetails.setCountry("India");
+		addressDetailsRepo.save(addressDetails);
 
-		basicDetails.setBasicDetailsId(1);
-		basicDetails.setName("Prateek");
+		BasicDetails basicDetails = new BasicDetails();
+		basicDetails.setBasicDetailsId(3);
+		basicDetails.setName("p");
 		basicDetails.setEmail("p@gmail.com");
 		basicDetails.setAddress(addressDetails);
 		basicDetailsRepo.save(basicDetails);
-		addressDetailsRepo.save(addressDetails);
-		System.out.println("All good");
 
 	}
 }

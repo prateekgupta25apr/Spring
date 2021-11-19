@@ -9,10 +9,6 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@ToString
-@Table
-@AllArgsConstructor
-@NoArgsConstructor
 public class AddressDetails {
     @Id
     private int id;
