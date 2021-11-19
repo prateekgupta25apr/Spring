@@ -75,6 +75,7 @@ public class UsersServiceImpl implements UsersService {
         for (UsersEntity entity : repo.findAll()) {
             UsersDTO dto = new UsersDTO();
             try {
+                logger.info(entity.toString());
                 BeanUtils.copyProperties(entity, dto);
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());
@@ -274,4 +275,9 @@ public class UsersServiceImpl implements UsersService {
         }
         return "User details updated";
     }
+
+//    public static void main(String[] args) {
+//        UsersEntity entity=new UsersEntity();
+//        repo.save(entity);
+//    }
 }
