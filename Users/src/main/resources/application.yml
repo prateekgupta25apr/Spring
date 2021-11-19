@@ -1,12 +1,9 @@
 # For .properties
-#spring.datasource.url=mysql://localhost:3306/users
+#spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+#spring.datasource.url=jdbc:mysql://localhost:3306/<schema_name>
 #spring.datasource.username=root
 #spring.datasource.password=root
-#spring.datasource.driver-class-name=com.mysql.jdbc.cj.Driver
-#spring.jpa.hibernate=none
-#spring.jpa.show-sql=false
-#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
-# server.port=7979
+#spring.jpa.hibernate.ddl-auto=update
 
 # For .yml
 spring:
@@ -16,10 +13,8 @@ spring:
     url: jdbc:mysql://localhost:3306/users
     username: root
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-    ddl-auto: none
-    show-sql: false
+      ddl-auto: update
 
 server:
   port: 2525
