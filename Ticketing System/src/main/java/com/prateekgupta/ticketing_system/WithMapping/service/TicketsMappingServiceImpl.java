@@ -1,4 +1,7 @@
 package com.prateekgupta.ticketing_system.WithMapping.service;
 
-public class TicketsMappingServiceImpl {
+import org.springframework.stereotype.Service;
+
+@Service
+public class TicketsMappingServiceImpl implements TicketsMappingService {
 }
