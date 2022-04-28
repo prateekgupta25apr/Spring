@@ -4,7 +4,7 @@ cloud:
       access-key: AKIA4YYTIQXIG2OCJTPY
       secret-key: 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
     region:
-      static: us-east-2
+      static: ap-south-1
     stack:
       auto: false
 
