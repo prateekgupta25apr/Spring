@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="70d54992-278d-484e-ac4d-7e991fffe5f6" name="Changes" comment="Updated MobileController, servlet.xml, web.xml, home.html, save.html, updateAvailabilityByModelName.html, updatePriceByModelNumber.html,">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/Mobiles.war" beforeDir="false" afterPath="$PROJECT_DIR$/target/Mobiles.war" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,8 +79,8 @@
                 <option value="install" />
                 <option value="war:war" />
                 <option value="org.codehaus.mojo:wagon-maven-plugin:upload-single" />
-                <option value="-Dwagon.fromFile=E:\Training\Spring-Assessment\Mobiles\target\Mobiles.war" />
-                <option value="-Dwagon.url=file://E:\Tomcat\webapps" />
+                <option value="-Dwagon.fromFile=P:\Spring\Mobiles\target\Mobiles.war" />
+                <option value="-Dwagon.url=file://P:\Tomcat\webapps" />
               </list>
             </option>
             <option name="pomFileName" />
