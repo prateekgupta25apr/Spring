@@ -29,7 +29,7 @@ public class PDFController {
 
     @GetMapping("create_report")
     ResponseEntity<ByteArrayResource> createReport(){
-        byte[] content = (byte[]) service.createArticle();
+        byte[] content = (byte[]) service.createReport();
         ByteArrayResource resource = new ByteArrayResource(content);
         return ResponseEntity.ok().contentLength(content.length)
                 .header("Content-type",
