@@ -3,6 +3,7 @@ package com.prateekgupta.DocumentGenerator.service.impl;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -103,6 +104,7 @@ public class PDFServiceImpl implements PDFService {
             // Adding caption
             PdfPCell hCell=new PdfPCell(new Phrase("test",new Font(Font.FontFamily.HELVETICA,16,Font.BOLD)));
             hCell.setPadding(5);
+            hCell.setBorder(Rectangle.NO_BORDER);
             table.addCell(hCell);
             PdfPCell vCell=new PdfPCell(new Phrase("test",new Font(Font.FontFamily.HELVETICA,16,Font.BOLD)));
             vCell.setPadding(5);

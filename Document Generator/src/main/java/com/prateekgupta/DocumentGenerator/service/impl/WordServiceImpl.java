@@ -8,11 +8,13 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+@Service
 public class WordServiceImpl implements WordService {
     @Override
     public byte[] createReport() {
