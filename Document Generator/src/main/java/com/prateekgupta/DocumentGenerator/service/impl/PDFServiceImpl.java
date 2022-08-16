@@ -17,6 +17,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -25,48 +26,109 @@ import java.nio.file.Paths;
 @Service
 public class PDFServiceImpl implements PDFService {
     @Override
-    public byte[] createArticle() {
+    public ByteArrayInputStream createDocument() {
         com.itextpdf.text.Document document = new Document();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, byteArrayOutputStream);
             document.open();
 
-            // Creating Article
-            Chunk titleChunk = new Chunk("Title of the PDF file");
-            titleChunk.setFont(new Font(Font.FontFamily.HELVETICA, 25,
-                    Font.BOLDITALIC, BaseColor.BLUE));
-            Paragraph title = new Paragraph(titleChunk);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
+            // Creating object to hold the Logo image
+            Image logoImage = Image.getInstance("https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png");
 
-            //String html="<div>this is div</div><img src='file:/C:/Users/PrateekGupta/Downloads/pic.jpg'/><p>this is p</p>";
-            String html="<div>this is div</div><img src='https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-674010.jpg&fm=jpg'/><p>this is p</p>";
-            org.jsoup.nodes.Document doc= Jsoup.parse(html);
-            doc.outputSettings().syntax( org.jsoup.nodes.Document.OutputSettings.Syntax.xml);
-            Elements elements=doc.getElementsByTag("img");
-            System.out.println(doc.getAllElements().size());
-            for (org.jsoup.nodes.Element e : elements) {
-                System.out.println(e.toString());
-                e.attr("src","file:/C:/Users/PrateekGupta/Downloads/pic.jpg");
-                System.out.println(e.toString());
-            }
+            // Setting size for the Logo image
+            logoImage.scaleToFit(200, 200);
 
-            ElementList tags= XMLWorkerHelper.parseToElementList(doc.html(), null);
-            Paragraph p=new Paragraph();
-            System.out.println(tags.size());
-            for (Element e:tags) {
-                System.out.println(e);
-                p.add(e);
-            }
-            document.add(p);
+            // Setting alignment for the Logo Image
+            logoImage.setAlignment(Image.MIDDLE);
+
+            // Adding Logo image to the document
+            document.add(logoImage);
+
+            // Creating Table 1
+            createTableWithBorders(document);
+
             document.close();
 
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
         }
 
-        return byteArrayOutputStream.toByteArray();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+
+    void createTableWithBorders(Document document){
+        try{
+            // Creating a Table with 2 columns
+            PdfPTable table=new PdfPTable(2);
+
+            // Setting width of the Table
+            table.setWidthPercentage(99);
+
+            // Setting width of the 2 columns in the Table
+            table.setWidths(new int[] { 3, 7 });
+
+            // Setting space before the Table
+            table.setSpacingBefore(20);
+
+            // Setting space after the Table
+            table.setSpacingAfter(20);
+
+            // Creating the Title Cell for the Table
+            PdfPCell tableTitle = new PdfPCell(new Phrase("Table Title",
+                    new Font(Font.FontFamily.HELVETICA, 13, Font.BOLD, GrayColor.BLACK)));
+
+            // Setting background color for the Table Title Cell
+            tableTitle.setBackgroundColor(GrayColor.LIGHT_GRAY);
+
+            // Setting Horizontal alignment for the Table Title Cell
+            tableTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            // Setting for how many columns the Table Title Cell should extend
+            tableTitle.setColspan(2);
+
+            // Setting padding for the Table Title Cell
+            tableTitle.setPadding(5);
+
+            // Adding the Table Title Cell to the table
+            table.addCell(tableTitle);
+
+            // Adding data to the table
+            addCellsToTableWithBorders(table,"header 1","value 1");
+            addCellsToTableWithBorders(table,"header 2","value 2");
+
+            // Adding the Table to the document
+            document.add(table);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    void addCellsToTableWithBorders(PdfPTable table,String headColumnValue,String columnValue){
+
+        // Creating cell for header value
+        PdfPCell headerCell=new PdfPCell();
+
+        // Setting text for header cell
+        headerCell.addElement(new Chunk(headColumnValue,FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+
+        // Setting padding for the header cell
+        headerCell.setPadding(5);
+
+        // Adding the header cell to the table
+        table.addCell(headerCell);
+
+        // Creating cell for the normal value
+        PdfPCell normalCell=new PdfPCell();
+
+        // Setting text for the normal cell
+        normalCell.addElement(new Chunk(columnValue,FontFactory.getFont(FontFactory.HELVETICA)));
+
+        // Setting padding for the normal cell
+        normalCell.setPadding(5);
+
+        // Adding the normal cell in the table
+        table.addCell(normalCell);
     }
 
     @Override

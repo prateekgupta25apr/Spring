@@ -15,6 +15,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * For the tables in the Apache POI we use XML and these XML use the schema definitions/
+ * file formats named as xsd. And xsd schema definitions define xsd:complexType. So CT
+ * in Java Classes stand for Complex Type.
+ * TC -> Table Cell
+ * Tbl -> Table
+ * Pr -> Properties
+ * W -> Width
+ * ST -> SimpleType
+ */
+
 @Service
 public class WordServiceImpl implements WordService {
     @Override

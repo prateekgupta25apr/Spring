@@ -1,7 +1,9 @@
 package com.prateekgupta.DocumentGenerator.service;
 
+import java.io.ByteArrayInputStream;
+
 public interface PDFService {
-    byte[] createArticle();
+    ByteArrayInputStream createDocument();
 
     byte[] createReport();
 }
