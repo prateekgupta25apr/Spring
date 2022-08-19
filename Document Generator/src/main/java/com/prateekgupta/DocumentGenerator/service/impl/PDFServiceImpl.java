@@ -13,18 +13,20 @@ import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.prateekgupta.DocumentGenerator.service.PDFService;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PDFServiceImpl implements PDFService {
+    /**
+     * Method to create a PDF document
+     * @return an input stream of byte array
+     */
     @Override
     public ByteArrayInputStream createDocument() {
         com.itextpdf.text.Document document = new Document();
@@ -34,7 +36,9 @@ public class PDFServiceImpl implements PDFService {
             document.open();
 
             // Creating object to hold the Logo image
-            Image logoImage = Image.getInstance("https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png");
+            Image logoImage = Image.getInstance("" +
+                    "https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/" +
+                    "1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png");
 
             // Setting size for the Logo image
             logoImage.scaleToFit(200, 200);
@@ -45,9 +49,43 @@ public class PDFServiceImpl implements PDFService {
             // Adding Logo image to the document
             document.add(logoImage);
 
-            // Creating Table 1
-            createTableWithBorders(document);
+            // Creating data for tables
+            Map<String,String> data=new HashMap<>();
+            data.put("Header 1","Value 1");
+            data.put("Header 2","Value 2");
+            data.put("Header 3","Value 3");
 
+            // Creating Table with borders
+            createTable(document,true,data);
+
+            // Creating Table without borders
+            createTable(document,false,data);
+
+            Paragraph htmlContentHeading=new Paragraph(
+                    new Phrase("HTML Content :",
+                            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16,
+                                    BaseColor.BLACK)));
+            htmlContentHeading.setSpacingBefore(25);
+            document.add(htmlContentHeading);
+
+
+            String html="<div>Test</div><br><img src=''>";
+            org.jsoup.nodes.Document doc = Jsoup.parse(html);
+            doc.outputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml);
+            doc.select("img").forEach(t->{
+                t.attr("src","https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png");
+//                if(Integer.parseInt(t.attr("width"))>600)
+//                    t.attr("width","600");
+//                if(Integer.parseInt(t.attr("height"))>600)
+//                    t.attr("height","300");
+            });
+
+            Paragraph description=new Paragraph();
+            ElementList tags= XMLWorkerHelper.parseToElementList(doc.html(), null);
+            description.setSpacingBefore(5);
+            description.addAll(tags);
+
+            document.add(description);
             document.close();
 
         } catch (DocumentException | IOException e) {
@@ -57,16 +95,32 @@ public class PDFServiceImpl implements PDFService {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
-    void createTableWithBorders(Document document){
+    /**
+     * Method to add a table to the document
+     * @param document: reference to the document to which the table needs to be added
+     * @param withBorders: specifies whether the table should have borders or not
+     * @param data: data to be added to the table
+     */
+    void createTable(Document document, boolean withBorders,
+                     Map<String,String> data){
         try{
+            PdfPTable table;
+            int[] colSizes;
             // Creating a Table with 2 columns
-            PdfPTable table=new PdfPTable(2);
+            if (withBorders) {
+                table = new PdfPTable(2);
+                colSizes = new int[]{3, 7};
+            }
+            else {
+                table = new PdfPTable(3);
+                colSizes=new int[]{1, 1, 1};
+            }
 
             // Setting width of the Table
             table.setWidthPercentage(99);
 
-            // Setting width of the 2 columns in the Table
-            table.setWidths(new int[] { 3, 7 });
+            // Setting width of the columns in the Table
+            table.setWidths(colSizes);
 
             // Setting space before the Table
             table.setSpacingBefore(20);
@@ -74,28 +128,17 @@ public class PDFServiceImpl implements PDFService {
             // Setting space after the Table
             table.setSpacingAfter(20);
 
-            // Creating the Title Cell for the Table
-            PdfPCell tableTitle = new PdfPCell(new Phrase("Table Title",
-                    new Font(Font.FontFamily.HELVETICA, 13, Font.BOLD, GrayColor.BLACK)));
-
-            // Setting background color for the Table Title Cell
-            tableTitle.setBackgroundColor(GrayColor.LIGHT_GRAY);
-
-            // Setting Horizontal alignment for the Table Title Cell
-            tableTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-            // Setting for how many columns the Table Title Cell should extend
-            tableTitle.setColspan(2);
-
-            // Setting padding for the Table Title Cell
-            tableTitle.setPadding(5);
-
-            // Adding the Table Title Cell to the table
-            table.addCell(tableTitle);
+            // Adding table title
+            addTableTitle(table,withBorders,colSizes.length);
 
             // Adding data to the table
-            addCellsToTableWithBorders(table,"header 1","value 1");
-            addCellsToTableWithBorders(table,"header 2","value 2");
+            if (withBorders) {
+                for (String key : data.keySet())
+                    addTableCellsWithBorders(table, key, data.get(key));
+            } else {
+                for (String key : data.keySet())
+                    addTableCellsWithoutBorders(table, key, data.get(key));
+            }
 
             // Adding the Table to the document
             document.add(table);
@@ -104,7 +147,46 @@ public class PDFServiceImpl implements PDFService {
         }
     }
 
-    void addCellsToTableWithBorders(PdfPTable table,String headColumnValue,String columnValue){
+    /**
+     * Method to add the title table cell to the table
+     * @param table: table to which the title cell needs to be added
+     * @param withBorder: whether to set border or not
+     * @param colSpan: number of columns the title cell should expand
+     */
+    void addTableTitle(PdfPTable table, boolean withBorder,int colSpan){
+        // Creating the Title Cell for the Table
+        PdfPCell tableTitle = new PdfPCell(new Phrase("Table Title",
+                new Font(Font.FontFamily.HELVETICA, 13, Font.BOLD, GrayColor.BLACK)));
+
+        // Setting background color for the Table Title Cell
+        tableTitle.setBackgroundColor(GrayColor.LIGHT_GRAY);
+
+        // Setting Horizontal alignment for the Table Title Cell
+        tableTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        // Setting for how many columns the Table Title Cell should extend
+        tableTitle.setColspan(colSpan);
+
+        // Setting padding for the header cell
+        tableTitle.setPaddingTop(5);
+        tableTitle.setPaddingBottom(5);
+
+        // Setting borders
+        if (!withBorder)
+            tableTitle.setBorder(Rectangle.NO_BORDER);
+
+        // Adding the Table Title Cell to the table
+        table.addCell(tableTitle);
+    }
+
+    /**
+     * Method to add cells to the table without borders
+     * @param table: Reference to the table in which the cells need to be added
+     * @param headColumnValue: header value to be added
+     * @param columnValue: normal value to be added
+     */
+    void addTableCellsWithBorders(PdfPTable table, String headColumnValue,
+                                  String columnValue){
 
         // Creating cell for header value
         PdfPCell headerCell=new PdfPCell();
@@ -129,6 +211,43 @@ public class PDFServiceImpl implements PDFService {
 
         // Adding the normal cell in the table
         table.addCell(normalCell);
+    }
+
+    /**
+     * Method to add cells to the table without borders
+     * @param table: Reference to the table in which the cells need to be added
+     * @param headColumnValue: header value to be added
+     * @param columnValue: normal value to be added
+     */
+    void addTableCellsWithoutBorders(PdfPTable table, String headColumnValue,
+                                     String columnValue){
+        // Object to hold the table cell
+        PdfPCell cell=new PdfPCell();
+
+        // Object to hold the text value of the table cell
+        Phrase value=new Phrase();
+
+        // Adding heading to the table cell text
+        value.add(new Chunk(headColumnValue+" : ",FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+
+        // Adding value to the table cell text
+        value.add(new Chunk(columnValue,FontFactory.getFont(FontFactory.HELVETICA)));
+
+        // Adding table cell text to table cell
+        cell.addElement(value);
+
+        // To stop extending the table cell text to multiple lines
+        cell.setNoWrap(true);
+
+        // Setting padding for the table cell
+        cell.setPaddingLeft(5);
+        cell.setPaddingRight(5);
+
+        // To remove the border of the table cell
+        cell.setBorder(Rectangle.NO_BORDER);
+
+        // Adding the table cell to table
+        table.addCell(cell);
     }
 
     @Override
