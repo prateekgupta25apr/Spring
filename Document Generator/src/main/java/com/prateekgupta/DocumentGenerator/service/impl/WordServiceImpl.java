@@ -3,16 +3,15 @@ package com.prateekgupta.DocumentGenerator.service.impl;
 import com.prateekgupta.DocumentGenerator.service.WordService;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.*;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URL;
 
 /**
@@ -28,6 +27,69 @@ import java.net.URL;
 
 @Service
 public class WordServiceImpl implements WordService {
+
+    @Override
+    public ByteArrayInputStream createDocument() {
+        // Object to hold Document in bytes
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try{
+            // Object to hold Document
+            XWPFDocument document = new XWPFDocument();
+
+            // Object to hold the Logo
+            XWPFParagraph companyLogo = document.createParagraph();
+
+            // Aligning the Logo to center
+            companyLogo.setAlignment(ParagraphAlignment.CENTER);
+
+            // Retrieving the Logo image
+            InputStream inputStream= new URL("https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png").openStream();
+
+            // Object to execute configuration for the Logo
+            XWPFRun companyLogoRun = companyLogo.createRun();
+
+            // Setting space after the Logo
+            companyLogoRun.setTextPosition(20);
+
+
+            // Adding the Logo to the document
+            companyLogoRun.addPicture(inputStream,
+                    XWPFDocument.PICTURE_TYPE_PNG, "file",
+                    Units.toEMU(200), Units.toEMU(70));
+
+            XWPFTable articleSummaryTable=document.createTable(10,2);
+            articleSummaryTable.setCellMargins(0,0,200,0);
+            articleSummaryTable.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
+            articleSummaryTable.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
+            XWPFParagraph articleSummaryTableTitle=articleSummaryTable.getRow(0).getCell(0).addParagraph();
+            articleSummaryTableTitle.setFontAlignment(ParagraphAlignment.CENTER.getValue());
+            articleSummaryTable.getRow(0).getCell(0).getParagraphs().get(0).setSpacingAfter(0);
+            XWPFRun articleSummaryTableTitleRun=articleSummaryTableTitle.createRun();
+            articleSummaryTableTitleRun.setText("Table Title");
+            articleSummaryTableTitleRun.setBold(true);
+            articleSummaryTableTitleRun.setFontSize(15);
+            articleSummaryTable.getRow(0).setHeight(800);
+            articleSummaryTable.getRow(0).getCtRow().getTrPr().getTrHeightArray(0).setHRule(STHeightRule.EXACT);
+            articleSummaryTable.getRow(0).getCell(0).setColor("D3D3D3");
+
+            articleSummaryTable.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
+
+            articleSummaryTable.getRow(0).getCell(1).setColor("D3D3D3");
+            CTHMerge hMerge = CTHMerge.Factory.newInstance();
+            hMerge.setVal(STMerge.RESTART);
+            articleSummaryTable.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(hMerge);
+
+            // Merging second col of the title row
+            hMerge.setVal(STMerge.CONTINUE);
+            articleSummaryTable.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(hMerge);
+
+            document.write(out);
+        }catch (Exception e){
+
+        }
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
     @Override
     public byte[] createReport() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

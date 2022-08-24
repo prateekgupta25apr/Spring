@@ -27,6 +27,8 @@ public class PDFController {
     ResponseEntity<?> createArticle(HttpServletRequest request, HttpServletResponse response){
         try{
             ByteArrayInputStream content = service.createDocument();
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=PDFDocument.pdf");
             InputStreamResource resource = new InputStreamResource(content);
 
             InputStream is = resource.getInputStream();
