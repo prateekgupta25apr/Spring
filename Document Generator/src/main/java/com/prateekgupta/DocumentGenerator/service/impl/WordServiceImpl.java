@@ -57,37 +57,60 @@ public class WordServiceImpl implements WordService {
                     XWPFDocument.PICTURE_TYPE_PNG, "file",
                     Units.toEMU(200), Units.toEMU(70));
 
-            XWPFTable articleSummaryTable=document.createTable(10,2);
-            articleSummaryTable.setCellMargins(0,0,200,0);
-            articleSummaryTable.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
-            articleSummaryTable.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
-            XWPFParagraph articleSummaryTableTitle=articleSummaryTable.getRow(0).getCell(0).addParagraph();
-            articleSummaryTableTitle.setFontAlignment(ParagraphAlignment.CENTER.getValue());
-            articleSummaryTable.getRow(0).getCell(0).getParagraphs().get(0).setSpacingAfter(0);
-            XWPFRun articleSummaryTableTitleRun=articleSummaryTableTitle.createRun();
-            articleSummaryTableTitleRun.setText("Table Title");
-            articleSummaryTableTitleRun.setBold(true);
-            articleSummaryTableTitleRun.setFontSize(15);
-            articleSummaryTable.getRow(0).setHeight(800);
-            articleSummaryTable.getRow(0).getCtRow().getTrPr().getTrHeightArray(0).setHRule(STHeightRule.EXACT);
-            articleSummaryTable.getRow(0).getCell(0).setColor("D3D3D3");
-
-            articleSummaryTable.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
-
-            articleSummaryTable.getRow(0).getCell(1).setColor("D3D3D3");
-            CTHMerge hMerge = CTHMerge.Factory.newInstance();
-            hMerge.setVal(STMerge.RESTART);
-            articleSummaryTable.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(hMerge);
-
-            // Merging second col of the title row
-            hMerge.setVal(STMerge.CONTINUE);
-            articleSummaryTable.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(hMerge);
+            // Create table
+            createTable(document);
 
             document.write(out);
         }catch (Exception e){
 
         }
         return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    void createTable(XWPFDocument document){
+        // Creating an object to hold the Article Summary Table with specific number of rows and columns
+        XWPFTable table=document.createTable(10,2);
+
+        //table.setCellMargins(0,0,200,0);
+
+        table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
+
+        table.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
+
+        XWPFParagraph articleSummaryTableTitle=table.getRow(0).getCell(0).addParagraph();
+
+        articleSummaryTableTitle.setFontAlignment(ParagraphAlignment.CENTER.getValue());
+
+        table.getRow(0).getCell(0).getParagraphs().get(0).setSpacingAfter(0);
+
+        XWPFRun articleSummaryTableTitleRun=articleSummaryTableTitle.createRun();
+
+        articleSummaryTableTitleRun.setText("Table Title");
+
+        articleSummaryTableTitleRun.setBold(true);
+
+        articleSummaryTableTitleRun.setFontSize(22);
+
+        table.getRow(0).setHeight(1000);
+
+        table.getRow(0).getCtRow().getTrPr().getTrHeightArray(0).setHRule(STHeightRule.EXACT);
+
+        table.getRow(0).getCell(0).setColor("D3D3D3");
+
+        table.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
+
+        table.getRow(0).getCell(1).setColor("D3D3D3");
+
+        CTHMerge hMerge = CTHMerge.Factory.newInstance();
+
+        hMerge.setVal(STMerge.RESTART);
+
+        table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(hMerge);
+
+        // Merging second col of the title row
+        hMerge.setVal(STMerge.CONTINUE);
+
+        table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(hMerge);
     }
 
     @Override
