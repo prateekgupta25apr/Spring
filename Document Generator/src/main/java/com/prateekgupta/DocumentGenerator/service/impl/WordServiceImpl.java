@@ -68,49 +68,104 @@ public class WordServiceImpl implements WordService {
     }
 
     void createTable(XWPFDocument document){
-        // Creating an object to hold the Article Summary Table with specific number of rows and columns
+        // Adding table title
+        addTableTitle(document);
+
+        // Creating an object to hold the Table with specific number of rows and columns
         XWPFTable table=document.createTable(10,2);
 
-        //table.setCellMargins(0,0,200,0);
-
+        // Setting width of the Table
         table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
 
+        // Setting width of the Table to fixed so that the table width won't vary according to size of the data
         table.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
 
-        XWPFParagraph articleSummaryTableTitle=table.getRow(0).getCell(0).addParagraph();
+        // Adding data to the table
+        addTableCellsWithBorders(table,0);
 
-        articleSummaryTableTitle.setFontAlignment(ParagraphAlignment.CENTER.getValue());
 
+    }
+
+    void addTableTitle(XWPFDocument document){
+        // Creating a separate Table for Title
+        XWPFTable table=document.createTable(1,2);
+
+        // Setting width of the Table
+        table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
+
+        // Setting width of the Table to fixed so that the table width won't vary according to size of the data
+        table.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
+
+        // Adding a paragraph(Title) to the 1st row's 1st column(Title Column) of the table
+        XWPFParagraph tableTitle=table.getRow(0).getCell(0).addParagraph();
+
+        // Setting alignment of Title
+        tableTitle.setFontAlignment(ParagraphAlignment.CENTER.getValue());
+
+        // Setting space after the Title to be 0
         table.getRow(0).getCell(0).getParagraphs().get(0).setSpacingAfter(0);
 
-        XWPFRun articleSummaryTableTitleRun=articleSummaryTableTitle.createRun();
+        // Object to execute configuration for the Title
+        XWPFRun tableTitleRun=tableTitle.createRun();
 
-        articleSummaryTableTitleRun.setText("Table Title");
+        // Setting text for Title
+        tableTitleRun.setText("Table Title");
 
-        articleSummaryTableTitleRun.setBold(true);
+        // Setting font style for Title to be bold
+        tableTitleRun.setBold(true);
 
-        articleSummaryTableTitleRun.setFontSize(22);
+        // Setting font size for Title
+        tableTitleRun.setFontSize(22);
 
+        // Setting height for the Title's row in the Table
         table.getRow(0).setHeight(1000);
 
-        table.getRow(0).getCtRow().getTrPr().getTrHeightArray(0).setHRule(STHeightRule.EXACT);
+        // Adding a table row property to set the height of the Table's 1st row to exact
+        // value as specified
+        table.getRow(0).getCtRow().getTrPr().getTrHeightArray(0).setHRule(
+                STHeightRule.EXACT);
 
+        // Setting background color for the Table's 1st row's both the columns
         table.getRow(0).getCell(0).setColor("D3D3D3");
-
-        table.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
-
         table.getRow(0).getCell(1).setColor("D3D3D3");
 
-        CTHMerge hMerge = CTHMerge.Factory.newInstance();
+        //table.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
 
-        hMerge.setVal(STMerge.RESTART);
+        // Creating an object of CTHMerge(which is used to merge 2 columns)
+        CTHMerge cthMerge = CTHMerge.Factory.newInstance();
 
-        table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(hMerge);
+        // Starting column merge
+        cthMerge.setVal(STMerge.RESTART);
 
-        // Merging second col of the title row
-        hMerge.setVal(STMerge.CONTINUE);
+        // Column from which merge starts
+        table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
 
-        table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(hMerge);
+        // Continuing column merge
+        cthMerge.setVal(STMerge.CONTINUE);
+
+        // Next column to be merged
+        table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+    }
+
+    void addTableCellsWithBorders(XWPFTable table,int rowNumber){
+        // Setting height for the row in the Table
+        table.getRow(rowNumber).setHeight(500);
+
+        // Setting padding for Table cells
+        table.setCellMargins(150,150,0,0);
+
+        // Adding a table row property to set the height of the Table's 1st row to exact
+        // value as specified
+        table.getRow(rowNumber).getCtRow().getTrPr().getTrHeightArray(0).setHRule(
+                STHeightRule.EXACT);
+
+        XWPFRun cellParagraphRun=table.getRow(rowNumber).getCell(0).getParagraphs().get(0).createRun();
+        cellParagraphRun.setText("Header 1");
+        cellParagraphRun.setBold(true);
+
+
+        XWPFRun cellParagraphRun1=table.getRow(rowNumber).getCell(1).getParagraphs().get(0).createRun();
+        cellParagraphRun1.setText("Value 1");
     }
 
     @Override
