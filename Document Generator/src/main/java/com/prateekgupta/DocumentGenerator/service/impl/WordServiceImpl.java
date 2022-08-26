@@ -74,7 +74,7 @@ public class WordServiceImpl implements WordService {
 
             document.write(out);
         }catch (Exception e){
-
+            System.out.println(e.getMessage());
         }
         return new ByteArrayInputStream(out.toByteArray());
     }
@@ -84,17 +84,21 @@ public class WordServiceImpl implements WordService {
         // Creating an object to hold the Table with specific number of rows and columns
         XWPFTable table;
         int dataSize;
+        int numberOfColumns;
         if (withBorders) {
             dataSize=data.size();
+            numberOfColumns=2;
             // Adding table title
-            addTableTitle(document, true,2);
-            table = document.createTable(dataSize, 2);
+            addTableTitle(document, true,numberOfColumns);
+            table = document.createTable(dataSize, numberOfColumns);
         }
         else {
-            dataSize=(data.size() % 2 == 0) ? data.size() / 2 : (data.size() / 2 + 1);
+            numberOfColumns=3;
+            dataSize=(data.size() % numberOfColumns == 0) ?
+                    data.size() / numberOfColumns : (data.size() / numberOfColumns + 1);
             // Adding table title
-            addTableTitle(document, false,3);
-            table = document.createTable(dataSize, 3);
+            addTableTitle(document, false,numberOfColumns);
+            table = document.createTable(dataSize, numberOfColumns);
         }
 
 
@@ -107,19 +111,21 @@ public class WordServiceImpl implements WordService {
 
 
         // Adding data to the table
-        int i=0;
+
         if (withBorders) {
+            int i=0;
             for (String key : data.keySet())
                 addTableCellsWithBorders(table, i++, key, data.get(key));
         }
         else {
             int columnsAdded=0;
             for (String key : data.keySet()) {
-                addTableCellsWithoutBorders(table,Math.max(columnsAdded / 2, 0),columnsAdded,key,data.get(key));
+                addTableCellsWithoutBorders(table,Math.max(columnsAdded / 3, 0),columnsAdded,key,data.get(key));
                 columnsAdded++;
             }
-            if ((dataSize-1) % 2 == 1)
-                removeCellBorders(table.getRow(dataSize-1).getCell(1));
+            if ((dataSize-1) % numberOfColumns > 0)
+                for (int i=1;i<numberOfColumns;i++)
+                removeCellBorders(table.getRow(dataSize-1).getCell(i));
         }
 
 
@@ -132,9 +138,9 @@ public class WordServiceImpl implements WordService {
         cell.getCTTc().addNewTcPr().addNewTcBorders().addNewBottom().setVal(STBorder.NIL);
     }
 
-    void addTableTitle(XWPFDocument document,boolean withBorders, int colSpan){
+    void addTableTitle(XWPFDocument document,boolean withBorders, int numberOfColumns){
         // Creating a separate Table for Title
-        XWPFTable table=document.createTable(1,2);
+        XWPFTable table=document.createTable(1,numberOfColumns);
 
         // Setting width of the Table
         table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
@@ -176,54 +182,27 @@ public class WordServiceImpl implements WordService {
         table.getRow(0).getCell(1).setColor("D3D3D3");
 
         if (!withBorders){
-            // Removing borders of the cells
+            // Removing borders of the first cell
             removeCellBorders(table.getRow(0).getCell(0));
-            removeCellBorders(table.getRow(0).getCell(1));
         }
-
-        //table.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
 
         // Creating an object of CTHMerge(which is used to merge 2 columns)
         CTHMerge cthMerge = CTHMerge.Factory.newInstance();
 
+        // Starting column merge
+        cthMerge.setVal(STMerge.RESTART);
 
+        // Column from which merge starts
+        table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
 
-        if (colSpan>2){
-            // Starting column merge
-            cthMerge.setVal(STMerge.RESTART);
+        // Continuing column merge
+        cthMerge.setVal(STMerge.CONTINUE);
 
-            // Column from which merge starts
-            table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
-
-            // Continuing column merge
-            cthMerge.setVal(STMerge.CONTINUE);
-
-            // Next column to be merged
-            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
-
-            // Starting column merge
-            cthMerge.setVal(STMerge.RESTART);
-
-            // Column from which merge starts
-            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
-
-            // Continuing column merge
-            cthMerge.setVal(STMerge.CONTINUE);
-
-            // Next column to be merged
-            table.getRow(0).getCell(2).getCTTc().getTcPr().setHMerge(cthMerge);
-        }else{
-            // Starting column merge
-            cthMerge.setVal(STMerge.RESTART);
-
-            // Column from which merge starts
-            table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
-
-            // Continuing column merge
-            cthMerge.setVal(STMerge.CONTINUE);
-
-            // Next column to be merged
-            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+        // Next columns to be merged
+        for (int i=1;i<=(numberOfColumns-1);i++){
+            if (!withBorders)
+            removeCellBorders(table.getRow(0).getCell(i));
+            table.getRow(0).getCell(i).getCTTc().getTcPr().setHMerge(cthMerge);
         }
     }
 
@@ -267,7 +246,7 @@ public class WordServiceImpl implements WordService {
         XWPFTableRow row=table.getRow(rowNumber);
 
         // Retrieving table cell from the table row
-        XWPFTableCell cell = row.getCell(columnsAdded % 2);
+        XWPFTableCell cell = row.getCell(columnsAdded % 3);
 
         // Removing borders
         removeCellBorders(cell);
