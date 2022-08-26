@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * For the tables in the Apache POI we use XML and these XML use the schema definitions/
@@ -57,8 +59,18 @@ public class WordServiceImpl implements WordService {
                     XWPFDocument.PICTURE_TYPE_PNG, "file",
                     Units.toEMU(200), Units.toEMU(70));
 
+            // Creating data for tables
+            Map<String,String> data=new HashMap<>();
+            data.put("Header 1","Value 1");
+            data.put("Header 2","Value 2");
+            data.put("Header 3","Value 3");
+
             // Create table
-            createTable(document);
+            createTable(document,true,data);
+
+            XWPFParagraph spacing=document.createParagraph();
+            spacing.setSpacingAfter(200);
+            createTable(document,false,data);
 
             document.write(out);
         }catch (Exception e){
@@ -67,12 +79,24 @@ public class WordServiceImpl implements WordService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    void createTable(XWPFDocument document){
-        // Adding table title
-        addTableTitle(document);
+    void createTable(XWPFDocument document, boolean withBorders, Map<String,String> data){
 
         // Creating an object to hold the Table with specific number of rows and columns
-        XWPFTable table=document.createTable(10,2);
+        XWPFTable table;
+        int dataSize;
+        if (withBorders) {
+            dataSize=data.size();
+            // Adding table title
+            addTableTitle(document, true,2);
+            table = document.createTable(dataSize, 2);
+        }
+        else {
+            dataSize=(data.size() % 2 == 0) ? data.size() / 2 : (data.size() / 2 + 1);
+            // Adding table title
+            addTableTitle(document, false,3);
+            table = document.createTable(dataSize, 3);
+        }
+
 
         // Setting width of the Table
         table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(9400));
@@ -80,13 +104,35 @@ public class WordServiceImpl implements WordService {
         // Setting width of the Table to fixed so that the table width won't vary according to size of the data
         table.getCTTbl().getTblPr().addNewTblLayout().setType(STTblLayoutType.FIXED);
 
+
+
         // Adding data to the table
-        addTableCellsWithBorders(table,0);
+        int i=0;
+        if (withBorders) {
+            for (String key : data.keySet())
+                addTableCellsWithBorders(table, i++, key, data.get(key));
+        }
+        else {
+            int columnsAdded=0;
+            for (String key : data.keySet()) {
+                addTableCellsWithoutBorders(table,Math.max(columnsAdded / 2, 0),columnsAdded,key,data.get(key));
+                columnsAdded++;
+            }
+            if ((dataSize-1) % 2 == 1)
+                removeCellBorders(table.getRow(dataSize-1).getCell(1));
+        }
 
 
     }
 
-    void addTableTitle(XWPFDocument document){
+    void removeCellBorders(XWPFTableCell cell){
+        cell.getCTTc().addNewTcPr().addNewTcBorders().addNewTop().setVal(STBorder.NIL);
+        cell.getCTTc().addNewTcPr().addNewTcBorders().addNewRight().setVal(STBorder.NIL);
+        cell.getCTTc().addNewTcPr().addNewTcBorders().addNewLeft().setVal(STBorder.NIL);
+        cell.getCTTc().addNewTcPr().addNewTcBorders().addNewBottom().setVal(STBorder.NIL);
+    }
+
+    void addTableTitle(XWPFDocument document,boolean withBorders, int colSpan){
         // Creating a separate Table for Title
         XWPFTable table=document.createTable(1,2);
 
@@ -129,25 +175,59 @@ public class WordServiceImpl implements WordService {
         table.getRow(0).getCell(0).setColor("D3D3D3");
         table.getRow(0).getCell(1).setColor("D3D3D3");
 
+        if (!withBorders){
+            // Removing borders of the cells
+            removeCellBorders(table.getRow(0).getCell(0));
+            removeCellBorders(table.getRow(0).getCell(1));
+        }
+
         //table.getRow(0).getCell(0).getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1000));
 
         // Creating an object of CTHMerge(which is used to merge 2 columns)
         CTHMerge cthMerge = CTHMerge.Factory.newInstance();
 
-        // Starting column merge
-        cthMerge.setVal(STMerge.RESTART);
 
-        // Column from which merge starts
-        table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
 
-        // Continuing column merge
-        cthMerge.setVal(STMerge.CONTINUE);
+        if (colSpan>2){
+            // Starting column merge
+            cthMerge.setVal(STMerge.RESTART);
 
-        // Next column to be merged
-        table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+            // Column from which merge starts
+            table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
+
+            // Continuing column merge
+            cthMerge.setVal(STMerge.CONTINUE);
+
+            // Next column to be merged
+            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+
+            // Starting column merge
+            cthMerge.setVal(STMerge.RESTART);
+
+            // Column from which merge starts
+            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+
+            // Continuing column merge
+            cthMerge.setVal(STMerge.CONTINUE);
+
+            // Next column to be merged
+            table.getRow(0).getCell(2).getCTTc().getTcPr().setHMerge(cthMerge);
+        }else{
+            // Starting column merge
+            cthMerge.setVal(STMerge.RESTART);
+
+            // Column from which merge starts
+            table.getRow(0).getCell(0).getCTTc().getTcPr().setHMerge(cthMerge);
+
+            // Continuing column merge
+            cthMerge.setVal(STMerge.CONTINUE);
+
+            // Next column to be merged
+            table.getRow(0).getCell(1).getCTTc().getTcPr().setHMerge(cthMerge);
+        }
     }
 
-    void addTableCellsWithBorders(XWPFTable table,int rowNumber){
+    void addTableCellsWithBorders(XWPFTable table,int rowNumber, String headerValue, String normalValue){
         // Setting height for the row in the Table
         table.getRow(rowNumber).setHeight(500);
 
@@ -159,13 +239,56 @@ public class WordServiceImpl implements WordService {
         table.getRow(rowNumber).getCtRow().getTrPr().getTrHeightArray(0).setHRule(
                 STHeightRule.EXACT);
 
+        // Adding header value
         XWPFRun cellParagraphRun=table.getRow(rowNumber).getCell(0).getParagraphs().get(0).createRun();
-        cellParagraphRun.setText("Header 1");
+        cellParagraphRun.setText(headerValue);
         cellParagraphRun.setBold(true);
 
 
+        // Adding normal value
         XWPFRun cellParagraphRun1=table.getRow(rowNumber).getCell(1).getParagraphs().get(0).createRun();
-        cellParagraphRun1.setText("Value 1");
+        cellParagraphRun1.setText(normalValue);
+    }
+
+    void addTableCellsWithoutBorders(XWPFTable table,int rowNumber, int columnsAdded, String headerValue, String normalValue){
+
+        // Setting height for the row in the Table
+        table.getRow(rowNumber).setHeight(500);
+
+        // Setting padding for Table cells
+        table.setCellMargins(150,150,0,0);
+
+        // Adding a table row property to set the height of the Table's 1st row to exact
+        // value as specified
+        table.getRow(rowNumber).getCtRow().getTrPr().getTrHeightArray(0).setHRule(
+                STHeightRule.EXACT);
+
+        // Retrieving table row from the table
+        XWPFTableRow row=table.getRow(rowNumber);
+
+        // Retrieving table cell from the table row
+        XWPFTableCell cell = row.getCell(columnsAdded % 2);
+
+        // Removing borders
+        removeCellBorders(cell);
+
+        // Retrieving a paragraph from the table cell
+        XWPFParagraph cellParagraph = cell.getParagraphs().get(0);
+
+        // Object to execute configuration for the table cell heading
+        XWPFRun cellParagraphRun = cellParagraph.createRun();
+
+        // Setting text for table cell heading
+        cellParagraphRun.setText(headerValue + " : ");
+
+        // Setting the text style for the table cell heading to bold
+        cellParagraphRun.setBold(true);
+
+        // Object to execute configuration for the table cell value
+        cellParagraphRun = cellParagraph.createRun();
+
+        // Setting text for table cell value
+        cellParagraphRun.setText(normalValue);
     }
 
     @Override
