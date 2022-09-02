@@ -11,6 +11,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.prateekgupta.DocumentGenerator.service.PDFService;
+import com.prateekgupta.DocumentGenerator.util.Util;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
@@ -61,31 +62,36 @@ public class PDFServiceImpl implements PDFService {
             // Creating Table without borders
             createTable(document,false,data);
 
+            // Creating an object to hold HTML Content Heading
             Paragraph htmlContentHeading=new Paragraph(
                     new Phrase("HTML Content :",
                             FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16,
                                     BaseColor.BLACK)));
+
+            // Setting space before HTML Content Heading
             htmlContentHeading.setSpacingBefore(25);
+
+            // Adding HTML Content Heading to document
             document.add(htmlContentHeading);
 
+            // HTML Content
+            String HTMLContent="<div>Test</div><br><img src='https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png'>";
 
-            String html="<div>Test</div><br><img src=''>";
-            org.jsoup.nodes.Document doc = Jsoup.parse(html);
-            doc.outputSettings().syntax(org.jsoup.nodes.Document.OutputSettings.Syntax.xml);
-            doc.select("img").forEach(t->{
-                t.attr("src","https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png");
-//                if(Integer.parseInt(t.attr("width"))>600)
-//                    t.attr("width","600");
-//                if(Integer.parseInt(t.attr("height"))>600)
-//                    t.attr("height","300");
-            });
+            // Creating an object to hold HTML Content Value
+            Paragraph htmlContentValue=new Paragraph();
 
-            Paragraph description=new Paragraph();
-            ElementList tags= XMLWorkerHelper.parseToElementList(doc.html(), null);
-            description.setSpacingBefore(5);
-            description.addAll(tags);
+            // Converting HTML tags to Elements
+            ElementList tags= XMLWorkerHelper.parseToElementList(Util.HTMLPreProcessor(HTMLContent,"pdf"), null);
 
-            document.add(description);
+            // Setting space before the HTML Content Value
+            htmlContentValue.setSpacingBefore(5);
+
+            // Adding all the Elements(created from HTML) to the htmlContentValue object
+            htmlContentValue.addAll(tags);
+
+            // Adding HTMLContentValue to the Document
+            document.add(htmlContentValue);
+
             document.close();
 
         } catch (DocumentException | IOException e) {

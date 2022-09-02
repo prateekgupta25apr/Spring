@@ -1,18 +1,25 @@
 package com.prateekgupta.DocumentGenerator.service.impl;
 
 import com.prateekgupta.DocumentGenerator.service.WordService;
+import com.prateekgupta.DocumentGenerator.util.Util;
+import org.apache.poi.POIXMLDocumentPart;
+import org.apache.poi.POIXMLRelation;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackagePart;
+import org.apache.poi.openxml4j.opc.PackagePartName;
+import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.jsoup.Jsoup;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,12 +72,39 @@ public class WordServiceImpl implements WordService {
             data.put("Header 2","Value 2");
             data.put("Header 3","Value 3");
 
-            // Create table
+            // Create table with borders
             createTable(document,true,data);
 
+            // Creating a Paragraph for space
             XWPFParagraph spacing=document.createParagraph();
             spacing.setSpacingAfter(200);
+
+            // Create table without borders
             createTable(document,false,data);
+
+            // Creating object to hold HTML Content heading
+            XWPFParagraph descriptionHeading = document.createParagraph();
+
+            // Setting space before the HTML Content heading
+            descriptionHeading.setSpacingBefore(500);
+
+            // Object to execute configuration for the HTML Content heading
+            XWPFRun descriptionHeadingRun = descriptionHeading.createRun();
+
+            // Setting text for heading for the HTML Content heading
+            descriptionHeadingRun.setText("HTML Content" + " : ");
+
+            // Setting the text style for the Description heading to bold
+            descriptionHeadingRun.setBold(true);
+
+            // Setting size for the text for the heading for the HTML Content heading
+            descriptionHeadingRun.setFontSize(16);
+
+            // HTML Content
+            String HTMLContent="<div>Test</div><br><img src='https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png'>";
+
+            // Adding the HTML Content to the Document
+            setHTMLToWord(document, Util.HTMLPreProcessor(HTMLContent,"word"));
 
             document.write(out);
         }catch (Exception e){
@@ -268,6 +302,102 @@ public class WordServiceImpl implements WordService {
 
         // Setting text for table cell value
         cellParagraphRun.setText(normalValue);
+    }
+
+    int HTMLDocId=0;
+
+    /**
+     * Method to add an HTML String to WordDoc (*.docx) file
+     * @param document: reference to the WordDoc (*.docx) file
+     * @param strHTML : HTML content in String format
+     */
+    void setHTMLToWord(XWPFDocument document, String strHTML) throws Exception {
+        // Creating an HTMLDoc (/word/*.html) in the WordDoc (*.docx) file
+        MyPOIXMLDocumentPart myPOIXMLDocumentPart=createHTMLPartForWordFile(document,"HTMLDoc" + HTMLDocId++);
+
+        // Setting HTML content in the HTMLDoc (/word/*.html)
+        myPOIXMLDocumentPart.setHtml(myPOIXMLDocumentPart.getHtml().replace("<body></body>", "<body>" + strHTML + "</body>"));
+
+        // Adding HTMLDoc (/word/*.html) in the WordDoc (*.docx) file
+        document.getDocument().getBody().addNewAltChunk().setId(myPOIXMLDocumentPart.getId());
+    }
+
+    /**
+     * Method to create an HTMLDoc (/word/*.html) in the WordDoc (*.docx) file
+     * @param document : reference to the WordDoc (*.docx) file
+     * @param id : id for the HTMLDoc (/word/*.html)
+     * @return : reference to the HTMLDoc (/word/*.html) as object of {@link MyPOIXMLDocumentPart}
+     */
+    MyPOIXMLDocumentPart createHTMLPartForWordFile(XWPFDocument document, String id) throws Exception {
+        // Retrieving a Package from the Document
+        OPCPackage oPCPackage = document.getPackage();
+
+        // Naming retrieved Package's part
+        PackagePartName partName = PackagingURIHelper.createPartName("/word/" + id + ".html");
+
+        // Creating a Package Part(HTMLDoc (/word/*.html)) with provided name
+        PackagePart part = oPCPackage.createPart(partName, "text/html");
+
+        // Creating an object to hold the provided Package Part(HTMLDoc (/word/*.html)) with the provided id
+        MyPOIXMLDocumentPart myPOIXMLDocumentPart = new MyPOIXMLDocumentPart(part, id);
+
+        // Adding a relation the Package Part(HTMLDoc (/word/*.html)) and the Document (WordDoc (*.docx) file)
+        document.addRelation(myPOIXMLDocumentPart.getId(), new MyPOIXMLRelation(), myPOIXMLDocumentPart);
+        return myPOIXMLDocumentPart;
+    }
+
+
+    /**
+     * Class for the  HTMLDoc (/word/*.html) in the WordDoc (*.docx) file which provides
+     * methods for manipulating the HTML.
+     * Note: We should NOT use String methods for manipulating HTML!
+     */
+    private static class MyPOIXMLDocumentPart extends POIXMLDocumentPart {
+
+        private String html;
+        private final String id;
+
+        private MyPOIXMLDocumentPart(PackagePart part, String id) {
+            super(part);
+            this.html = "<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"><style></style><title>HTML import</title></head><body></body>";
+            this.id = id;
+        }
+
+        private String getId() {
+            return id;
+        }
+
+        private String getHtml() {
+            return html;
+        }
+
+        private void setHtml(String html) {
+            this.html = html;
+        }
+
+        @Override
+        protected void commit() throws IOException {
+            PackagePart part = getPackagePart();
+            OutputStream out = part.getOutputStream();
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+            writer.write(html);
+            writer.close();
+            out.close();
+        }
+
+    }
+
+    /**
+     * Class to provide relation between a  WordDoc (*.docx) file and HTMLDoc
+     * (/word/*.html) file
+     */
+    private final static class MyPOIXMLRelation extends POIXMLRelation {
+        private MyPOIXMLRelation() {
+            super(
+                    "text/html",
+                    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/aFChunk",
+                    "/word/htmlDoc#.html");
+        }
     }
 
     @Override
