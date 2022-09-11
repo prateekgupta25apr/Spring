@@ -10,10 +10,13 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.prateekgupta.DocumentGenerator.entities.HTMLContentMaster;
+import com.prateekgupta.DocumentGenerator.repository.Repository;
 import com.prateekgupta.DocumentGenerator.service.PDFService;
 import com.prateekgupta.DocumentGenerator.util.Util;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 @Service
 public class PDFServiceImpl implements PDFService {
+    @Autowired
+    Repository repository;
     /**
      * Method to create a PDF document
      * @return an input stream of byte array
@@ -75,7 +80,7 @@ public class PDFServiceImpl implements PDFService {
             document.add(htmlContentHeading);
 
             // HTML Content
-            String HTMLContent="<div>Test</div><br><img src='https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png'>";
+            String HTMLContent=repository.getHTMLContent(1).getHtmlContent();
 
             // Creating an object to hold HTML Content Value
             Paragraph htmlContentValue=new Paragraph();
