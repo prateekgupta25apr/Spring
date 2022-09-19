@@ -1,5 +1,6 @@
 package com.prateekgupta.DocumentGenerator.service.impl;
 
+import com.prateekgupta.DocumentGenerator.repository.Repository;
 import com.prateekgupta.DocumentGenerator.service.WordService;
 import com.prateekgupta.DocumentGenerator.util.Util;
 import org.apache.poi.POIXMLDocumentPart;
@@ -14,6 +15,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.jsoup.Jsoup;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -36,6 +38,9 @@ import java.util.Map;
 
 @Service
 public class WordServiceImpl implements WordService {
+
+    @Autowired
+    Repository repository;
 
     @Override
     public ByteArrayInputStream createDocument() {
@@ -101,7 +106,7 @@ public class WordServiceImpl implements WordService {
             descriptionHeadingRun.setFontSize(16);
 
             // HTML Content
-            String HTMLContent="<div>Test</div><br><img src='https://s3-us-west-2.amazonaws.com/ws.ca.prod.attachments/1_CA/COMPANY_LOGO/05082019_162256503_1_logo-broadcom.png'>";
+            String HTMLContent=repository.getHTMLContent(1).getHtmlContent();
 
             // Adding the HTML Content to the Document
             setHTMLToWord(document, Util.HTMLPreProcessor(HTMLContent,"word"));
