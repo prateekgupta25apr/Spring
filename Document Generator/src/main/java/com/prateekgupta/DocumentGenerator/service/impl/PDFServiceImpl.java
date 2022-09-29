@@ -1,29 +1,24 @@
 package com.prateekgupta.DocumentGenerator.service.impl;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.prateekgupta.DocumentGenerator.entities.HTMLContentMaster;
+import com.prateekgupta.DocumentGenerator.entities.TabularContentMaster;
 import com.prateekgupta.DocumentGenerator.repository.Repository;
 import com.prateekgupta.DocumentGenerator.service.PDFService;
 import com.prateekgupta.DocumentGenerator.util.Util;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PDFServiceImpl implements PDFService {
@@ -56,16 +51,18 @@ public class PDFServiceImpl implements PDFService {
             document.add(logoImage);
 
             // Creating data for tables
-            Map<String,String> data=new HashMap<>();
-            data.put("Header 1","Value 1");
-            data.put("Header 2","Value 2");
-            data.put("Header 3","Value 3");
+            List<String>headerValue=new ArrayList<>();
+            List<String>value=new ArrayList<>();
+            for (TabularContentMaster tabularContentMaster:repository.getTabularContent(1)){
+                headerValue.add(tabularContentMaster.getHeaderValue());
+                value.add(tabularContentMaster.getNormalValue());
+            }
 
             // Creating Table with borders
-            createTable(document,true,data);
+            createTable(document,true,headerValue,value);
 
             // Creating Table without borders
-            createTable(document,false,data);
+            createTable(document,false,headerValue,value);
 
             // Creating an object to hold HTML Content Heading
             Paragraph htmlContentHeading=new Paragraph(
@@ -110,10 +107,11 @@ public class PDFServiceImpl implements PDFService {
      * Method to add a table to the document
      * @param document: reference to the document to which the table needs to be added
      * @param withBorders: specifies whether the table should have borders or not
-     * @param data: data to be added to the table
+     * @param headerValues: header value to be added to the table
+     * @param values: normal value to be added to the table
      */
     void createTable(Document document, boolean withBorders,
-                     Map<String,String> data){
+                     List<String> headerValues,List<String> values){
         try{
             PdfPTable table;
             int[] colSizes;
@@ -123,7 +121,21 @@ public class PDFServiceImpl implements PDFService {
                 colSizes = new int[]{3, 7};
             }
             else {
-                table = new PdfPTable(3);
+                int colNum=headerValues.size();
+                if (headerValues.size()%3==1) {
+                    colNum += 2;
+                    headerValues.add("");
+                    headerValues.add("");
+                    values.add("");
+                    values.add("");
+                }
+                else if (headerValues.size()%3==2) {
+                    colNum += 1;
+                    headerValues.add("");
+                    values.add("");
+                }
+                System.out.println(colNum);
+                table = new PdfPTable(colNum);
                 colSizes=new int[]{1, 1, 1};
             }
 
@@ -144,11 +156,11 @@ public class PDFServiceImpl implements PDFService {
 
             // Adding data to the table
             if (withBorders) {
-                for (String key : data.keySet())
-                    addTableCellsWithBorders(table, key, data.get(key));
+                for (int i=0;i<headerValues.size();i++)
+                    addTableCellsWithBorders(table, headerValues.get(i), values.get(i));
             } else {
-                for (String key : data.keySet())
-                    addTableCellsWithoutBorders(table, key, data.get(key));
+                for (int i=0;i<headerValues.size();i++)
+                    addTableCellsWithoutBorders(table, headerValues.get(i), values.get(i));
             }
 
             // Adding the Table to the document
@@ -231,21 +243,24 @@ public class PDFServiceImpl implements PDFService {
      * @param columnValue: normal value to be added
      */
     void addTableCellsWithoutBorders(PdfPTable table, String headColumnValue,
-                                     String columnValue){
+                                     String columnValue) {
+
         // Object to hold the table cell
-        PdfPCell cell=new PdfPCell();
+        PdfPCell cell = new PdfPCell();
 
-        // Object to hold the text value of the table cell
-        Phrase value=new Phrase();
+        if (!headColumnValue.equals("") && !headColumnValue.equals(" ")) {
+            // Object to hold the text value of the table cell
+            Phrase value = new Phrase();
 
-        // Adding heading to the table cell text
-        value.add(new Chunk(headColumnValue+" : ",FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            // Adding heading to the table cell text
+            value.add(new Chunk(headColumnValue + " : ", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
 
-        // Adding value to the table cell text
-        value.add(new Chunk(columnValue,FontFactory.getFont(FontFactory.HELVETICA)));
+            // Adding value to the table cell text
+            value.add(new Chunk(columnValue, FontFactory.getFont(FontFactory.HELVETICA)));
 
-        // Adding table cell text to table cell
-        cell.addElement(value);
+            // Adding table cell text to table cell
+            cell.addElement(value);
+        }
 
         // To stop extending the table cell text to multiple lines
         cell.setNoWrap(true);
@@ -259,6 +274,7 @@ public class PDFServiceImpl implements PDFService {
 
         // Adding the table cell to table
         table.addCell(cell);
+
     }
 
     @Override

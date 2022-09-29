@@ -1,11 +1,11 @@
 package com.prateekgupta.DocumentGenerator.service.impl;
 
+import com.prateekgupta.DocumentGenerator.entities.TabularContentMaster;
 import com.prateekgupta.DocumentGenerator.repository.Repository;
 import com.prateekgupta.DocumentGenerator.service.WordService;
 import com.prateekgupta.DocumentGenerator.util.Util;
 import org.apache.poi.POIXMLDocumentPart;
 import org.apache.poi.POIXMLRelation;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.openxml4j.opc.PackagePartName;
@@ -13,7 +13,6 @@ import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import org.jsoup.Jsoup;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,8 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * For the tables in the Apache POI we use XML and these XML use the schema definitions/
@@ -72,20 +71,22 @@ public class WordServiceImpl implements WordService {
                     Units.toEMU(200), Units.toEMU(70));
 
             // Creating data for tables
-            Map<String,String> data=new HashMap<>();
-            data.put("Header 1","Value 1");
-            data.put("Header 2","Value 2");
-            data.put("Header 3","Value 3");
+            List<String> headerValue=new ArrayList<>();
+            List<String>value=new ArrayList<>();
+            for (TabularContentMaster tabularContentMaster:repository.getTabularContent(1)){
+                headerValue.add(tabularContentMaster.getHeaderValue());
+                value.add(tabularContentMaster.getNormalValue());
+            }
 
             // Create table with borders
-            createTable(document,true,data);
+            createTable(document,true,headerValue,value);
 
             // Creating a Paragraph for space
             XWPFParagraph spacing=document.createParagraph();
             spacing.setSpacingAfter(200);
 
             // Create table without borders
-            createTable(document,false,data);
+            createTable(document,false,headerValue,value);
 
             // Creating object to hold HTML Content heading
             XWPFParagraph descriptionHeading = document.createParagraph();
@@ -118,14 +119,14 @@ public class WordServiceImpl implements WordService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    void createTable(XWPFDocument document, boolean withBorders, Map<String,String> data){
+    void createTable(XWPFDocument document, boolean withBorders, List<String> headerValues,List<String> values){
 
         // Creating an object to hold the Table with specific number of rows and columns
         XWPFTable table;
         int dataSize;
         int numberOfColumns;
         if (withBorders) {
-            dataSize=data.size();
+            dataSize=headerValues.size();
             numberOfColumns=2;
             // Adding table title
             addTableTitle(document, true,numberOfColumns);
@@ -133,8 +134,8 @@ public class WordServiceImpl implements WordService {
         }
         else {
             numberOfColumns=3;
-            dataSize=(data.size() % numberOfColumns == 0) ?
-                    data.size() / numberOfColumns : (data.size() / numberOfColumns + 1);
+            dataSize=(headerValues.size() % numberOfColumns == 0) ?
+                    headerValues.size() / numberOfColumns : (headerValues.size() / numberOfColumns + 1);
             // Adding table title
             addTableTitle(document, false,numberOfColumns);
             table = document.createTable(dataSize, numberOfColumns);
@@ -152,19 +153,20 @@ public class WordServiceImpl implements WordService {
         // Adding data to the table
 
         if (withBorders) {
-            int i=0;
-            for (String key : data.keySet())
-                addTableCellsWithBorders(table, i++, key, data.get(key));
+            int j=0;
+            for (int i=0;i<headerValues.size();i++)
+                addTableCellsWithBorders(table,j++, headerValues.get(i), values.get(i));
         }
         else {
             int columnsAdded=0;
-            for (String key : data.keySet()) {
-                addTableCellsWithoutBorders(table,Math.max(columnsAdded / 3, 0),columnsAdded,key,data.get(key));
+            for (int i=0;i<headerValues.size();i++) {
+                addTableCellsWithoutBorders(table,Math.max(columnsAdded / 3, 0),columnsAdded,headerValues.get(i),values.get(i));
                 columnsAdded++;
             }
-            if ((dataSize-1) % numberOfColumns > 0)
-                for (int i=1;i<numberOfColumns;i++)
-                removeCellBorders(table.getRow(dataSize-1).getCell(i));
+            if ((dataSize) % numberOfColumns > 0)
+                for (int i = 1; i < numberOfColumns; i++)
+                    removeCellBorders(table.getRow(dataSize - 1).getCell(i));
+
         }
 
 
@@ -240,7 +242,7 @@ public class WordServiceImpl implements WordService {
         // Next columns to be merged
         for (int i=1;i<=(numberOfColumns-1);i++){
             if (!withBorders)
-            removeCellBorders(table.getRow(0).getCell(i));
+                removeCellBorders(table.getRow(0).getCell(i));
             table.getRow(0).getCell(i).getCTTc().getTcPr().setHMerge(cthMerge);
         }
     }

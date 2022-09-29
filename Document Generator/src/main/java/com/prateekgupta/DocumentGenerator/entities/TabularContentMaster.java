@@ -42,4 +42,13 @@ public class TabularContentMaster {
     public void setNormalValue(String normalValue) {
         this.normalValue = normalValue;
     }
+
+    @Override
+    public String toString() {
+        return "TabularContentMaster{" +
+                "tabularContentId=" + tabularContentId +
+                ", headerValue='" + headerValue + '\'' +
+                ", normalValue='" + normalValue + '\'' +
+                '}';
+    }
 }
