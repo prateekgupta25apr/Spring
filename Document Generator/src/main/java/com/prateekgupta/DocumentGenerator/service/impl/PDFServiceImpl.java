@@ -1,10 +1,7 @@
 package com.prateekgupta.DocumentGenerator.service.impl;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.GrayColor;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.prateekgupta.DocumentGenerator.entities.TabularContentMaster;
@@ -33,7 +30,16 @@ public class PDFServiceImpl implements PDFService {
         com.itextpdf.text.Document document = new Document();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            PdfWriter.getInstance(document, byteArrayOutputStream);
+            // Object to convert document object to bytes
+            PdfWriter writer=PdfWriter.getInstance(document, byteArrayOutputStream);
+
+            // Setting border for all the pages in document
+            writer.setPageEvent(new PDFDocumentBorder());
+
+            // Setting page number for all the pages in the document
+            writer.setPageEvent(new PDFDocumentPagination());
+
+            // To start adding elements to the documents
             document.open();
 
             // Creating object to hold the Logo image
@@ -326,5 +332,72 @@ public class PDFServiceImpl implements PDFService {
         }
 
         return byteArrayOutputStream.toByteArray();
+    }
+
+
+    /**
+     * Class for the border in the PDF file.
+     */
+    public static class PDFDocumentBorder extends PdfPageEventHelper {
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            // Retrieving content of the Document in bytes
+            PdfContentByte pdfContentByte = writer.getDirectContent();
+
+            // Creating a Rectangle with the size of the page
+            Rectangle rect = document.getPageSize();
+
+            // Setting border style
+            rect.setBorder(Rectangle.BOX);
+
+            // Setting border
+            rect.setBorderWidth(2);
+
+            // Setting border color
+            rect.setBorderColor(BaseColor.BLACK);
+
+            // Adding the rectangle to the Document
+            pdfContentByte.rectangle(rect);
+        }
+    }
+
+    /**
+     * Class for the pagination in the PDF file.
+     */
+    public static class PDFDocumentPagination extends PdfPageEventHelper {
+
+        public void onStartPage(PdfWriter writer, Document document) {
+            // Adding content to page top left
+            // ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("Top Left"), 30, 800, 0);
+
+            // Adding content to page top right
+            //ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("Top Right"), 550, 800, 0);
+        }
+
+        public void onEndPage(PdfWriter writer, Document document) {
+            //try {
+            // Adding content to page bottom left
+            //ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_LEFT, new Phrase("Powered By "), 40, 15, 0);
+
+            // Creating an object to store Footer image
+            // Image footerImage = Image.getInstance("https://brdcmitsmbst.wolkenservicedesk.com/assets/images/footer.png");
+
+            // Setting the footer image to an absolute position
+            //footerImage.setAbsolutePosition(105, 12);
+
+            // Setting size of the footer image
+            //footerImage.scalePercent(75,75);
+
+            // Adding the footer image to the Document
+            //writer.getDirectContent().addImage(footerImage);
+
+
+            //} catch (IOException | DocumentException e) {
+            //e.printStackTrace();
+            //}
+            // Adding content to page bottom right
+            ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_RIGHT, new Phrase(String.valueOf(document.getPageNumber()),new Font(Font.FontFamily.HELVETICA,10)), 550, 15, 0);
+        }
+
     }
 }

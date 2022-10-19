@@ -4,13 +4,15 @@ import com.prateekgupta.DocumentGenerator.entities.TabularContentMaster;
 import com.prateekgupta.DocumentGenerator.repository.Repository;
 import com.prateekgupta.DocumentGenerator.service.WordService;
 import com.prateekgupta.DocumentGenerator.util.Util;
-import org.apache.poi.POIXMLDocumentPart;
-import org.apache.poi.POIXMLRelation;
+import org.apache.poi.ooxml.POIXMLDocumentPart;
+import org.apache.poi.ooxml.POIXMLRelation;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.openxml4j.opc.PackagePartName;
 import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.apache.poi.util.Units;
+import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
@@ -111,6 +113,16 @@ public class WordServiceImpl implements WordService {
 
             // Adding the HTML Content to the Document
             setHTMLToWord(document, Util.HTMLPreProcessor(HTMLContent,"word"));
+
+            // Adding Border
+            setBorderForWordDocument(document);
+
+            // Adding Pagination
+            setPaginationForWordDocument(document);
+
+            // Setting page size
+            CTPageSz pageSize= document.getDocument().getBody().addNewSectPr().addNewPgSz();
+            pageSize.setW(BigInteger.valueOf(12400));
 
             document.write(out);
         }catch (Exception e){
@@ -444,5 +456,80 @@ public class WordServiceImpl implements WordService {
         }
 
         return byteArrayOutputStream.toByteArray();
+    }
+
+    /**
+     * Set pagination for the XWPFDocument passed as argument
+     * @param document: reference to XWPFDocument
+     */
+    void setPaginationForWordDocument(XWPFDocument document) throws IOException, InvalidFormatException {
+        // Setting footer style for the Document
+        XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
+
+        // Creating a Paragraph in the footer
+        XWPFParagraph footerParagraph = footer.createParagraph();
+
+        // Setting alignment for the footer paragraph
+        footerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+
+        // Object to execute configuration for footer paragraph
+        //XWPFRun footerParagraphRun=footerParagraph.createRun();
+
+        // Adding text to the footer paragraph
+        //footerParagraphRun.setText("Powered by ");
+
+        // Adding image to the footer paragraph
+        //footerParagraphRun.addPicture(new URL("https://brdcmitsmbst.wolkenservicedesk.com/assets/images/footer.png").openStream(),XWPFDocument.PICTURE_TYPE_PNG, "file",Units.toEMU(40), Units.toEMU(14));
+
+        // Adding tab spaces in the footer paragraph
+        //for (int i=0;i<12;i++)footerParagraphRun.addTab();
+
+        // Retrieving complex type configuration for the footer paragraph
+        CTP ctp = footerParagraph.getCTP();
+
+        // Start page count
+        ctp.addNewR().addNewFldChar().setFldCharType(STFldCharType.BEGIN);
+
+        // Adding text box at the page level
+        ctp.addNewR().addNewInstrText().setStringValue(" PAGE ");
+
+        // Stop page count
+        ctp.addNewR().addNewFldChar().setFldCharType(STFldCharType.END);
+
+    }
+
+    /**
+     * Set border for the XWPFDocument passed as argument
+     * @param document: reference to XWPFDocument
+     */
+    void setBorderForWordDocument(XWPFDocument document) {
+        // Adding new Section property and Page Border property to the Document
+        CTPageBorders pageBorders = document.getDocument().getBody().addNewSectPr().addNewPgBorders();
+
+        // Setting the origin of the offset for the border to page border
+        pageBorders.setOffsetFrom(STPageBorderOffset.PAGE);
+
+        for (int b = 0; b < 4; b++) {
+            // Adding border at the top
+            CTBorder ctBorder = (pageBorders.isSetTop()) ? pageBorders.getTop() : pageBorders.addNewTop();
+
+            // Adding border at the bottom
+            if (b == 1) ctBorder = (pageBorders.isSetBottom()) ? pageBorders.getBottom() : pageBorders.addNewBottom();
+
+                // Adding border at the left
+            else if (b == 2) ctBorder = (pageBorders.isSetLeft()) ? pageBorders.getLeft() : pageBorders.addNewLeft();
+
+                // Adding border at the right
+            else if (b == 3) ctBorder = (pageBorders.isSetRight()) ? pageBorders.getRight() : pageBorders.addNewRight();
+
+            // Setting border style
+            ctBorder.setVal(STBorder.THICK);
+
+            // Setting border size
+            ctBorder.setSz(java.math.BigInteger.valueOf(25));
+
+            // Setting space from the origin of the offset
+            ctBorder.setSpace(java.math.BigInteger.valueOf(0));
+        }
     }
 }
