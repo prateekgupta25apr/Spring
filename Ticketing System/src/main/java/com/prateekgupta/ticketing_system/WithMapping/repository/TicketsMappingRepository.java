@@ -4,9 +4,11 @@ import com.prateekgupta.ticketing_system.WithMapping.entity.TicketsEntityMapping
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 public interface TicketsMappingRepository extends
         JpaRepositoryImplementation<TicketsEntityMapping, Integer> {
 
