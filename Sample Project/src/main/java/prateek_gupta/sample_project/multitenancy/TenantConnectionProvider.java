@@ -15,6 +15,9 @@ import static prateek_gupta.sample_project.multitenancy.TenantContext.
 @Component
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
+    /**
+     * This field is like the Driver class which is used to connect to the Database
+     */
     @Autowired
     private DataSource dataSource;
 
@@ -28,6 +31,9 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
         connection.close();
     }
 
+    /**
+     * This method will actually connect to the schema
+     */
     @Override
     public Connection getConnection(String schemaName) throws SQLException {
         final Connection connection = getAnyConnection();

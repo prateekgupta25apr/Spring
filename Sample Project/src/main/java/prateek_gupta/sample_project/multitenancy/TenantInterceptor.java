@@ -1,7 +1,6 @@
 package prateek_gupta.sample_project.multitenancy;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class TenantInterceptor implements HandlerInterceptor {
+    /**
+     * This method will be called everytime before processing an API
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) {
@@ -28,6 +30,9 @@ public class TenantInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    /**
+     * This method will be called everytime after an API is processed
+     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) {

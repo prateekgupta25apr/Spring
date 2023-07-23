@@ -8,6 +8,9 @@ import static prateek_gupta.sample_project.multitenancy.TenantContext.DEFAULT_SC
 @Component
 public class TenantResolver implements CurrentTenantIdentifierResolver {
 
+    /**
+     * This method will return the name of the schema to connect to
+     */
     @Override
     public String resolveCurrentTenantIdentifier() {
         String schemaName = TenantContext.getCurrentTenant()!=null?

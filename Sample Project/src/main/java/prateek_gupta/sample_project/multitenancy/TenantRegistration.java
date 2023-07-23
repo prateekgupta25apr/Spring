@@ -23,27 +23,49 @@ public class TenantRegistration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // Intercepting all paths for Tenant
         registry.addInterceptor(tenantInterceptor).addPathPatterns("/**");
     }
 
+    /**
+     * Creating a bean of {@link LocalContainerEntityManagerFactoryBean} which will
+     * resolve the schema name to connect to by using {@link TenantResolver} and
+     * connect to the schema by using the class {@link TenantConnectionProvider}
+     */
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             DataSource dataSource,
-            MultiTenantConnectionProvider multiTenantConnectionProviderImpl,
+            MultiTenantConnectionProvider multiTenantConnectionProvider,
             CurrentTenantIdentifierResolver currentTenantIdentifierResolverImpl) {
         Map<String, Object> properties = new HashMap<>();
+        // Setting the strategy for MultiTenancy as by using schemas
         properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.SCHEMA);
+
+        // Setting TenantConnectionProvider (implementation) to be used for
+        // connecting to schema
         properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER,
-                multiTenantConnectionProviderImpl);
+                multiTenantConnectionProvider);
+
+        // Setting TenantResolver (implementation) to be used for resolving schema
+        // to connect to
         properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER,
                 currentTenantIdentifierResolverImpl);
 
-        LocalContainerEntityManagerFactoryBean entityManager =
+        LocalContainerEntityManagerFactoryBean entityManagerFactory =
                 new LocalContainerEntityManagerFactoryBean();
-        entityManager.setDataSource(dataSource);
-        entityManager.setPackagesToScan("prateek_gupta.sample_project");
-        entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManager.setJpaPropertyMap(properties);
-        return entityManager;
+        // Setting DataSource/Driver to connect to Database (No need to create been
+        // its handled already, even its autowired in TenantConnectionProvider)
+        entityManagerFactory.setDataSource(dataSource);
+
+        // Package to search for the implementations for MultiTenantConnectionProvider
+        // and CurrentTenantIdentifierResolver
+        entityManagerFactory.setPackagesToScan("prateek_gupta.sample_project");
+
+        // Setting Adapter to for JPA
+        entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+
+        // Setting properties for JPA
+        entityManagerFactory.setJpaPropertyMap(properties);
+        return entityManagerFactory;
     }
 }
