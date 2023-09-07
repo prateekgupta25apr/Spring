@@ -1,6 +1,7 @@
 package com.prateekgupta.DocumentGenerator.controller;
 
 import com.prateekgupta.DocumentGenerator.service.IText7;
+import com.prateekgupta.DocumentGenerator.service.Jasper;
 import com.prateekgupta.DocumentGenerator.service.PDFService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,6 +27,9 @@ public class PDFController {
 
     @Autowired
     IText7 iText7;
+
+    @Autowired
+    Jasper jasper;
 
     @GetMapping("create_document")
     ResponseEntity<?> createArticle(HttpServletRequest request, HttpServletResponse response){
@@ -73,6 +77,39 @@ public class PDFController {
     ResponseEntity<?> createArticleIText7(HttpServletRequest request, HttpServletResponse response){
         try{
             ByteArrayInputStream content = iText7.createDocument();
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=PDFDocument.pdf");
+            InputStreamResource resource = new InputStreamResource(content);
+
+            InputStream is = resource.getInputStream();
+
+            OutputStream output = response.getOutputStream();
+
+            byte[] bytes = new byte[1024];
+
+            // Read in the bytes
+            int numRead;
+            while ((numRead = is.read(bytes)) != -1) {
+                output.write(bytes, 0, numRead);
+            }
+            // Ensure all the bytes have been read in
+            is.close();
+            output.flush();
+            output.close();
+
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>("Failure", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
+    @GetMapping("create_document_jasper")
+    ResponseEntity<?> createArticleJasper(HttpServletRequest request, HttpServletResponse response){
+        try{
+
+            ByteArrayInputStream content = jasper.createArticle();
             response.setHeader("Content-Disposition",
                     "attachment; filename=PDFDocument.pdf");
             InputStreamResource resource = new InputStreamResource(content);

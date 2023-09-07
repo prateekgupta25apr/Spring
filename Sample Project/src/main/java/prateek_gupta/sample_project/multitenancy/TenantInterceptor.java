@@ -3,6 +3,7 @@ package prateek_gupta.sample_project.multitenancy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import prateek_gupta.sample_project.SampleProjectException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

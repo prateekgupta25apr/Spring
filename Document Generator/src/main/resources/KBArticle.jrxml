@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="KBArticle" pageWidth="595" pageHeight="2000" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="caf5cba5-142c-4449-ab92-f225e3160513">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<subDataset name="Dataset1" uuid="5965b929-9de6-4753-830e-03f27188303e">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="articleId" class="java.lang.String"/>
+	<parameter name="articleTitle" class="java.lang.String"/>
+	<parameter name="htmlData" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="30" width="90" height="30" uuid="0af94ecc-8581-44a4-b91d-a1c79b8b543b"/>
+				<textElement>
+					<font fontName="Calibri" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Article Id : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Transparent" x="100" y="30" width="100" height="30" forecolor="rgba(0, 0, 0, 0.68235296)" uuid="eaf99479-d8b0-4bac-ac73-da4090e7f570"/>
+				<textElement>
+					<font fontName="Calibri" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{articleId}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="600" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="10" width="110" height="30" uuid="e86fbf0c-c018-432a-8c4d-a9643ad08562"/>
+				<textElement>
+					<font fontName="Calibri" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Article Title : ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="130" y="10" width="150" height="30" forecolor="rgba(0, 0, 0, 0.68235296)" uuid="8a011e4b-b127-4bd8-819c-42deafe1476e"/>
+				<textElement>
+					<font fontName="Calibri" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{articleTitle}]]></textFieldExpression>
+			</textField>
+			<genericElement>
+				<reportElement x="0" y="48" width="550" height="552" uuid="bc4e5e45-4830-4cd6-8f8e-d6d6ba66693e"/>
+				<genericElementType namespace="http://jasperreports.sourceforge.net/jasperreports/htmlcomponent" name="htmlelement"/>
+				<genericElementParameter name="htmlContent">
+					<valueExpression><![CDATA[$P{htmlData}]]></valueExpression>
+				</genericElementParameter>
+			</genericElement>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="250" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
