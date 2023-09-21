@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    <bean id="getterSetterBasedBean" class="prateek_gupta.sample_project.ioc_containers.Bean">
+        <property name="param1" value="test"/>
+        <property name="subBean" ref="getterSetterBasedSubBean"/>
+    </bean>
+
+    <bean id="getterSetterBasedSubBean" class="prateek_gupta.sample_project.ioc_containers.SubBean">
+        <property name="param" value="1"/>
+    </bean>
+
+    <bean id="constructorBasedBean" class="prateek_gupta.sample_project.ioc_containers.Bean">
+        <constructor-arg name="param1" value="test"/>
+        <constructor-arg name="subBean" ref="constructorBasedSubBean"/>
+    </bean>
+
+    <bean id="constructorBasedSubBean" class="prateek_gupta.sample_project.ioc_containers.SubBean">
+        <constructor-arg name="param" value="1"/>
+    </bean>
+</beans>
