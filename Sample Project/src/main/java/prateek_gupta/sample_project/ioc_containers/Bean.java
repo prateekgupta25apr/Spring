@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -36,5 +37,19 @@ public class Bean {
         System.out.println("Constructor Based");
         System.out.println(constructorBasedBean.param1);
         System.out.println(constructorBasedBean.subBean.param);
+
+        Bean constructorAutowiredBean= (Bean) new ClassPathXmlApplicationContext(
+                "beans.xml")
+                .getBean("constructorAutowiredBasedBean");
+        System.out.println("Constructor Autowired");
+        System.out.println(constructorAutowiredBean.param1);
+        System.out.println(constructorAutowiredBean.subBean.param);
+
+        Bean byNameAutowiredBasedBean= (Bean) new ClassPathXmlApplicationContext(
+                "beans.xml")
+                .getBean("byNameAutowiredBasedBean");
+        System.out.println("By Name Autowired");
+        System.out.println(byNameAutowiredBasedBean.param1);
+        System.out.println(byNameAutowiredBasedBean.subBean.param);
     }
 }
