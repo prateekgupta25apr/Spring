@@ -53,3 +53,18 @@ public class Bean {
         System.out.println(byNameAutowiredBasedBean.subBean.param);
     }
 }
+
+@Getter
+@Setter
+class SubBean {
+    String param;
+
+    // For Getter Setter Based
+    public SubBean() {
+    }
+
+    // For Constructor Based
+    public SubBean(String param) {
+        this.param = param;
+    }
+}
