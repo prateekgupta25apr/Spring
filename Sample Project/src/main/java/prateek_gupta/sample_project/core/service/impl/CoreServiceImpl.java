@@ -1,5 +1,7 @@
 package prateek_gupta.sample_project.core.service.impl;
 
+import com.google.gson.Gson;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +30,21 @@ public class CoreServiceImpl implements CoreService {
         }
         log.info("getTable1Details ended");
         return null;
+    }
+
+    @Override
+    public void saveTable1Details(String data) {
+        log.info("saveTable1Details started");
+        try{
+            JSONObject jsonObject=JSONObject.fromObject(data);
+            Gson gson=new Gson();
+            Table1VO table1VO = gson.fromJson(
+                    jsonObject.get("data").toString(), Table1VO.class);
+
+            table1Repository.save(table1VO.toEntity());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("saveTable1Details ended");
     }
 }
