@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>prateek_gupta</groupId>
-	<artifactId>sample_project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Sample Project</name>
+	<artifactId>spring_boot</artifactId>
+	<version>0.0.1</version>
+	<name>Spring Boot</name>
 	<description>Sample project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>

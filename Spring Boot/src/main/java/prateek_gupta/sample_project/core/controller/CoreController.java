@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prateek_gupta.sample_project.SampleProjectException;
+import prateek_gupta.sample_project.SpringBootException;
 import prateek_gupta.sample_project.Util;
 import prateek_gupta.sample_project.core.service.CoreService;
 import prateek_gupta.sample_project.core.vo.Table1VO;
@@ -32,13 +32,13 @@ public class CoreController {
                     response = Util.getResponse(true,
                             "Successfully fetched the data", data);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new SpringBootException(
+                            SpringBootException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new SpringBootException(
+                        SpringBootException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SpringBootException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,9 +56,9 @@ public class CoreController {
                         "Successfully fetched the data", null);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new SpringBootException(
+                        SpringBootException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SpringBootException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

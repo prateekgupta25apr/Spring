@@ -5,18 +5,18 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ResourceBundle;
 
-public class SampleProjectException extends Exception {
+public class SpringBootException extends Exception {
     public enum ExceptionType{UNKNOWN_ERROR,DB_ERROR,MISSING_REQUIRED_DATA}
 
-    private static final Log logUtil = LogFactory.getLog(SampleProjectException.class);
+    private static final Log logUtil = LogFactory.getLog(SpringBootException.class);
 
     public ExceptionType exceptionType;
 
-    public SampleProjectException() {
+    public SpringBootException() {
         this.exceptionType = ExceptionType.UNKNOWN_ERROR;
     }
 
-    public SampleProjectException(ExceptionType exceptionType) {
+    public SpringBootException(ExceptionType exceptionType) {
         this.exceptionType = exceptionType;
     }
 

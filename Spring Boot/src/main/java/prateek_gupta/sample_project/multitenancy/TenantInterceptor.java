@@ -3,7 +3,6 @@ package prateek_gupta.sample_project.multitenancy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import prateek_gupta.sample_project.SampleProjectException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ public class TenantInterceptor implements HandlerInterceptor {
         if (tenantIdStr != null) {
             try {
                 int tenantId = Integer.parseInt(tenantIdStr);
-                TenantContext.setCurrentTenant("sample_project_" + tenantId);
+                TenantContext.setCurrentTenant("spring_" + tenantId);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
