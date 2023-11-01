@@ -6,33 +6,33 @@
    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!--***** Getter Setter *****-->
-    <bean id="getterSetterBasedBean" class="prateek_gupta.sample_project.ioc_containers.Bean">
+    <bean id="getterSetterBasedBean" class="prateek_gupta.spring.Bean">
         <property name="param1" value="test"/>
         <property name="subBean" ref="getterSetterBasedSubBean"/>
     </bean>
 
-    <bean id="getterSetterBasedSubBean" class="prateek_gupta.sample_project.ioc_containers.SubBean">
+    <bean id="getterSetterBasedSubBean" class="prateek_gupta.spring.SubBean">
         <property name="param" value="1"/>
     </bean>
 
     <!--***** Constructor *****-->
-    <bean id="constructorBasedBean" class="prateek_gupta.sample_project.ioc_containers.Bean">
+    <bean id="constructorBasedBean" class="prateek_gupta.spring.Bean">
         <constructor-arg name="param1" value="test"/>
         <constructor-arg name="subBean" ref="constructorBasedSubBean"/>
     </bean>
 
-    <bean id="constructorBasedSubBean" class="prateek_gupta.sample_project.ioc_containers.SubBean">
+    <bean id="constructorBasedSubBean" class="prateek_gupta.spring.SubBean">
         <constructor-arg name="param" value="1"/>
     </bean>
 
     <!--***** Constructor Autowired *****-->
     <bean id="constructorAutowiredBasedBean"
-          class="prateek_gupta.sample_project.ioc_containers.Bean" autowire="constructor"/>
+          class="prateek_gupta.spring.Bean" autowire="constructor"/>
 
     <!-- id for the following tag needs to match the name of the argument in the constructor
     of the Bean class-->
     <bean id="subBean"
-          class="prateek_gupta.sample_project.ioc_containers.SubBean" autowire="constructor"/>
+          class="prateek_gupta.spring.SubBean" autowire="constructor"/>
 
     <bean id="param1" class="java.lang.String">
         <constructor-arg value="test"/>
@@ -44,7 +44,7 @@
 
     <!--***** ByName Autowired *****-->
     <bean id="byNameAutowiredBasedBean"
-          class="prateek_gupta.sample_project.ioc_containers.Bean" autowire="byName"/>
+          class="prateek_gupta.spring.Bean" autowire="byName"/>
     <!--Above tag will use the bean tag with ids "param1" and "subBean" and as Object of
     String cannot be created with setter, so it will be null -->
 
@@ -59,7 +59,7 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
-                <value>prateek_gupta.sample_project.core.entities.Table1Entity</value>
+                <value>prateek_gupta.spring.Table1Entity</value>
             </list>
         </property>
         <property name="hibernateProperties">

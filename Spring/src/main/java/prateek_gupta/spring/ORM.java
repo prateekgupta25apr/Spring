@@ -1,10 +1,9 @@
-package prateek_gupta.sample_project.ioc_containers;
+package prateek_gupta.spring;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import prateek_gupta.sample_project.core.entities.Table1Entity;
+
 
 public class ORM {
     public static void main(String[] args) {
