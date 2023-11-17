@@ -8,6 +8,15 @@
   <name>Spring MVC</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+    <!-- For the DispatcherServlet class-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>5.3.9</version>
+    </dependency>
+
+
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
