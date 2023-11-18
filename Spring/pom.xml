@@ -31,7 +31,7 @@
       <version>5.3.28</version>
     </dependency>
 
-    <!-- For Hibernate classes -->
+    <!-- For SessionFactory and other Hibernate classes -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>

@@ -15,8 +15,6 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="CoreModule" target="16" />
-      <module name="Mobiles" target="17" />
-      <module name="MVCModule" target="16" />
       <module name="ORMModule" target="16" />
       <module name="User" target="1.5" />
     </bytecodeTargetLevel>
