@@ -24,6 +24,6 @@ public class DAOImpl implements DAO{
                 session.close();
             }
         }
-        return "Monuments details saved";
+        return "Details saved";
     }
 }

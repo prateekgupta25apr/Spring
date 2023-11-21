@@ -17,9 +17,9 @@ public class Controller {
     }
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    ModelAndView save(DTO dto){
+    ModelAndView save(String col_1,boolean col_2){
         ModelAndView modelAndView=new ModelAndView("result.jsp");
-        modelAndView.addObject("message",service.save(dto));
+        modelAndView.addObject("message",service.save(col_1, col_2));
         return modelAndView;
     }
 }

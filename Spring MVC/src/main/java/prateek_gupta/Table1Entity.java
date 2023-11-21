@@ -22,4 +22,13 @@ public class Table1Entity {
 
     @Column(name = "col_2")
     Boolean col2;
+
+    @Override
+    public String toString() {
+        return "Table1Entity{" +
+                "primaryKey=" + primaryKey +
+                ", col1='" + col1 + '\'' +
+                ", col2=" + col2 +
+                '}';
+    }
 }

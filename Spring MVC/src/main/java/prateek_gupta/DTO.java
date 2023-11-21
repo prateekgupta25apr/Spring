@@ -7,5 +7,13 @@ import lombok.Setter;
 @Setter
 public class DTO {
     String col_1;
-    String col_2;
+    boolean col_2;
+
+    @Override
+    public String toString() {
+        return "DTO{" +
+                "col_1='" + col_1 + '\'' +
+                ", col_2='" + col_2 + '\'' +
+                '}';
+    }
 }
