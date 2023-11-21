@@ -36,7 +36,27 @@
       <version>5.5.7.Final</version>
     </dependency>
 
+    <!--Lombok : For generating getter and setters-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.20</version>
+      <scope>provided</scope>
+    </dependency>
 
+    <!--For using JSTL in the .jsp pages-->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+
+    <!--For connecting to MySQL -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.26</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

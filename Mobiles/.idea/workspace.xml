@@ -5,44 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70d54992-278d-484e-ac4d-7e991fffe5f6" name="Changes" comment="Updated MobileController, servlet.xml, web.xml, home.html, save.html, updateAvailabilityByModelName.html, updatePriceByModelNumber.html,">
-      <change beforePath="$PROJECT_DIR$/../Mappings/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/.jpb/jpb-settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/.mvn/wrapper/MavenWrapperDownloader.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/MappingsApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToMany/entity/BasicContactDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToMany/entity/ContactDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToMany/repositories/BasicContactDetailsRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToMany/repositories/ContactDetailsRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToOne/entity/AddressDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToOne/entity/BasicAddressDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToOne/repositories/AddressDetailsRepo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/java/com/prateekgupta/mappings/OneToOne/repositories/BasicAddressDetailsRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Mappings/src/test/java/com/prateekgupta/mappings/MappingsApplicationTests.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/result.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/.jpb/jpb-settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/.mvn/wrapper/MavenWrapperDownloader.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/Postman/Users.postman_collection.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/Controller/Controller.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/DataTransferObject/DTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/Entity/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/Repository/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/Service/Service.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/Service/ServiceImplementation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/java/PrateekGupta/User/UserApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Users/src/test/java/PrateekGupta/User/UserApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Spring MVC/src/main/java/prateek_gupta/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/src/main/java/prateek_gupta/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/save.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/save.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,22 +47,22 @@
       </map>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="20jyt7SaNTNe5YU5TbwZMVOFXOS" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/Spring/Mobiles"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Spring/Mobiles&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Training\Spring-Assessment\Mobiles\src\main\webapp" />

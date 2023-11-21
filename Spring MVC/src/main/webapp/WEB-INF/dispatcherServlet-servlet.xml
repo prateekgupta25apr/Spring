@@ -20,11 +20,11 @@
         <property name="password" value="root"/>
     </bean>
 
-    <!--<bean id="factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <bean id="factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
-                <value>Monument.entity.Entity</value>
+                <value>prateek_gupta.Table1Entity</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -34,5 +34,5 @@
         </property>
     </bean>
 
-    <bean id="dao" class="Monument.dao.DAOImpl"/>-->
+    <bean id="dao" class="prateek_gupta.DAOImpl"/>
 </beans>
