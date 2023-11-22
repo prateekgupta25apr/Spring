@@ -5,15 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="70d54992-278d-484e-ac4d-7e991fffe5f6" name="Changes" comment="Updated MobileController, servlet.xml, web.xml, home.html, save.html, updateAvailabilityByModelName.html, updatePriceByModelNumber.html,">
-      <change afterPath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/result.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../MVC Module/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MVC Module/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Spring MVC/src/main/java/prateek_gupta/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/src/main/java/prateek_gupta/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/save.html" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/save.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Spring MVC/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Spring MVC/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
