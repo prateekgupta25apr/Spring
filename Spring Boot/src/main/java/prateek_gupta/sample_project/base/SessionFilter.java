@@ -1,4 +1,4 @@
-package prateek_gupta.sample_project;
+package prateek_gupta.sample_project.base;
 
 import org.springframework.stereotype.Component;
 

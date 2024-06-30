@@ -69,6 +69,14 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+
+		<!--AWS S3-->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.26.12</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
