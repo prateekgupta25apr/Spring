@@ -20,4 +20,10 @@ public class AWSController {
         String eTag = awsService.uploadFile(file);
         return ResponseEntity.ok("File uploaded successfully. ETag: " + eTag);
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteFile(@RequestParam("fileName") String fileName) {
+        String eTag = awsService.deleteFile(fileName);
+        return ResponseEntity.ok("File deleted successfully");
+    }
 }

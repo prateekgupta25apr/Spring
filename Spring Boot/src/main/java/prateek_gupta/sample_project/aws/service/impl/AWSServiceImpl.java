@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import prateek_gupta.sample_project.aws.service.AWSService;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
@@ -35,6 +37,21 @@ public class AWSServiceImpl implements AWSService {
             return response.eTag();
         } catch (IOException e) {
             throw new RuntimeException("Error uploading file to S3", e);
+        }
+    }
+
+    @Override
+    public String deleteFile(String fileName) {
+        try{
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+            return "Success";
+        }catch (Exception e){
+            throw new RuntimeException("Error deleting file to S3", e);
         }
     }
 }
