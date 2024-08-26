@@ -1,0 +1,21 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--***** Constructor *****-->
+    <bean id="constructorBasedXMLBasedBean" class="prateek_gupta.spring.bean.xml.XMLBasedBean">
+        <!--Setting value for the field beanName-->
+        <constructor-arg name="beanName" value="test"/>
+
+        <!--Setting value for the field xmlBasedSubBean-->
+        <constructor-arg name="xmlBasedSubBean" ref="constructorBasedSubBean"/>
+    </bean>
+
+    <bean id="constructorBasedSubBean" class="prateek_gupta.spring.bean.xml.XMLBasedSubBean">
+        <!--Setting value for the field subBeanName-->
+        <constructor-arg name="subBeanName" value="1"/>
+    </bean>
+</beans>

@@ -1,4 +1,4 @@
-package prateek_gupta.spring;
+package prateek_gupta.spring.orm;
 
 import lombok.Getter;
 import lombok.Setter;

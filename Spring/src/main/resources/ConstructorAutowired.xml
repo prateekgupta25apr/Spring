@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--***** Constructor Autowired *****-->
+    <bean id="constructorAutowiredBasedBean"
+          class="prateek_gupta.spring.bean.xml.XMLBasedBean" autowire="constructor"/>
+
+    <!-- id for the following tag needs to match the name of the argument in the constructor
+    of the Bean class-->
+    <bean id="xmlBasedSubBean"
+          class="prateek_gupta.spring.bean.xml.XMLBasedSubBean" autowire="constructor"/>
+
+    <bean id="beanName" class="java.lang.String">
+        <constructor-arg value="test"/>
+    </bean>
+
+    <bean id="subBeanName" class="java.lang.String">
+        <constructor-arg value="1"/>
+    </bean>
+</beans>

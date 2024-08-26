@@ -1,0 +1,44 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--***** Getter Setter *****-->
+    <!--Creating a bean of the class XMLBasedBean-->
+    <bean id="getterSetterBasedXMLBasedBean" class="prateek_gupta.spring.bean.xml.XMLBasedBean">
+        <!--Setting value for the field beanName-->
+        <property name="beanName" value="test"/>
+
+        <!--Setting value for the field xmlBasedSubBean-->
+        <property name="xmlBasedSubBean" ref="getterSetterBasedSubBean"/>
+    </bean>
+
+    <!--Creating a bean of the class XMLBasedSubBean-->
+    <bean id="getterSetterBasedSubBean" class="prateek_gupta.spring.bean.xml.XMLBasedSubBean">
+        <!--Setting value for the field subBeanName-->
+        <property name="subBeanName" value="1"/>
+    </bean>
+
+<!--    &lt;!&ndash;***** ORM *****&ndash;&gt;-->
+<!--    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">-->
+<!--        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--        <property name="url" value="jdbc:mysql://localhost:3306/sample_project_1"/>-->
+<!--        <property name="username" value="root"/>-->
+<!--        <property name="password" value="root"/>-->
+<!--    </bean>-->
+<!--    <bean id="factory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">-->
+<!--        <property name="dataSource" ref="dataSource"/>-->
+<!--        <property name="annotatedClasses">-->
+<!--            <list>-->
+<!--                <value>prateek_gupta.spring.orm.Table1Entity</value>-->
+<!--            </list>-->
+<!--        </property>-->
+<!--        <property name="hibernateProperties">-->
+<!--            <props>-->
+<!--                <prop key="hbm2ddl.auto">update</prop>-->
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+</beans>
