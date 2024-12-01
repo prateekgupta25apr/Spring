@@ -24,7 +24,8 @@ public class CoreServiceImpl implements CoreService {
         log.info("getTable1Details started");
         try{
             Table1Entity entity= table1Repository.findByPrimaryKey(primaryKey);
-            return entity.toVO();
+            if (entity != null)
+                return entity.toVO();
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
