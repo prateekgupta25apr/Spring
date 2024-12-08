@@ -1,6 +1,7 @@
 package prateek_gupta.sample_project.core.controller;
 
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,46 @@ public class CoreController {
                 coreService.saveTable1Details(data);
                 response = Util.getResponse(true,
                         "Successfully fetched the data", null);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SampleProjectException exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("redis_save")
+    ResponseEntity<JSONObject> redisSave(HttpServletRequest request) {
+        JSONObject response;
+        try {
+            String data=request.getParameter("data");
+            if (data!=null) {
+                coreService.redisSave(data);
+                response = Util.getResponse(true,
+                        "Successfully saved the data", null);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SampleProjectException exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("redis_get")
+    ResponseEntity<JSONObject> redisGet(HttpServletRequest request,@RequestParam String key) {
+        JSONObject response;
+        try {
+
+            if (StringUtils.isNotBlank(key)) {
+                Object value=coreService.redisGet(key);
+                response = Util.getResponse(true,
+                        "Successfully fetched the value", value);
             }
             else
                 throw new SampleProjectException(

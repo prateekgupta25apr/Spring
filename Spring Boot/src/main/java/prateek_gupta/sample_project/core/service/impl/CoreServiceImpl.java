@@ -5,6 +5,7 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import prateek_gupta.sample_project.core.dao.Table1Repository;
 import prateek_gupta.sample_project.core.entities.Table1Entity;
@@ -18,6 +19,9 @@ public class CoreServiceImpl implements CoreService {
 
     @Autowired
     Table1Repository table1Repository;
+
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
 
     @Override
     public Table1VO getTable1Details(Integer primaryKey) {
@@ -47,5 +51,36 @@ public class CoreServiceImpl implements CoreService {
             System.out.println(e.getMessage());
         }
         log.info("saveTable1Details ended");
+    }
+
+    @Override
+    public void redisSave(String data) {
+        log.info("redisSave started");
+        try{
+            JSONObject jsonObject=JSONObject.fromObject(data);
+            String key= jsonObject.getString("key");
+            String value= jsonObject.getString("value");
+            redisTemplate.opsForValue().set(key,value);
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisSave ended");
+    }
+
+    @Override
+    public Object redisGet(String key) {
+        log.info("redisGet started");
+        Object value=null;
+        try{
+
+
+            value= redisTemplate.opsForValue().get(key);
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisGet ended");
+        return value;
     }
 }
