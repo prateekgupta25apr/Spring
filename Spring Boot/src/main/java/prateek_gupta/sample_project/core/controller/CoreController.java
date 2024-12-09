@@ -70,11 +70,12 @@ public class CoreController {
     ResponseEntity<JSONObject> redisSave(HttpServletRequest request) {
         JSONObject response;
         try {
-            String data=request.getParameter("data");
-            if (data!=null) {
-                coreService.redisSave(data);
+            String key=request.getParameter("key");
+            String value=request.getParameter("value");
+            if (key!=null) {
+                coreService.redisSave(key,value);
                 response = Util.getResponse(true,
-                        "Successfully saved the data", null);
+                        "Successfully saved the key", null);
             }
             else
                 throw new SampleProjectException(
@@ -87,12 +88,52 @@ public class CoreController {
     }
 
     @GetMapping("redis_get")
-    ResponseEntity<JSONObject> redisGet(HttpServletRequest request,@RequestParam String key) {
+    ResponseEntity<JSONObject> redisGet(@RequestParam String key) {
         JSONObject response;
         try {
 
             if (StringUtils.isNotBlank(key)) {
                 Object value=coreService.redisGet(key);
+                response = Util.getResponse(true,
+                        "Successfully fetched the value", value);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SampleProjectException exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("redis_save_object")
+    ResponseEntity<JSONObject> redisSaveObject(HttpServletRequest request) {
+        JSONObject response;
+        try {
+            String key=request.getParameter("key");
+            String value=request.getParameter("value");
+            if (key!=null) {
+                coreService.redisSaveObject(key,value);
+                response = Util.getResponse(true,
+                        "Successfully saved the key", null);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SampleProjectException exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("redis_get_object")
+    ResponseEntity<JSONObject> redisGetObject(@RequestParam String key) {
+        JSONObject response;
+        try {
+            if (StringUtils.isNotBlank(key)) {
+                Object value=coreService.redisGetObject(key);
                 response = Util.getResponse(true,
                         "Successfully fetched the value", value);
             }

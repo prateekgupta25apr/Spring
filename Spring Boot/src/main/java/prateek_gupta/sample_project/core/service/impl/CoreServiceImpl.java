@@ -21,7 +21,10 @@ public class CoreServiceImpl implements CoreService {
     Table1Repository table1Repository;
 
     @Autowired
-    RedisTemplate<String,Object> redisTemplate;
+    RedisTemplate<String,String> redisTemplateString;
+
+    @Autowired
+    RedisTemplate<String,Object> redisTemplateObject;
 
     @Override
     public Table1VO getTable1Details(Integer primaryKey) {
@@ -41,10 +44,10 @@ public class CoreServiceImpl implements CoreService {
     public void saveTable1Details(String data) {
         log.info("saveTable1Details started");
         try{
-            JSONObject jsonObject=JSONObject.fromObject(data);
-            Gson gson=new Gson();
-            Table1VO table1VO = gson.fromJson(
-                    jsonObject.get("data").toString(), Table1VO.class);
+                JSONObject jsonObject=JSONObject.fromObject(data);
+                Gson gson=new Gson();
+                Table1VO table1VO = gson.fromJson(
+                        jsonObject.get("data").toString(), Table1VO.class);
 
             table1Repository.save(table1VO.toEntity());
         }catch (Exception e){
@@ -54,14 +57,10 @@ public class CoreServiceImpl implements CoreService {
     }
 
     @Override
-    public void redisSave(String data) {
+    public void redisSave(String key,String value) {
         log.info("redisSave started");
         try{
-            JSONObject jsonObject=JSONObject.fromObject(data);
-            String key= jsonObject.getString("key");
-            String value= jsonObject.getString("value");
-            redisTemplate.opsForValue().set(key,value);
-
+            redisTemplateString.opsForValue().set(key,value);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -69,18 +68,40 @@ public class CoreServiceImpl implements CoreService {
     }
 
     @Override
-    public Object redisGet(String key) {
+    public String redisGet(String key) {
         log.info("redisGet started");
-        Object value=null;
+        String value=null;
         try{
-
-
-            value= redisTemplate.opsForValue().get(key);
-
+            value= redisTemplateString.opsForValue().get(key);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         log.info("redisGet ended");
+        return value;
+    }
+
+    @Override
+    public void redisSaveObject(String key, String value) {
+        log.info("redisSaveObject started");
+        try{
+            Table1VO table1VO = new Gson().fromJson(value, Table1VO.class);
+            redisTemplateObject.opsForValue().set(key,table1VO);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisSaveObject ended");
+    }
+
+    @Override
+    public Object redisGetObject(String key) {
+        log.info("redisGetObject started");
+        Object value=null;
+        try{
+            value= redisTemplateObject.opsForValue().get(key);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisGetObject ended");
         return value;
     }
 }

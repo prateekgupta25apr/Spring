@@ -6,6 +6,9 @@ public interface CoreService {
     Table1VO getTable1Details(Integer primaryKey);
 
     void saveTable1Details(String data);
-    void redisSave(String data);
-    Object redisGet(String key);
+    void redisSave(String key,String value);
+    String redisGet(String key);
+    void redisSaveObject(String key,String value);
+
+    Object redisGetObject(String key);
 }

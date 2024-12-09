@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -53,8 +54,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String,Object> redisTemplate(){
-        RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
+    public RedisTemplate<String,String> redisTemplateString(){
+        RedisTemplate<String,String>redisTemplate=new RedisTemplate<>();
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(REDIS_HOST);
         config.setPort(Integer.parseInt(REDIS_PORT));
@@ -65,6 +66,22 @@ public class BeanConfiguration {
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+        return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String,Object> redisTemplateObject(){
+        RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(REDIS_HOST);
+        config.setPort(Integer.parseInt(REDIS_PORT));
+
+        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
+        jedisConnectionFactory.afterPropertiesSet();
+
+        redisTemplate.setConnectionFactory(jedisConnectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         return redisTemplate;
     }
 }
