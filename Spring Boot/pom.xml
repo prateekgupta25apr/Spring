@@ -98,6 +98,14 @@
 			<version>3.9.0</version>
 		</dependency>
 
+		<!-- Redisson (for redis) -->
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson-spring-boot-starter</artifactId>
+			<version>3.23.5</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

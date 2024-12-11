@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import prateek_gupta.sample_project.core.dao.Table1Repository;
 import prateek_gupta.sample_project.core.entities.Table1Entity;
@@ -21,7 +22,7 @@ public class CoreServiceImpl implements CoreService {
     Table1Repository table1Repository;
 
     @Autowired
-    RedisTemplate<String,String> redisTemplateString;
+    StringRedisTemplate redisTemplateString;
 
     @Autowired
     RedisTemplate<String,Object> redisTemplateObject;

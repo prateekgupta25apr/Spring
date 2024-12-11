@@ -1,5 +1,9 @@
 package prateek_gupta.sample_project.base;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,22 +58,6 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String,String> redisTemplateString(){
-        RedisTemplate<String,String>redisTemplate=new RedisTemplate<>();
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(REDIS_HOST);
-        config.setPort(Integer.parseInt(REDIS_PORT));
-
-        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
-        jedisConnectionFactory.afterPropertiesSet();
-
-        redisTemplate.setConnectionFactory(jedisConnectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
-
-    @Bean
     public RedisTemplate<String,Object> redisTemplateObject(){
         RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
@@ -83,5 +71,12 @@ public class BeanConfiguration {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         return redisTemplate;
+    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://"+REDIS_HOST+":"+REDIS_PORT);
+        return Redisson.create(config);
     }
 }
