@@ -76,6 +76,7 @@ public class BeanConfiguration {
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
+        config.setCodec(new org.redisson.client.codec.StringCodec());
         config.useSingleServer().setAddress("redis://"+REDIS_HOST+":"+REDIS_PORT);
         return Redisson.create(config);
     }

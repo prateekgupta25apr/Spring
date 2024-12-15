@@ -1,7 +1,10 @@
 package prateek_gupta.sample_project.core.service.impl;
 
 import com.google.gson.Gson;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.redisson.api.RMap;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class CoreServiceImpl implements CoreService {
 
     @Autowired
     RedisTemplate<String,Object> redisTemplateObject;
+
+    @Autowired
+    RedissonClient redissonClient;
 
     @Override
     public Table1VO getTable1Details(Integer primaryKey) {
@@ -104,5 +110,47 @@ public class CoreServiceImpl implements CoreService {
         }
         log.info("redisGetObject ended");
         return value;
+    }
+
+    @Override
+    public Object redisGetMap(String key) {
+        log.info("redisGetMap started");
+        Object value=null;
+        try{
+            RMap<String,Object> rMap=redissonClient.getMap("mapped_key_values");
+            value= rMap.get(key);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisGetMap ended");
+        return value;
+    }
+
+    @Override
+    public void redisSaveMap(String key, String value) {
+        log.info("redisSaveMap started");
+        try{
+            RMap<String,Object> rMap=redissonClient.getMap("mapped_key_values");
+            rMap.put(key,value);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisSaveMap ended");
+    }
+
+    @Override
+    public void redisAppendMap(String key, String value) {
+        log.info("redisAppendMap started");
+        try{
+            RMap<String,Object> rMap=redissonClient.getMap("mapped_key_values");
+            Object response= rMap.get(key);
+            JSONArray responseArray=JSONArray.fromObject(response);
+            JSONArray valueArray=JSONArray.fromObject(value);
+            responseArray.addAll(valueArray);
+            rMap.put(key,responseArray);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        log.info("redisAppendMap ended");
     }
 }
