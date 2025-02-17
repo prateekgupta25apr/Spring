@@ -14,7 +14,8 @@ import prateek_gupta.sample_project.base.SampleProjectException;
 import prateek_gupta.sample_project.kafka.service.KafkaService;
 import prateek_gupta.sample_project.utils.Util;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/kafka")
@@ -30,6 +31,7 @@ public class KafkaController {
     @PostMapping("/send")
     ResponseEntity<JSONObject> sendMessage(@RequestParam String topic,
                                            @RequestParam String message) {
+        log.info("Entering sendMessage()");
         JSONObject response;
         try {
             if (StringUtils.isNotBlank(topic) &&StringUtils.isNotBlank(message)) {
@@ -45,15 +47,18 @@ public class KafkaController {
                     null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        log.info("Exiting sendMessage()");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/get_all_topics")
     ResponseEntity<JSONObject> getAllTopics() {
+        log.info("Entering getAllTopics()");
         JSONObject response;
-        // Create Kafka AdminClient
-        Properties config = new Properties();
+
+        Map<String,Object> config=new HashMap<>();
         config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+
         try (AdminClient adminClient = AdminClient.create(config)) {
             JSONObject responseData=new JSONObject();
             responseData.put("topics",adminClient.listTopics().names().get());
@@ -62,6 +67,7 @@ public class KafkaController {
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving topics", e);
         }
+        log.info("Exiting getAllTopics()");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
