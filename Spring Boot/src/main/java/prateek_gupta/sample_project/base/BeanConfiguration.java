@@ -1,23 +1,33 @@
 package prateek_gupta.sample_project.base;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class BeanConfiguration {
@@ -32,6 +42,14 @@ public class BeanConfiguration {
 
     @Value("${REDIS_PORT}")
     String REDIS_PORT="";
+
+    @Value("${KAFKA_SERVERS}")
+    String bootstrapServers;
+
+    @Value("${KAFKA_CONFIG}")
+    String saslConfig;
+
+    boolean enableKafka=false;
 
     @Bean
     public S3Client s3Client() {
@@ -79,5 +97,66 @@ public class BeanConfiguration {
         config.setCodec(new org.redisson.client.codec.StringCodec());
         config.useSingleServer().setAddress("redis://"+REDIS_HOST+":"+REDIS_PORT);
         return Redisson.create(config);
+    }
+
+    @Bean
+    @Conditional(MyCustomCondition.class)
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig()));
+    }
+
+    @Bean
+    @Conditional(MyCustomCondition.class)
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
+    kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory;
+
+        factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+
+        return factory;
+    }
+
+    @Bean
+    @Conditional(MyCustomCondition.class)
+    public DefaultKafkaConsumerFactory<String,String> consumerFactory(){
+        return new DefaultKafkaConsumerFactory<>(kafkaConfig()) ;
+    }
+
+    @Bean
+    @Conditional(MyCustomCondition.class)
+    public AdminClient adminClient(){
+        return AdminClient.create(kafkaConfig()) ;
+    }
+
+    @Bean("kafkaConfig")
+    public Map<String, Object> kafkaConfig() {
+        Map<String, Object> kafkaConfig = new HashMap<>();
+        kafkaConfig.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+//        kafkaConfig.put("security.protocol", "SASL_SSL");
+//        kafkaConfig.put("sasl.mechanism", "SCRAM-SHA-512");
+//        kafkaConfig.put("sasl.jaas.config", saslConfig);
+
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringSerializer");
+
+
+        kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringDeserializer");
+        kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringDeserializer");
+
+        kafkaConfig.put("enable.auto.commit", "false");
+        return kafkaConfig;
+    }
+
+    static class MyCustomCondition implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+            return true;
+        }
     }
 }
