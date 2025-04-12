@@ -1,5 +1,7 @@
 package prateek_gupta.sample_project.base;
 
+import lombok.NonNull;
+import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -43,13 +45,17 @@ public class BeanConfiguration {
     @Value("${REDIS_PORT}")
     String REDIS_PORT="";
 
-    @Value("${KAFKA_SERVERS}")
-    String bootstrapServers;
+    @Value("${KAFKA_BROKER:}")
+    String kafkaBrokers;
 
-    @Value("${KAFKA_CONFIG}")
+    @Value("${KAFKA_SECURITY_PROTOCOL:}")
+    String securityProtocol;
+
+    @Value("${KAFKA_SASL_MECHANISM:}")
+    String saslMechanism;
+
+    @Value("${KAFKA_CONFIG:}")
     String saslConfig;
-
-    boolean enableKafka=false;
 
     @Bean
     public S3Client s3Client() {
@@ -100,13 +106,14 @@ public class BeanConfiguration {
     }
 
     @Bean
-    @Conditional(MyCustomCondition.class)
+    @Conditional(KafkaCondition.class)
     public KafkaTemplate<String, String> kafkaTemplate() {
+        System.out.println(kafkaConfig());
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig()));
     }
 
     @Bean
-    @Conditional(MyCustomCondition.class)
+    @Conditional(KafkaCondition.class)
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
     kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory;
@@ -119,13 +126,13 @@ public class BeanConfiguration {
     }
 
     @Bean
-    @Conditional(MyCustomCondition.class)
+    @Conditional(KafkaCondition.class)
     public DefaultKafkaConsumerFactory<String,String> consumerFactory(){
         return new DefaultKafkaConsumerFactory<>(kafkaConfig()) ;
     }
 
     @Bean
-    @Conditional(MyCustomCondition.class)
+    @Conditional(KafkaCondition.class)
     public AdminClient adminClient(){
         return AdminClient.create(kafkaConfig()) ;
     }
@@ -133,10 +140,16 @@ public class BeanConfiguration {
     @Bean("kafkaConfig")
     public Map<String, Object> kafkaConfig() {
         Map<String, Object> kafkaConfig = new HashMap<>();
-        kafkaConfig.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-//        kafkaConfig.put("security.protocol", "SASL_SSL");
-//        kafkaConfig.put("sasl.mechanism", "SCRAM-SHA-512");
-//        kafkaConfig.put("sasl.jaas.config", saslConfig);
+        kafkaConfig.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
+
+        if (StringUtils.isNotBlank(securityProtocol))
+            kafkaConfig.put("security.protocol", securityProtocol);
+
+        if(StringUtils.isNotBlank(saslMechanism))
+            kafkaConfig.put("sasl.mechanism", saslMechanism);
+
+        if(StringUtils.isNotBlank(saslConfig))
+            kafkaConfig.put("sasl.jaas.config", saslConfig);
 
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringSerializer");
@@ -153,10 +166,11 @@ public class BeanConfiguration {
         return kafkaConfig;
     }
 
-    static class MyCustomCondition implements Condition {
+    static class KafkaCondition implements Condition {
         @Override
-        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            return true;
+        public boolean matches(@NonNull ConditionContext context,
+                               @NonNull AnnotatedTypeMetadata metadata) {
+            return StringUtils.isNotBlank(context.getEnvironment().getProperty("KAFKA_ENABLE"));
         }
     }
 }

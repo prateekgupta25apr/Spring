@@ -80,6 +80,71 @@ public class KafkaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("get_topic")
+    public ResponseEntity<JSONObject> getTopic(String topicName) {
+        log.info("Entering getTopic()");
+        JSONObject response;
+
+        try {
+            DescribeTopicsResult describeTopicsResult =
+                    adminClient.describeTopics(Collections.singleton(topicName));
+            TopicDescription topicDescription =
+                    describeTopicsResult.topicNameValues().get(topicName).get();
+
+            JSONObject responseData = new JSONObject();
+            responseData.put("topicName", topicDescription.name());
+
+            Map<TopicPartition, OffsetSpec> endOffsetsSpecs = new HashMap<>();
+            Map<TopicPartition, OffsetSpec> startOffsetsSpecs = new HashMap<>();
+
+            for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
+                TopicPartition topicPartition = new TopicPartition(
+                        topicName, partitionInfo.partition());
+                endOffsetsSpecs.put(topicPartition, OffsetSpec.latest());
+                startOffsetsSpecs.put(topicPartition, OffsetSpec.earliest());
+            }
+            ListOffsetsResult endOffsetsResult = adminClient.listOffsets(endOffsetsSpecs);
+            ListOffsetsResult startOffsetsResult = adminClient.listOffsets(startOffsetsSpecs);
+            Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> endOffsets =
+                    endOffsetsResult.all().get();
+            Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> startOffsets =
+                    startOffsetsResult.all().get();
+
+            List<TopicPartition> entries=new ArrayList<>(startOffsets.keySet());
+
+            Collections.reverse(entries);
+            JSONObject partitions = new JSONObject();
+            JSONObject partitionInfo = new JSONObject();
+            for (TopicPartition topicPartition :entries) {
+                partitionInfo.put("messageCount",(endOffsets.get(topicPartition).offset() -
+                        startOffsets.get(topicPartition).offset()));
+                partitionInfo.put("earliest(start)Offset",
+                        startOffsets.get(topicPartition).offset());
+                partitionInfo.put("latest(end)Offset",
+                        endOffsets.get(topicPartition).offset());
+                partitions.put(topicPartition.partition(),partitionInfo);
+            }
+
+            responseData.put("partitions", partitions);
+
+            ConfigResource topicResource =
+                    new ConfigResource(ConfigResource.Type.TOPIC, topicName);
+            DescribeConfigsResult describeConfigsResult =
+                    adminClient.describeConfigs(Collections.singletonList(topicResource));
+            Config configResult = describeConfigsResult.all().get().get(topicResource);
+
+            responseData.put("retention.ms", configResult.get("retention.ms").value());
+            response = Util.getResponse(true,
+                    "Successfully retrieve details for the topic : " + topicName,
+                    responseData);
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving topics", e);
+        }
+
+        log.info("Exiting getTopic()");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("create_topic")
     public ResponseEntity<JSONObject> createTopic(String topicName,
                                                   int partitions, short replicationFactor) {
@@ -149,81 +214,14 @@ public class KafkaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("get_topic")
-    public ResponseEntity<JSONObject> getTopic(String topicName) {
-        log.info("Entering getTopic()");
-        JSONObject response;
-
-        try {
-            DescribeTopicsResult describeTopicsResult =
-                    adminClient.describeTopics(Collections.singleton(topicName));
-            TopicDescription topicDescription =
-                    describeTopicsResult.topicNameValues().get(topicName).get();
-
-            JSONObject responseData = new JSONObject();
-            responseData.put("topicName", topicDescription.name());
-
-            Map<TopicPartition, OffsetSpec> endOffsetsSpecs = new HashMap<>();
-            Map<TopicPartition, OffsetSpec> startOffsetsSpecs = new HashMap<>();
-
-            for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-                TopicPartition topicPartition = new TopicPartition(
-                        topicName, partitionInfo.partition());
-                endOffsetsSpecs.put(topicPartition, OffsetSpec.latest());
-                startOffsetsSpecs.put(topicPartition, OffsetSpec.earliest());
-            }
-            ListOffsetsResult endOffsetsResult = adminClient.listOffsets(endOffsetsSpecs);
-            ListOffsetsResult startOffsetsResult = adminClient.listOffsets(startOffsetsSpecs);
-            Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> endOffsets =
-                    endOffsetsResult.all().get();
-            Map<TopicPartition, ListOffsetsResult.ListOffsetsResultInfo> startOffsets =
-                    startOffsetsResult.all().get();
-
-            List<TopicPartition> entries=new ArrayList<>(startOffsets.keySet());
-
-            Collections.reverse(entries);
-            JSONObject partitions = new JSONObject();
-            JSONObject partitionInfo = new JSONObject();
-            for (TopicPartition topicPartition :entries) {
-                partitionInfo.put("messageCount",(endOffsets.get(topicPartition).offset() -
-                        startOffsets.get(topicPartition).offset()));
-                partitionInfo.put("earliest(start)Offset",
-                        startOffsets.get(topicPartition).offset());
-                partitionInfo.put("latest(end)Offset",
-                        endOffsets.get(topicPartition).offset());
-                partitions.put(topicPartition.partition(),partitionInfo);
-            }
-
-            responseData.put("partitions", partitions);
-
-            ConfigResource topicResource =
-                    new ConfigResource(ConfigResource.Type.TOPIC, topicName);
-            DescribeConfigsResult describeConfigsResult =
-                    adminClient.describeConfigs(Collections.singletonList(topicResource));
-            Config configResult = describeConfigsResult.all().get().get(topicResource);
-
-            responseData.put("retention.ms", configResult.get("retention.ms").value());
-            response = Util.getResponse(true,
-                    "Successfully retrieve details for the topic : " + topicName,
-                    responseData);
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving topics", e);
-        }
-
-        log.info("Exiting getTopic()");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @DeleteMapping("delete_topic")
     public ResponseEntity<JSONObject> deleteTopic(String topicName) {
         log.info("Entering deleteTopic()");
         JSONObject response;
-
         try {
             DeleteTopicsResult result =
                     adminClient.deleteTopics(Collections.singletonList(topicName));
             result.all().get();
-
             response = Util.getResponse(true,
                     "Successfully deleted the topic : " + topicName, null);
         } catch (Exception e) {
@@ -231,6 +229,38 @@ public class KafkaController {
         }
 
         log.info("Exiting deleteTopic()");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("get_commited_offset")
+    public ResponseEntity<JSONObject> getCommitedOffset(
+            String topicName,int partitionId,String consumerGroupName) {
+        log.info("Entering getCommitedOffset()");
+        JSONObject response = null;
+        try {
+            TopicPartition topicPartition = new TopicPartition(topicName, partitionId);
+
+            // Fetch the committed offset for the consumer group
+            Map<TopicPartition, OffsetAndMetadata> committedOffsets =
+                    adminClient.listConsumerGroupOffsets(consumerGroupName)
+                            .partitionsToOffsetAndMetadata().get();
+
+            OffsetAndMetadata offsetAndMetadata = committedOffsets.get(topicPartition);
+            if (offsetAndMetadata != null) {
+                response = Util.getResponse(true,
+                        "Successfully retrieved the commited offset as : " +
+                                offsetAndMetadata.offset(), null);
+            } else {
+                response = Util.getResponse(true,
+                        "No committed offset found for the specified partition.",
+                        null);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        log.info("Exiting getCommitedOffset()");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -342,39 +372,6 @@ public class KafkaController {
         }
 
         log.info("Exiting getMessages()");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("get_commited_offset")
-    public ResponseEntity<JSONObject> getCommitedOffset(String topicName,
-                                                        int partitionId,String consumerGroupName) {
-        log.info("Entering getCommitedOffset()");
-        JSONObject response = null;
-
-        try {
-            TopicPartition topicPartition = new TopicPartition(topicName, partitionId);
-
-            // Fetch the committed offset for the consumer group
-            Map<TopicPartition, OffsetAndMetadata> committedOffsets =
-                    adminClient.listConsumerGroupOffsets(consumerGroupName)
-                    .partitionsToOffsetAndMetadata().get();
-
-            OffsetAndMetadata offsetAndMetadata = committedOffsets.get(topicPartition);
-            if (offsetAndMetadata != null) {
-                response = Util.getResponse(true,
-                        "Successfully retrieved the commited offset as : " +
-                                offsetAndMetadata.offset(), null);
-            } else {
-                response = Util.getResponse(true,
-                        "No committed offset found for the specified partition.",
-                        null);
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        log.info("Exiting getCommitedOffset()");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
