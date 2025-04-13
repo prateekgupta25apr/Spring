@@ -15,6 +15,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -98,6 +99,22 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public StringRedisTemplate stringRedisTemplate(){
+        StringRedisTemplate redisTemplate=new StringRedisTemplate();
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(REDIS_HOST);
+        config.setPort(Integer.parseInt(REDIS_PORT));
+
+        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
+        jedisConnectionFactory.afterPropertiesSet();
+
+        redisTemplate.setConnectionFactory(jedisConnectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        return redisTemplate;
+    }
+
+    @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.setCodec(new org.redisson.client.codec.StringCodec());
@@ -108,7 +125,6 @@ public class BeanConfiguration {
     @Bean
     @Conditional(KafkaCondition.class)
     public KafkaTemplate<String, String> kafkaTemplate() {
-        System.out.println(kafkaConfig());
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig()));
     }
 
