@@ -75,4 +75,25 @@ public class RedisController {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @DeleteMapping("delete")
+    ResponseEntity<JSONObject> delete(@RequestParam String key,
+                                   @RequestParam(required = false) String useMap) {
+        JSONObject response;
+        try {
+
+            if (StringUtils.isNotBlank(key)) {
+                redisService.delete(key,Boolean.parseBoolean(useMap));
+                response = Util.getResponse(true,
+                        "Successfully deleted the key", null);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (SampleProjectException exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

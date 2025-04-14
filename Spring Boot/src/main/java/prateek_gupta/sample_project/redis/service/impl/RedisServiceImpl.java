@@ -97,4 +97,25 @@ public class RedisServiceImpl implements RedisService {
         return response;
     }
 
+    @Override
+    public void delete(String key, boolean useMap) throws SampleProjectException {
+        log.info("Entering delete()");
+        try {
+            if (useMap) {
+                RMap<String, Object> rMap = redissonClient.getMap(mapName);
+                rMap.remove(key);
+            } else {
+                try {
+                    redisTemplateObject.delete(key);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    redisTemplateString.delete(key);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new SampleProjectException();
+        }
+        log.info("Exiting delete()");
+    }
 }
