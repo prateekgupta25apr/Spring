@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -40,10 +41,10 @@ public class BeanConfiguration {
     @Value("${AWS_SECRET_KEY}")
     String AWS_SECRET_KEY = "";
 
-    @Value("${REDIS_HOST}")
+    @Value("${REDIS_HOST:}")
     String REDIS_HOST="";
 
-    @Value("${REDIS_PORT}")
+    @Value("${REDIS_PORT:}")
     String REDIS_PORT="";
 
     @Value("${KAFKA_BROKER:}")
@@ -82,14 +83,31 @@ public class BeanConfiguration {
         return s3Client;
     }
 
+    boolean redisLocalCheck(){
+        return REDIS_HOST.equals("localhost");
+    }
+
     @Bean
+    @Conditional(RedisCondition.class)
     public RedisTemplate<String,Object> redisTemplateObject(){
         RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(REDIS_HOST);
         config.setPort(Integer.parseInt(REDIS_PORT));
 
-        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
+
+        JedisConnectionFactory jedisConnectionFactory;
+        if (redisLocalCheck())
+            jedisConnectionFactory = new JedisConnectionFactory(config);
+        else {
+            JedisClientConfiguration clientConfig =
+                    JedisClientConfiguration.builder()
+                            .useSsl()
+                            .build();
+
+            jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
+        }
+
         jedisConnectionFactory.afterPropertiesSet();
 
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -99,13 +117,24 @@ public class BeanConfiguration {
     }
 
     @Bean
+    @Conditional(RedisCondition.class)
     public StringRedisTemplate stringRedisTemplate(){
         StringRedisTemplate redisTemplate=new StringRedisTemplate();
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(REDIS_HOST);
         config.setPort(Integer.parseInt(REDIS_PORT));
 
-        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
+        JedisConnectionFactory jedisConnectionFactory;
+        if (redisLocalCheck())
+            jedisConnectionFactory = new JedisConnectionFactory(config);
+        else {
+            JedisClientConfiguration clientConfig =
+                    JedisClientConfiguration.builder()
+                            .useSsl()
+                            .build();
+
+            jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
+        }
         jedisConnectionFactory.afterPropertiesSet();
 
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -115,10 +144,13 @@ public class BeanConfiguration {
     }
 
     @Bean
+    @Conditional(RedisCondition.class)
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.setCodec(new org.redisson.client.codec.StringCodec());
-        config.useSingleServer().setAddress("redis://"+REDIS_HOST+":"+REDIS_PORT);
+        config.useSingleServer().setAddress(redisLocalCheck() ?
+                "redis://" + REDIS_HOST + ":" + REDIS_PORT :
+                "rediss://" + REDIS_HOST + ":" + REDIS_PORT);
         return Redisson.create(config);
     }
 
@@ -180,6 +212,14 @@ public class BeanConfiguration {
 
         kafkaConfig.put("enable.auto.commit", "false");
         return kafkaConfig;
+    }
+
+    static class RedisCondition implements Condition {
+        @Override
+        public boolean matches(@NonNull ConditionContext context,
+                               @NonNull AnnotatedTypeMetadata metadata) {
+            return StringUtils.isNotBlank(context.getEnvironment().getProperty("REDIS_ENABLE"));
+        }
     }
 
     static class KafkaCondition implements Condition {

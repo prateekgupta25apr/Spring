@@ -22,13 +22,13 @@ public class RedisServiceImpl implements RedisService {
 
     private final Logger log = LoggerFactory.getLogger(RedisServiceImpl.class);
 
-    @Autowired
+    @Autowired(required = false)
     StringRedisTemplate redisTemplateString;
 
-    @Autowired
+    @Autowired(required = false)
     RedisTemplate<String, Object> redisTemplateObject;
 
-    @Autowired
+    @Autowired(required = false)
     RedissonClient redissonClient;
 
     String mapName = "mapped_key_values";
