@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -47,6 +48,12 @@ public class BeanConfiguration {
     @Value("${REDIS_PORT:}")
     String REDIS_PORT="";
 
+    @Value("${REDIS_SSL:}")
+    String REDIS_SSL="";
+
+    @Value("${REDIS_PASSWORD:}")
+    String REDIS_PASSWORD="";
+
     @Value("${KAFKA_BROKER:}")
     String kafkaBrokers;
 
@@ -83,10 +90,6 @@ public class BeanConfiguration {
         return s3Client;
     }
 
-    boolean redisLocalCheck(){
-        return REDIS_HOST.equals("localhost");
-    }
-
     @Bean
     @Conditional(RedisCondition.class)
     public RedisTemplate<String,Object> redisTemplateObject(){
@@ -94,19 +97,20 @@ public class BeanConfiguration {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(REDIS_HOST);
         config.setPort(Integer.parseInt(REDIS_PORT));
+        config.setPassword(REDIS_PASSWORD);
 
 
         JedisConnectionFactory jedisConnectionFactory;
-        if (redisLocalCheck())
-            jedisConnectionFactory = new JedisConnectionFactory(config);
-        else {
+        if (StringUtils.isNotBlank(REDIS_SSL))
+        {
             JedisClientConfiguration clientConfig =
                     JedisClientConfiguration.builder()
                             .useSsl()
                             .build();
 
             jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
-        }
+        }else
+            jedisConnectionFactory = new JedisConnectionFactory(config);
 
         jedisConnectionFactory.afterPropertiesSet();
 
@@ -123,18 +127,20 @@ public class BeanConfiguration {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(REDIS_HOST);
         config.setPort(Integer.parseInt(REDIS_PORT));
+        config.setPassword(REDIS_PASSWORD);
 
         JedisConnectionFactory jedisConnectionFactory;
-        if (redisLocalCheck())
-            jedisConnectionFactory = new JedisConnectionFactory(config);
-        else {
+        if (StringUtils.isNotBlank(REDIS_SSL))
+        {
             JedisClientConfiguration clientConfig =
                     JedisClientConfiguration.builder()
                             .useSsl()
                             .build();
 
             jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
-        }
+        }else
+            jedisConnectionFactory = new JedisConnectionFactory(config);
+
         jedisConnectionFactory.afterPropertiesSet();
 
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -148,9 +154,13 @@ public class BeanConfiguration {
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.setCodec(new org.redisson.client.codec.StringCodec());
-        config.useSingleServer().setAddress(redisLocalCheck() ?
-                "redis://" + REDIS_HOST + ":" + REDIS_PORT :
-                "rediss://" + REDIS_HOST + ":" + REDIS_PORT);
+        SingleServerConfig singleServerConfig=config.useSingleServer();
+        singleServerConfig.setAddress(StringUtils.isNotBlank(REDIS_SSL) ?
+                "rediss://" + REDIS_HOST + ":" + REDIS_PORT:
+                "redis://" + REDIS_HOST + ":" + REDIS_PORT );
+
+        if(StringUtils.isNotBlank(REDIS_PASSWORD))
+            singleServerConfig.setPassword(REDIS_PASSWORD);
         return Redisson.create(config);
     }
 
