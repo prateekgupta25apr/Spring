@@ -2,10 +2,14 @@ package prateek_gupta.SampleProject.base;
 
 import lombok.NonNull;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
+import org.opensearch.client.RestHighLevelClient;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -36,10 +40,10 @@ import java.util.Map;
 
 @Configuration
 public class BeanConfiguration {
-    @Value("${AWS_ACCESS_KEY}")
+    @Value("${AWS_ACCESS_KEY:}")
     String AWS_ACCESS_KEY = "";
 
-    @Value("${AWS_SECRET_KEY}")
+    @Value("${AWS_SECRET_KEY:}")
     String AWS_SECRET_KEY = "";
 
     @Value("${REDIS_HOST:}")
@@ -65,6 +69,12 @@ public class BeanConfiguration {
 
     @Value("${KAFKA_CONFIG:}")
     String saslConfig;
+
+    @Value("${OPEN_SEARCH_HOST:}")
+    String openSearchHost;
+
+    @Value("${OPEN_SEARCH_PORT:}")
+    String openSearchPort;
 
     @Bean
     public S3Client s3Client() {
@@ -224,6 +234,14 @@ public class BeanConfiguration {
         return kafkaConfig;
     }
 
+    @Bean
+    @Conditional(OpenSearchCondition.class)
+    public RestHighLevelClient openSearchClient(){
+        RestClientBuilder builder = RestClient.builder(new HttpHost(openSearchHost,
+                Integer.parseInt(openSearchPort), "https"));
+        return new RestHighLevelClient(builder);
+    }
+
     static class RedisCondition implements Condition {
         @Override
         public boolean matches(@NonNull ConditionContext context,
@@ -237,6 +255,15 @@ public class BeanConfiguration {
         public boolean matches(@NonNull ConditionContext context,
                                @NonNull AnnotatedTypeMetadata metadata) {
             return StringUtils.isNotBlank(context.getEnvironment().getProperty("KAFKA_ENABLE"));
+        }
+    }
+
+    static class OpenSearchCondition implements Condition {
+        @Override
+        public boolean matches(@NonNull ConditionContext context,
+                               @NonNull AnnotatedTypeMetadata metadata) {
+            return StringUtils.isNotBlank(context.getEnvironment().getProperty(
+                    "OPEN_SEARCH_ENABLE"));
         }
     }
 }

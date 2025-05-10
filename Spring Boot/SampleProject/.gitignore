@@ -34,3 +34,4 @@ build/
 
 # Config file
 configuration.properties
+/src/main/java/prateek_gupta/SampleProject/prateek_gupta/ProjectSettings.java
