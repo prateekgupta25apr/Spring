@@ -1,10 +1,16 @@
 package prateek_gupta.SampleProject.openSearch;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 import org.apache.commons.lang.StringUtils;
 import org.opensearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.opensearch.action.bulk.BulkItemResponse;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.action.delete.DeleteRequest;
+import org.opensearch.action.delete.DeleteResponse;
 import org.opensearch.action.get.GetRequest;
 import org.opensearch.action.get.GetResponse;
 import org.opensearch.action.index.IndexRequest;
@@ -12,15 +18,21 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.support.master.AcknowledgedResponse;
+import org.opensearch.action.update.UpdateRequest;
+import org.opensearch.action.update.UpdateResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.indices.*;
-import org.opensearch.common.xcontent.XContentType;
-import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.common.settings.Settings;
+import org.opensearch.common.xcontent.*;
+import org.opensearch.search.SearchModule;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.base.SampleProjectException;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Service
 public class OpenSearchService {
@@ -185,7 +197,7 @@ public class OpenSearchService {
     }
 
     public JSONObject upsertRecord(String indexName,String recordId,
-                                   String data)
+                                   String data,boolean bulk)
             throws Exception {
         JSONObject result = new JSONObject();
         try {
@@ -193,8 +205,18 @@ public class OpenSearchService {
                 IndexRequest request = new IndexRequest(indexName)
                         .id(recordId)
                         .source(data, XContentType.JSON);
-                IndexResponse response = client.index(request, RequestOptions.DEFAULT);
-                result.put("result",response.getResult().name());
+                if (!bulk){
+                    IndexResponse response = client.index(request, RequestOptions.DEFAULT);
+                    result.put("result", response.getResult().name());
+                }else {
+                    BulkRequest bulkRequest = new BulkRequest();
+                    bulkRequest.add(request);
+
+                    BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+                    for (BulkItemResponse bulkItemResponse : bulkResponse.getItems())
+                        result.put("result",
+                                bulkItemResponse.getResponse().getResult().name());
+                }
 
             } else
                 result.put("message", "Index doesn't exists");
@@ -205,22 +227,97 @@ public class OpenSearchService {
         return result;
     }
 
-    public String searchByField(String index, String field,
-                                String value)
+    public JSONObject partialUpdateRecord(String indexName,
+                                          String recordId, String data,boolean bulk)
             throws Exception {
+        JSONObject result = new JSONObject();
         try {
-            SearchRequest searchRequest = new SearchRequest(index);
+            if (indexExists(indexName)) {
+                UpdateRequest request = new UpdateRequest(indexName, recordId)
+                        .doc(data,XContentType.JSON);
 
-            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-            sourceBuilder.query(QueryBuilders.matchQuery(field, value));
+                if (!bulk){
+                    UpdateResponse response = client.update(request, RequestOptions.DEFAULT);
+                    result.put("result", response.getResult().name());
+                }else {
+                    BulkRequest bulkRequest = new BulkRequest();
+                    bulkRequest.add(request);
 
-            searchRequest.source(sourceBuilder);
+                    BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+                    for (BulkItemResponse bulkItemResponse : bulkResponse.getItems())
+                        result.put("result",
+                                bulkItemResponse.getResponse().getResult().name());
+                }
 
-            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-            return response.toString();
+            } else
+                result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             SampleProjectException.logException(e);
             throw new Exception();
         }
+        return result;
+    }
+
+    public JSONObject deleteRecord(String indexName,String recordId
+            ,boolean bulk) throws Exception {
+        JSONObject result = new JSONObject();
+        try {
+            if (indexExists(indexName)) {
+                DeleteRequest request = new DeleteRequest(indexName, recordId);
+
+                if (!bulk){
+                    DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
+                    result.put("result", response.getResult().name());
+                }else {
+                    BulkRequest bulkRequest = new BulkRequest();
+                    bulkRequest.add(request);
+
+                    BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+                    for (BulkItemResponse bulkItemResponse : bulkResponse.getItems())
+                        result.put("result",
+                                bulkItemResponse.getResponse().getResult().name());
+                }
+
+            } else
+                result.put("message", "Index doesn't exists");
+        } catch (Exception e) {
+            SampleProjectException.logException(e);
+            throw new Exception();
+        }
+        return result;
+    }
+
+    public JSONObject searchRecord(String index, String searchJSON)
+            throws Exception {
+        JSONObject result = new JSONObject();
+        try {
+            SearchRequest searchRequest = new SearchRequest(index);
+
+            // Loading Query Builder parsers and Aggregations parsers
+            SearchModule searchModule = new SearchModule(
+                    Settings.EMPTY,
+                    false,
+                    new ArrayList<>()
+            );
+
+            // Creating an object of NamedXContentRegistry to hold all the Query Builder
+            // parsers and Aggregations parsers to be used
+            NamedXContentRegistry registry =
+                    new NamedXContentRegistry(searchModule.getNamedXContents());
+
+            // Creating an object of XContentParser to parse the JSON into Java objects to
+            // be used for querying opensearch
+            XContentParser parser = XContentType.JSON.xContent().createParser(registry,
+                    DeprecationHandler.IGNORE_DEPRECATIONS, searchJSON);
+
+            searchRequest.source(SearchSourceBuilder.fromXContent(parser));
+
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            result=JSONObject.fromObject(response.toString());
+        } catch (Exception e) {
+            SampleProjectException.logException(e);
+            throw new Exception();
+        }
+        return result;
     }
 }

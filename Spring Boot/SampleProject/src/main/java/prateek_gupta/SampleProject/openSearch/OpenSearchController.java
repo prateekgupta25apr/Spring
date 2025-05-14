@@ -139,11 +139,11 @@ public class OpenSearchController {
 
     @PostMapping("upsert_record")
     ResponseEntity<JSONObject> upsertRecordController(String indexName,
-                                                      String docId,String data) {
+                                                      String docId,String data,boolean bulk) {
         JSONObject response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
-                JSONObject indexDetails = service.upsertRecord(indexName,docId,data);
+                JSONObject indexDetails = service.upsertRecord(indexName,docId,data,bulk);
                 if (indexDetails != null) {
                     response = Util.getResponse(true,
                             "Successfully inserted the record", indexDetails);
@@ -161,24 +161,71 @@ public class OpenSearchController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("searchByField")
-    ResponseEntity<JSONObject> searchByField() {
+
+    @PatchMapping("partial_update_record")
+    ResponseEntity<JSONObject> partialUpdateRecordController(String indexName,
+                                                      String docId,String data,boolean bulk) {
         JSONObject response;
         try {
-            //if (primaryKey!=null&&primaryKey>0) {
-                String result = service.searchByField("index-test","f1","prateek");
-                if (result != null) {
-                    JSONObject data = new JSONObject();
-                    data.put("data", result);
+            if (StringUtils.isNotBlank(indexName)) {
+                JSONObject indexDetails = service.partialUpdateRecord(indexName,docId,data,bulk);
+                if (indexDetails != null) {
                     response = Util.getResponse(true,
-                            "Successfully fetched the data", data);
+                            "Successfully updated the record", indexDetails);
                 } else
                     throw new SampleProjectException(
                             SampleProjectException.ExceptionType.DB_ERROR);
-//            }
-//            else
-//                throw new SampleProjectException(
-//                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (Exception exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("delete_record")
+    ResponseEntity<JSONObject> deleteRecordController(String indexName,
+                                                      String docId,boolean bulk) {
+        JSONObject response;
+        try {
+            if (StringUtils.isNotBlank(indexName)) {
+                JSONObject indexDetails = service.deleteRecord(indexName,docId,bulk);
+                if (indexDetails != null) {
+                    response = Util.getResponse(true,
+                            "Successfully deleted the record", indexDetails);
+                } else
+                    throw new SampleProjectException(
+                            SampleProjectException.ExceptionType.DB_ERROR);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (Exception exception) {
+            response = Util.getResponse(false, exception.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("search_record")
+    ResponseEntity<JSONObject> searchRecordController(String indexName,String searchJSON) {
+        JSONObject response;
+        try {
+            if (StringUtils.isNotBlank(indexName)) {
+                JSONObject indexDetails = service.searchRecord(indexName,searchJSON);
+                if (indexDetails != null) {
+                    response = Util.getResponse(true,
+                            "Successfully deleted the record", indexDetails);
+                } else
+                    throw new SampleProjectException(
+                            SampleProjectException.ExceptionType.DB_ERROR);
+            }
+            else
+                throw new SampleProjectException(
+                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
