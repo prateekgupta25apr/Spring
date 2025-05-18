@@ -1,7 +1,7 @@
 package prateek_gupta.SampleProject.openSearch;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 import org.apache.commons.lang.StringUtils;
 import org.opensearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -22,17 +22,24 @@ import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.action.update.UpdateResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.core.CountRequest;
+import org.opensearch.client.core.CountResponse;
 import org.opensearch.client.indices.*;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.*;
+import org.opensearch.index.query.AbstractQueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.reindex.BulkByScrollResponse;
+import org.opensearch.index.reindex.DeleteByQueryRequest;
 import org.opensearch.search.SearchModule;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.utils.Util;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 @Service
 public class OpenSearchService {
@@ -287,9 +294,59 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject searchRecord(String index, String searchJSON)
+    public JsonNode searchRecord(String index,
+                                 String searchJSON)
             throws Exception {
-        JSONObject result = new JSONObject();
+        try {
+            SearchRequest searchRequest = new SearchRequest(index);
+
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            sourceBuilder.query(QueryBuilders.wrapperQuery(searchJSON));
+
+            searchRequest.source(sourceBuilder);
+
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            return Util.getObjectMapper().readTree(response.toString());
+        } catch (Exception e) {
+            SampleProjectException.logException(e);
+            throw new Exception();
+        }
+    }
+
+    public JsonNode countRecord(String index, String queryJSON)
+            throws Exception {
+        try {
+            CountRequest countRequest = new CountRequest(index);
+
+            countRequest.query(QueryBuilders.wrapperQuery(queryJSON));
+
+            CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
+            return Util.getObjectMapper().valueToTree(countResponse);
+        } catch (Exception e) {
+            SampleProjectException.logException(e);
+            throw new Exception();
+        }
+    }
+
+    public JsonNode deleteByQueryRecord(String index, String queryJSON)
+            throws Exception {
+        try {
+            DeleteByQueryRequest request = new DeleteByQueryRequest(index);
+
+            request.setQuery(QueryBuilders.wrapperQuery(queryJSON));
+
+             BulkByScrollResponse response=client.deleteByQuery(request, RequestOptions.DEFAULT);
+            return Util.getObjectMapper().valueToTree(response);
+        } catch (Exception e) {
+            SampleProjectException.logException(e);
+            throw new Exception();
+        }
+    }
+
+    public JsonNode aggregateRecord(String index,
+                                 String searchJSON)
+            throws Exception {
         try {
             SearchRequest searchRequest = new SearchRequest(index);
 
@@ -307,17 +364,18 @@ public class OpenSearchService {
 
             // Creating an object of XContentParser to parse the JSON into Java objects to
             // be used for querying opensearch
-            XContentParser parser = XContentType.JSON.xContent().createParser(registry,
+
+            XContentParser parser= XContentType.JSON.xContent().createParser(registry,
                     DeprecationHandler.IGNORE_DEPRECATIONS, searchJSON);
 
             searchRequest.source(SearchSourceBuilder.fromXContent(parser));
 
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-            result=JSONObject.fromObject(response.toString());
+
+            return Util.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
             SampleProjectException.logException(e);
             throw new Exception();
         }
-        return result;
     }
 }
