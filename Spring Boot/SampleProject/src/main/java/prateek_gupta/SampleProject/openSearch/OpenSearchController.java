@@ -1,6 +1,5 @@
 package prateek_gupta.SampleProject.openSearch;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
