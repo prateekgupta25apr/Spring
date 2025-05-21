@@ -10,12 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.redis.service.RedisService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class RedisServiceImpl implements RedisService {
@@ -34,7 +30,7 @@ public class RedisServiceImpl implements RedisService {
     String mapName = "mapped_key_values";
 
     @Override
-    public Object get(String key, boolean useMap) throws SampleProjectException {
+    public Object get(String key, boolean useMap) throws ServiceException {
         log.info("Entering get()");
         Object value;
         try {
@@ -45,14 +41,14 @@ public class RedisServiceImpl implements RedisService {
                 value = redisTemplateString.opsForValue().get(key);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new SampleProjectException();
+            throw new ServiceException();
         }
         log.info("Exiting get()");
         return value;
     }
 
     @Override
-    public void upsert(String key, Object value, boolean useMap) throws SampleProjectException {
+    public void upsert(String key, Object value, boolean useMap) throws ServiceException {
         log.info("Entering upsert()");
         try {
             if (useMap) {
@@ -68,13 +64,13 @@ public class RedisServiceImpl implements RedisService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new SampleProjectException();
+            throw new ServiceException();
         }
         log.info("Exiting upsert()");
     }
 
     @Override
-    public JSONObject searchKeys(String pattern) throws SampleProjectException {
+    public JSONObject searchKeys(String pattern) throws ServiceException {
         log.info("Entering searchKeys()");
         JSONObject response = new JSONObject();
         try {
@@ -91,14 +87,14 @@ public class RedisServiceImpl implements RedisService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new SampleProjectException();
+            throw new ServiceException();
         }
         log.info("Exiting searchKeys()");
         return response;
     }
 
     @Override
-    public void delete(String key, boolean useMap) throws SampleProjectException {
+    public void delete(String key, boolean useMap) throws ServiceException {
         log.info("Entering delete()");
         try {
             if (useMap) {
@@ -114,7 +110,7 @@ public class RedisServiceImpl implements RedisService {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new SampleProjectException();
+            throw new ServiceException();
         }
         log.info("Exiting delete()");
     }

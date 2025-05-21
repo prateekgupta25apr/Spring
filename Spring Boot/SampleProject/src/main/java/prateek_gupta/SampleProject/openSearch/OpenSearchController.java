@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 @RestController
@@ -24,16 +24,18 @@ public class OpenSearchController {
                 JSONObject indexDetails = service.getIndex(indexName);
                 if (indexDetails != null) {
                     response = Util.getResponse(true,
-                            "Successfully fetched the index details", indexDetails);
+                            "Successfully fetched the index details",
+                            indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
+            response = Util.getResponse(false, exception.getMessage(),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -41,7 +43,8 @@ public class OpenSearchController {
 
     @PostMapping("create_index")
     ResponseEntity<JSONObject> createIndexController(
-            String indexName,String source,String aliases,String settings,String mappings) {
+            String indexName,String source,String aliases,String settings,
+            String mappings) {
         JSONObject response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
@@ -51,14 +54,15 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully create the index", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
+            response = Util.getResponse(false, exception.getMessage(),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -78,14 +82,15 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully updated the index", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
+            response = Util.getResponse(false, exception.getMessage(),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -101,14 +106,15 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully deleted the index", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
+            response = Util.getResponse(false, exception.getMessage(),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -125,22 +131,23 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully fetched the record", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
+            response = Util.getResponse(false, exception.getMessage(),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("upsert_record")
-    ResponseEntity<JSONObject> upsertRecordController(String indexName,
-                                                      String docId,String data,boolean bulk) {
+    ResponseEntity<JSONObject> upsertRecordController(
+            String indexName, String docId,String data,boolean bulk) {
         JSONObject response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
@@ -149,12 +156,12 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully inserted the record", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -164,22 +171,23 @@ public class OpenSearchController {
 
 
     @PatchMapping("partial_update_record")
-    ResponseEntity<JSONObject> partialUpdateRecordController(String indexName,
-                                                      String docId,String data,boolean bulk) {
+    ResponseEntity<JSONObject> partialUpdateRecordController(
+            String indexName, String docId,String data,boolean bulk) {
         JSONObject response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
-                JSONObject indexDetails = service.partialUpdateRecord(indexName,docId,data,bulk);
+                JSONObject indexDetails = service.partialUpdateRecord(indexName,
+                        docId,data,bulk);
                 if (indexDetails != null) {
                     response = Util.getResponse(true,
                             "Successfully updated the record", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -198,12 +206,12 @@ public class OpenSearchController {
                     response = Util.getResponse(true,
                             "Successfully deleted the record", indexDetails);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -213,94 +221,93 @@ public class OpenSearchController {
 
     @PostMapping("search_record")
     ResponseEntity<ObjectNode> searchRecordController(String indexName, String searchJSON) {
-        ObjectNode response;
+        Object data;
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
-                 Object data = service.searchRecord(indexName,searchJSON);
+                 data = service.searchRecord(indexName,searchJSON);
                 if (data!=null) {
-                    response = Util.getResponseNew(true,
+                    response =  Util.getSuccessResponse(
                             "Successfully searched the record", data);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponseNew(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @PostMapping("count_record")
     ResponseEntity<ObjectNode> countRecordController(String indexName, String searchJSON) {
-        ObjectNode response;
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                  Object data = service.countRecord(indexName,searchJSON);
                 if (data!=null) {
-                    response = Util.getResponseNew(true,
+                    response = Util.getSuccessResponse(
                             "Successfully fetched the record count", data);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponseNew(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
 
     @PostMapping("delete_by_query_record")
-    ResponseEntity<ObjectNode> deleteByQueryRecordController(String indexName, String searchJSON) {
-        ObjectNode response;
+    ResponseEntity<ObjectNode> deleteByQueryRecordController(String indexName,
+                                                             String searchJSON) {
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                  Object data = service.deleteByQueryRecord(indexName,searchJSON);
                 if (data!=null) {
-                    response = Util.getResponseNew(true,
+                    response = Util.getSuccessResponse(
                             "Successfully deleted the records", data);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponseNew(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @PostMapping("aggregate_record")
-    ResponseEntity<ObjectNode> aggregateRecordController(String indexName, String searchJSON) {
-        ObjectNode response;
+    ResponseEntity<ObjectNode> aggregateRecordController(String indexName,
+                                                         String searchJSON) {
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                 Object data = service.aggregateRecord(indexName,searchJSON);
                 if (data!=null) {
-                    response = Util.getResponseNew(true,
+                    response = Util.getSuccessResponse(
                             "Successfully aggregated the record", data);
                 } else
-                    throw new SampleProjectException(
-                            SampleProjectException.ExceptionType.DB_ERROR);
+                    throw new ServiceException(
+                            ServiceException.ExceptionType.DB_ERROR);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponseNew(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 }

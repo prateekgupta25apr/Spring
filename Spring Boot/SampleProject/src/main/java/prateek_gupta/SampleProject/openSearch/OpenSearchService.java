@@ -34,7 +34,7 @@ import org.opensearch.search.SearchModule;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class OpenSearchService {
             result = client.indices().exists(request, RequestOptions.DEFAULT);
 
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -77,7 +77,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -106,7 +106,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index already exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -156,7 +156,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -176,7 +176,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -195,7 +195,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -227,7 +227,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -259,7 +259,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -289,7 +289,7 @@ public class OpenSearchService {
             } else
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
         return result;
@@ -310,7 +310,7 @@ public class OpenSearchService {
 
             return Util.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
     }
@@ -325,7 +325,7 @@ public class OpenSearchService {
             CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
             return Util.getObjectMapper().valueToTree(countResponse);
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
     }
@@ -341,7 +341,7 @@ public class OpenSearchService {
             BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
             return Util.getObjectMapper().valueToTree(response);
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
     }
@@ -376,7 +376,7 @@ public class OpenSearchService {
 
             return Util.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
-            SampleProjectException.logException(e);
+            ServiceException.logException(e);
             throw new Exception();
         }
     }

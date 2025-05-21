@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.kafka.service.KafkaService;
 import prateek_gupta.SampleProject.utils.Util;
 
@@ -53,9 +53,9 @@ public class KafkaController {
                 response = Util.getResponse(true,
                         "Message sent to topic: " + topic, null);
             } else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (ServiceException exception) {
             response = Util.getResponse(false, exception.getMessage(),
                     null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

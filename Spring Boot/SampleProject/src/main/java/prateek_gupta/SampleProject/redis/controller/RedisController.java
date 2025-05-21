@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.SampleProjectException;
+import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.redis.service.RedisService;
 import prateek_gupta.SampleProject.utils.Util;
 
@@ -30,9 +30,9 @@ public class RedisController {
                         "Successfully fetched the value", value);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (ServiceException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -52,9 +52,9 @@ public class RedisController {
                         "Successfully saved the key : "+key, null);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (ServiceException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -69,7 +69,7 @@ public class RedisController {
             JSONObject value = redisService.searchKeys(pattern);
             response = Util.getResponse(true,
                     "Successfully fetched the value", value);
-        } catch (SampleProjectException exception) {
+        } catch (ServiceException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -88,9 +88,9 @@ public class RedisController {
                         "Successfully deleted the key", null);
             }
             else
-                throw new SampleProjectException(
-                        SampleProjectException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (SampleProjectException exception) {
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+        } catch (ServiceException exception) {
             response = Util.getResponse(false, exception.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
