@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.base;
+package prateek_gupta.SampleProject.prateek_gupta;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +40,11 @@ public class ServiceException extends Exception {
     public ServiceException(
             String exceptionMessage) {
         this(null,null,exceptionMessage);
+    }
+
+    public ServiceException(HttpStatus status,
+            String exceptionMessage) {
+        this(null,status,exceptionMessage);
     }
 
     public ServiceException(

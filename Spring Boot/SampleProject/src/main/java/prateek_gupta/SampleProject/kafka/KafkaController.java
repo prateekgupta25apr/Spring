@@ -1,14 +1,19 @@
-package prateek_gupta.SampleProject.kafka.controller;
+package prateek_gupta.SampleProject.kafka;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.ServiceException;
-import prateek_gupta.SampleProject.kafka.service.KafkaService;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.Kafka;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/kafka")
 public class KafkaController {
-    @Autowired
-    KafkaService kafkaService;
+    private final Logger log = LoggerFactory.getLogger(KafkaController.class);
+
+    @Autowired(required = false)
+    Kafka kafka;
 
     @PostMapping("/send")
     ResponseEntity<ObjectNode> sendMessage(@RequestParam String topic,
@@ -25,7 +32,7 @@ public class KafkaController {
         ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(topic) && StringUtils.isNotBlank(message)) {
-                kafkaService.sendMessage(topic, message);
+                kafka.sendMessage(topic, message);
                 response = Util.getSuccessResponse("Message sent to topic: " + topic);
             } else
                 throw new ServiceException(
@@ -41,7 +48,7 @@ public class KafkaController {
         ResponseEntity<ObjectNode> response;
         try {
             JSONObject responseData = new JSONObject();
-            responseData.put("topics", kafkaService.getAllTopics());
+            responseData.put("topics", kafka.getAllTopics());
             response = Util.getSuccessResponse(
                     "Successfully fetched topics", responseData);
         } catch (Exception e) {
@@ -54,7 +61,7 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
-            JSONObject responseData=kafkaService.getTopic(topicName);
+            JSONObject responseData= kafka.getTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully retrieve details for the topic : " + topicName,
                     responseData);
@@ -69,7 +76,7 @@ public class KafkaController {
                                                   int partitions, short replicationFactor) {
         ResponseEntity<ObjectNode> response;
         try {
-            kafkaService.createTopic(topicName, partitions, replicationFactor);
+            kafka.createTopic(topicName, partitions, replicationFactor);
             response = Util.getSuccessResponse(
                     "Successfully created the topic : " + topicName);
         } catch (Exception e) {
@@ -83,7 +90,7 @@ public class KafkaController {
             String topicName,int partitions) {
         ResponseEntity<ObjectNode> response;
         try {
-            kafkaService.updateTopicIncreasePartition(topicName, partitions);
+            kafka.updateTopicIncreasePartition(topicName, partitions);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic's partition to : " + partitions);
         } catch (Exception e) {
@@ -97,7 +104,7 @@ public class KafkaController {
             String topicName, String configKey,String configValue) {
         ResponseEntity<ObjectNode> response;
         try {
-            kafkaService.updateTopic(topicName, configKey, configValue);
+            kafka.updateTopic(topicName, configKey, configValue);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic : " + topicName);
         } catch (Exception e) {
@@ -111,7 +118,7 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> deleteTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
-            kafkaService.deleteTopic(topicName);
+            kafka.deleteTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully deleted the topic : " + topicName);
         } catch (Exception e) {
@@ -125,7 +132,7 @@ public class KafkaController {
             String topicName,int partitionId,String consumerGroupName) {
         ResponseEntity<ObjectNode> response;
         try {
-            OffsetAndMetadata offsetAndMetadata=kafkaService.getCommittedOffset(
+            OffsetAndMetadata offsetAndMetadata= kafka.getCommittedOffset(
                     topicName, partitionId, consumerGroupName);
             if (offsetAndMetadata != null) {
                 response = Util.getSuccessResponse(
@@ -149,7 +156,7 @@ public class KafkaController {
             // Extracting payload
             String dataStr = request.getParameter("data");
             JSONObject data = JSONObject.fromObject(dataStr);
-            JSONObject responseData=kafkaService.getMessages(data);
+            JSONObject responseData= kafka.getMessages(data);
             response = Util.getSuccessResponse(
                     "Successfully fetched the messages" , responseData);
         } catch (Exception e) {
@@ -157,6 +164,16 @@ public class KafkaController {
         }
 
         return response;
+    }
+
+    @KafkaListener(topics = "test", groupId = "my-group")
+    public void test(ConsumerRecord<String, String> record,
+                     Acknowledgment acknowledgment) {
+        log.info("Received message :  {} for topic {} for partition {} with offset {}",
+                record.value(), record.topic(), record.partition(), record.offset());
+
+        log.info("Committing the message offset {}", record.offset());
+        acknowledgment.acknowledge();
     }
 }
 

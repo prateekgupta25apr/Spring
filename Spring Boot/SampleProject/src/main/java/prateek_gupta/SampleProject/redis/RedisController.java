@@ -1,14 +1,13 @@
-package prateek_gupta.SampleProject.redis.controller;
+package prateek_gupta.SampleProject.redis;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.ServiceException;
-import prateek_gupta.SampleProject.redis.service.RedisService;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.Redis;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/redis")
 public class RedisController {
     @Autowired
-    RedisService redisService;
+    Redis redis;
 
     @GetMapping("get")
     ResponseEntity<ObjectNode> get(@RequestParam String key,
@@ -26,7 +25,7 @@ public class RedisController {
         try {
 
             if (StringUtils.isNotBlank(key)) {
-                Object value= redisService.get(key,Boolean.parseBoolean(useMap));
+                Object value= redis.get(key,Boolean.parseBoolean(useMap));
                 response = Util.getSuccessResponse(
                         "Successfully fetched the value", value);
             }
@@ -47,7 +46,7 @@ public class RedisController {
             String value=request.getParameter("value");
             String useMap=request.getParameter("useMap");
             if (key!=null) {
-                redisService.upsert(key,value,Boolean.parseBoolean(useMap));
+                redis.upsert(key,value,Boolean.parseBoolean(useMap));
                 response = Util.getSuccessResponse("Successfully saved the key : "+key);
             }
             else
@@ -64,7 +63,7 @@ public class RedisController {
         ResponseEntity<ObjectNode> response;
         try {
             String pattern=request.getParameter("pattern");
-            JSONObject value = redisService.searchKeys(pattern);
+            JSONObject value = redis.searchKeys(pattern);
             response = Util.getSuccessResponse(
                     "Successfully fetched the value", value);
         } catch (ServiceException exception) {
@@ -79,7 +78,7 @@ public class RedisController {
         ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(key)) {
-                redisService.delete(key,Boolean.parseBoolean(useMap));
+                redis.delete(key,Boolean.parseBoolean(useMap));
                 response = Util.getSuccessResponse("Successfully deleted the key");
             }
             else

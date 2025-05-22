@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.kafka.service;
+package prateek_gupta.SampleProject.prateek_gupta;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -14,32 +14,32 @@ import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.config.ConfigResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
-import prateek_gupta.SampleProject.base.ServiceException;
 
 import java.time.Duration;
 import java.util.*;
 
-@Service
-public class KafkaService {
-    private final Logger log = LoggerFactory.getLogger(KafkaService.class);
 
-    @Autowired(required = false)
+public class KafkaImpl implements Kafka {
+    private final Logger log = LoggerFactory.getLogger(KafkaImpl.class);
+
     KafkaTemplate<String, String> kafkaTemplate;
 
-    @Autowired(required = false)
     AdminClient adminClient;
 
-    @Autowired(required = false)
     DefaultKafkaConsumerFactory<String, String> consumerFactory;
 
+    public KafkaImpl(Map<String, Object> kafkaConfig) {
+        adminClient=AdminClient.create(kafkaConfig);
+        consumerFactory=new DefaultKafkaConsumerFactory<>(kafkaConfig) ;
+        kafkaTemplate=new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig));
+    }
+
+    @Override
     public void sendMessage(String topic, String message) throws
             ServiceException {
         log.info("Entering sendMessage()");
@@ -62,6 +62,7 @@ public class KafkaService {
         log.info("Entering sendMessage()");
     }
 
+    @Override
     public Set<String> getAllTopics() throws ServiceException {
         log.info("Entering getAllTopics()");
         Set<String> topics;
@@ -75,6 +76,7 @@ public class KafkaService {
         return topics;
     }
 
+    @Override
     public JSONObject getTopic(String topicName)
             throws ServiceException {
         log.info("Entering getTopic()");
@@ -137,6 +139,7 @@ public class KafkaService {
         return responseData;
     }
 
+    @Override
     public void createTopic(
             String topicName, int partitions, short replicationFactor)
             throws ServiceException {
@@ -154,6 +157,7 @@ public class KafkaService {
         log.info("Exiting createTopic()");
     }
 
+    @Override
     public void updateTopicIncreasePartition(
             String topicName, int partitions) throws ServiceException {
         log.info("Entering updateTopicIncreasePartition()");
@@ -169,6 +173,7 @@ public class KafkaService {
         log.info("Exiting updateTopicIncreasePartition()");
     }
 
+    @Override
     public void updateTopic(String topicName, String configKey,
                             String configValue) throws ServiceException {
         log.info("Entering updateTopic()");
@@ -189,7 +194,9 @@ public class KafkaService {
         log.info("Exiting updateTopic()");
     }
 
-    public void deleteTopic(String topicName) throws ServiceException {
+    @Override
+    public void deleteTopic(String topicName)
+            throws ServiceException {
         log.info("Entering deleteTopic()");
         try {
             DeleteTopicsResult result =
@@ -202,6 +209,7 @@ public class KafkaService {
         log.info("Existing deleteTopic()");
     }
 
+    @Override
     public OffsetAndMetadata getCommittedOffset(
             String topicName, int partitionId, String consumerGroupName)
             throws ServiceException {
@@ -224,6 +232,7 @@ public class KafkaService {
         return offsetAndMetadata;
     }
 
+    @Override
     public JSONObject getMessages(JSONObject data)
             throws ServiceException {
         JSONObject responseData = new JSONObject();
@@ -295,8 +304,9 @@ public class KafkaService {
                     messages = partitionMessageMapping.getOrDefault(
                             topicPartition, new JSONArray());
 
-                    // Processing the message only if the partition still needs to be processed
-                    // and either there is no limit or the limit is yet to be achieved
+                    // Processing the message only if the partition still needs to
+                    // be processed and either there is no limit or the limit is
+                    // yet to be achieved
                     if (partitionMapping.containsKey(topicPartition) &&
                             (partitionMapping.get(topicPartition).get(1) == -1 ||
                                     (messages.size() < partitionMapping.get(
@@ -330,15 +340,5 @@ public class KafkaService {
             throw new ServiceException();
         }
         return responseData;
-    }
-
-    @KafkaListener(topics = "test", groupId = "my-group")
-    public void test(ConsumerRecord<String, String> record,
-                     Acknowledgment acknowledgment) {
-        log.info("Received message :  {} for topic {} for partition {} with offset {}",
-                record.value(), record.topic(), record.partition(), record.offset());
-
-        log.info("Committing the message offset {}", record.offset());
-        acknowledgment.acknowledge();
     }
 }

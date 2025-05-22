@@ -1,4 +1,4 @@
-package src;
+package prateek_gupta.SampleProject.basics;
 
 import java.util.Arrays;
 

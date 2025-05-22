@@ -1,8 +1,9 @@
-package prateek_gupta.SampleProject.openSearch;
+package prateek_gupta.SampleProject.prateek_gupta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.opensearch.action.admin.indices.alias.IndicesAliasesRequest;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.admin.indices.settings.put.UpdateSettingsRequest;
@@ -21,6 +22,8 @@ import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.action.update.UpdateRequest;
 import org.opensearch.action.update.UpdateResponse;
 import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.core.CountRequest;
 import org.opensearch.client.core.CountResponse;
@@ -32,20 +35,25 @@ import org.opensearch.index.reindex.BulkByScrollResponse;
 import org.opensearch.index.reindex.DeleteByQueryRequest;
 import org.opensearch.search.SearchModule;
 import org.opensearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import prateek_gupta.SampleProject.base.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 import java.util.ArrayList;
 
-@Service
-public class OpenSearchService {
-    @Autowired
+
+public class OpenSearchImpl implements
+        OpenSearch {
+
     RestHighLevelClient client;
 
+    public OpenSearchImpl(String host, String port) {
+        RestClientBuilder builder = RestClient.builder(new HttpHost(host,
+                Integer.parseInt(port), "https"));
+        client= new RestHighLevelClient(builder);
+    }
+
+    @Override
     public boolean indexExists(String indexName)
-            throws Exception {
+            throws ServiceException {
         boolean result;
         try {
             // Create the request
@@ -55,13 +63,14 @@ public class OpenSearchService {
 
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject getIndex(String indexName)
-            throws Exception {
+            throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             GetIndexRequest request = new GetIndexRequest(indexName);
@@ -80,14 +89,15 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject createIndex(
             String indexName, String source, String aliases, String settings,
-            String mappings) throws Exception {
+            String mappings) throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             CreateIndexRequest request = new CreateIndexRequest(indexName);
@@ -109,14 +119,15 @@ public class OpenSearchService {
                 result.put("message", "Index already exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject updateIndex(
             String indexName, String settings, String addAlias, String removeAlias,
-            String mappings) throws Exception {
+            String mappings) throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -161,13 +172,14 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject deleteIndex(String indexName)
-            throws Exception {
+            throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -182,13 +194,14 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject getRecord(
-            String indexName, String recordId) throws Exception {
+            String indexName, String recordId) throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -201,14 +214,15 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject upsertRecord(
             String indexName, String recordId, String data, boolean bulk)
-            throws Exception {
+            throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -233,14 +247,15 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
-    public JSONObject partialUpdateRecord(String indexName,
-                                          String recordId, String data, boolean bulk)
-            throws Exception {
+    @Override
+    public JSONObject partialUpdateRecord(
+            String indexName, String recordId, String data, boolean bulk)
+            throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -266,13 +281,14 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
+    @Override
     public JSONObject deleteRecord(
-            String indexName, String recordId , boolean bulk) throws Exception {
+            String indexName, String recordId , boolean bulk) throws ServiceException {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -296,14 +312,15 @@ public class OpenSearchService {
                 result.put("message", "Index doesn't exists");
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
         return result;
     }
 
-    public JsonNode searchRecord(String index,
-                                 String searchJSON)
-            throws Exception {
+    @Override
+    public JsonNode searchRecord(
+            String index, String searchJSON)
+            throws ServiceException {
         try {
             SearchRequest searchRequest = new SearchRequest(index);
 
@@ -317,12 +334,13 @@ public class OpenSearchService {
             return Util.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
     }
 
+    @Override
     public JsonNode countRecord(String index, String queryJSON)
-            throws Exception {
+            throws ServiceException {
         try {
             CountRequest countRequest = new CountRequest(index);
 
@@ -332,13 +350,14 @@ public class OpenSearchService {
             return Util.getObjectMapper().valueToTree(countResponse);
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
     }
 
-    public JsonNode deleteByQueryRecord(String index,
-                                        String queryJSON)
-            throws Exception {
+    @Override
+    public JsonNode deleteByQueryRecord(
+            String index,String queryJSON)
+            throws ServiceException {
         try {
             DeleteByQueryRequest request = new DeleteByQueryRequest(index);
 
@@ -349,13 +368,14 @@ public class OpenSearchService {
             return Util.getObjectMapper().valueToTree(response);
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
     }
 
-    public JsonNode aggregateRecord(String index,
-                                    String searchJSON)
-            throws Exception {
+    @Override
+    public JsonNode aggregateRecord(
+            String index,String searchJSON)
+            throws ServiceException {
         try {
             SearchRequest searchRequest = new SearchRequest(index);
 
@@ -371,20 +391,21 @@ public class OpenSearchService {
             NamedXContentRegistry registry =
                     new NamedXContentRegistry(searchModule.getNamedXContents());
 
-            // Creating an object of XContentParser to parse the JSON into Java objects to
-            // be used for querying opensearch
+            // Creating an object of XContentParser to parse the JSON into Java
+            // objects to be used for querying opensearch
 
             XContentParser parser = XContentType.JSON.xContent().createParser(registry,
                     DeprecationHandler.IGNORE_DEPRECATIONS, searchJSON);
 
             searchRequest.source(SearchSourceBuilder.fromXContent(parser));
 
-            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse response = client.search(searchRequest,
+                    RequestOptions.DEFAULT);
 
             return Util.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
             ServiceException.logException(e);
-            throw new Exception();
+            throw new ServiceException();
         }
     }
 }

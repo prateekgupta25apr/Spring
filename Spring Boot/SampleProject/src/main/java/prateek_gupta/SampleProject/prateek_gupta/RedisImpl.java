@@ -1,33 +1,89 @@
-package prateek_gupta.SampleProject.redis.service.impl;
+package prateek_gupta.SampleProject.prateek_gupta;
 
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.redisson.Redisson;
 import org.redisson.api.RMap;
 import org.redisson.api.RType;
 import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;
-import prateek_gupta.SampleProject.base.ServiceException;
-import prateek_gupta.SampleProject.redis.service.RedisService;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@Service
-public class RedisServiceImpl implements RedisService {
 
-    private final Logger log = LoggerFactory.getLogger(RedisServiceImpl.class);
+public class RedisImpl implements Redis {
 
-    @Autowired(required = false)
+    private final Logger log = LoggerFactory.getLogger(RedisImpl.class);
+
     StringRedisTemplate redisTemplateString;
 
-    @Autowired(required = false)
     RedisTemplate<String, Object> redisTemplateObject;
 
-    @Autowired(required = false)
     RedissonClient redissonClient;
 
     String mapName = "mapped_key_values";
+
+    public RedisImpl(String host, String port, String password,
+                     String ssl) {
+        RedisStandaloneConfiguration redisStandaloneConfiguration =
+                new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPort(Integer.parseInt(port));
+        redisStandaloneConfiguration.setPassword(password);
+
+
+        JedisConnectionFactory jedisConnectionFactory;
+        if (StringUtils.isNotBlank(ssl))
+        {
+            JedisClientConfiguration clientConfig =
+                    JedisClientConfiguration.builder()
+                            .useSsl()
+                            .build();
+
+            jedisConnectionFactory = new JedisConnectionFactory(
+                    redisStandaloneConfiguration, clientConfig);
+        }else
+            jedisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration);
+
+        jedisConnectionFactory.afterPropertiesSet();
+
+        // Initiating RedisTemplate for Object
+        redisTemplateObject=new RedisTemplate<>();
+        redisTemplateObject.setConnectionFactory(jedisConnectionFactory);
+        redisTemplateObject.setKeySerializer(new StringRedisSerializer());
+        redisTemplateObject.setValueSerializer(
+                new Jackson2JsonRedisSerializer<>(Object.class));
+        redisTemplateObject.afterPropertiesSet();
+
+
+        // Initiating RedisTemplate for String
+        redisTemplateString=new StringRedisTemplate();
+        redisTemplateString.setConnectionFactory(jedisConnectionFactory);
+        redisTemplateString.setKeySerializer(new StringRedisSerializer());
+        redisTemplateString.setValueSerializer(new StringRedisSerializer());
+        redisTemplateString.afterPropertiesSet();
+
+
+        // Initiating RedissonClient
+        Config config = new Config();
+        config.setCodec(new org.redisson.client.codec.StringCodec());
+        SingleServerConfig singleServerConfig=config.useSingleServer();
+        singleServerConfig.setAddress(StringUtils.isNotBlank(ssl) ?
+                "rediss://" + host + ":" + port:
+                "redis://" + host + ":" + port );
+
+        if(StringUtils.isNotBlank(password))
+            singleServerConfig.setPassword(password);
+        redissonClient= Redisson.create(config);
+    }
 
     @Override
     public Object get(String key, boolean useMap) throws ServiceException {
@@ -40,7 +96,7 @@ public class RedisServiceImpl implements RedisService {
             } else
                 value = redisTemplateString.opsForValue().get(key);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            ServiceException.logException(e);
             throw new ServiceException();
         }
         log.info("Exiting get()");
@@ -58,12 +114,11 @@ public class RedisServiceImpl implements RedisService {
                 try {
                     redisTemplateObject.opsForValue().set(key, JSONObject.fromObject(value));
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
                     redisTemplateString.opsForValue().set(key, String.valueOf(value));
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            ServiceException.logException(e);
             throw new ServiceException();
         }
         log.info("Exiting upsert()");
@@ -86,7 +141,7 @@ public class RedisServiceImpl implements RedisService {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            ServiceException.logException(e);
             throw new ServiceException();
         }
         log.info("Exiting searchKeys()");
@@ -109,7 +164,7 @@ public class RedisServiceImpl implements RedisService {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            ServiceException.logException(e);
             throw new ServiceException();
         }
         log.info("Exiting delete()");

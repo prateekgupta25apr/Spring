@@ -1,4 +1,4 @@
-package src;
+package prateek_gupta.SampleProject.basics;
 
 public class Threads extends Thread {
     public static long startTime=0L;

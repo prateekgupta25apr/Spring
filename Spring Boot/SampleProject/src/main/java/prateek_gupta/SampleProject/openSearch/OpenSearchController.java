@@ -6,14 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.base.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.OpenSearch;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 @RestController
 @RequestMapping("/open_search")
 public class OpenSearchController {
     @Autowired
-    OpenSearchService service;
+    OpenSearch service;
 
     @GetMapping("get_index")
     ResponseEntity<ObjectNode> getIndexController(@RequestParam String indexName) {
@@ -275,8 +276,8 @@ public class OpenSearchController {
     }
 
     @PostMapping("aggregate_record")
-    ResponseEntity<ObjectNode> aggregateRecordController(String indexName,
-                                                         String searchJSON) {
+    ResponseEntity<ObjectNode> aggregateRecordController(
+            String indexName, String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {

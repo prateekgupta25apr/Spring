@@ -2,38 +2,18 @@ package prateek_gupta.SampleProject.base;
 
 import lombok.NonNull;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.opensearch.client.RestClient;
-import org.opensearch.client.RestClientBuilder;
-import org.opensearch.client.RestHighLevelClient;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
+import prateek_gupta.SampleProject.prateek_gupta.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +25,12 @@ public class BeanConfiguration {
 
     @Value("${AWS_SECRET_KEY:}")
     String AWS_SECRET_KEY = "";
+
+    @Value("${AWS_BUCKET_NAME:}")
+    String AWS_BUCKET_NAME = "";
+
+    @Value("${AWS_REGION_NAME:}")
+    String AWS_REGION_NAME = "";
 
     @Value("${REDIS_HOST:}")
     String REDIS_HOST="";
@@ -77,132 +63,33 @@ public class BeanConfiguration {
     String openSearchPort;
 
     @Bean
-    public S3Client s3Client() {
-        S3Client s3Client = null;
-        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
-        if (credentialsProvider.resolveCredentials() != null) {
-            System.out.println("Access Key: " +
-                    credentialsProvider.resolveCredentials().accessKeyId());
-
-
-            s3Client = S3Client.builder()
-                    .credentialsProvider(credentialsProvider)
-                    .region(Region.AP_SOUTH_1)
-                    .build();
-        }
-        if (s3Client == null)
-            s3Client = S3Client.builder()
-                    .region(Region.AP_SOUTH_1)
-                    .credentialsProvider(StaticCredentialsProvider.create(
-                            AwsBasicCredentials.create(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
-                    .build();
-
-        return s3Client;
+    public AWS aws() throws ServiceException {
+        return new AWSImpl(AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_BUCKET_NAME,AWS_REGION_NAME);
     }
+
 
     @Bean
     @Conditional(RedisCondition.class)
-    public RedisTemplate<String,Object> redisTemplateObject(){
-        RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(REDIS_HOST);
-        config.setPort(Integer.parseInt(REDIS_PORT));
-        config.setPassword(REDIS_PASSWORD);
-
-
-        JedisConnectionFactory jedisConnectionFactory;
-        if (StringUtils.isNotBlank(REDIS_SSL))
-        {
-            JedisClientConfiguration clientConfig =
-                    JedisClientConfiguration.builder()
-                            .useSsl()
-                            .build();
-
-            jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
-        }else
-            jedisConnectionFactory = new JedisConnectionFactory(config);
-
-        jedisConnectionFactory.afterPropertiesSet();
-
-        redisTemplate.setConnectionFactory(jedisConnectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        return redisTemplate;
-    }
-
-    @Bean
-    @Conditional(RedisCondition.class)
-    public StringRedisTemplate stringRedisTemplate(){
-        StringRedisTemplate redisTemplate=new StringRedisTemplate();
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(REDIS_HOST);
-        config.setPort(Integer.parseInt(REDIS_PORT));
-        config.setPassword(REDIS_PASSWORD);
-
-        JedisConnectionFactory jedisConnectionFactory;
-        if (StringUtils.isNotBlank(REDIS_SSL))
-        {
-            JedisClientConfiguration clientConfig =
-                    JedisClientConfiguration.builder()
-                            .useSsl()
-                            .build();
-
-            jedisConnectionFactory = new JedisConnectionFactory(config, clientConfig);
-        }else
-            jedisConnectionFactory = new JedisConnectionFactory(config);
-
-        jedisConnectionFactory.afterPropertiesSet();
-
-        redisTemplate.setConnectionFactory(jedisConnectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
-
-    @Bean
-    @Conditional(RedisCondition.class)
-    public RedissonClient redissonClient() {
-        Config config = new Config();
-        config.setCodec(new org.redisson.client.codec.StringCodec());
-        SingleServerConfig singleServerConfig=config.useSingleServer();
-        singleServerConfig.setAddress(StringUtils.isNotBlank(REDIS_SSL) ?
-                "rediss://" + REDIS_HOST + ":" + REDIS_PORT:
-                "redis://" + REDIS_HOST + ":" + REDIS_PORT );
-
-        if(StringUtils.isNotBlank(REDIS_PASSWORD))
-            singleServerConfig.setPassword(REDIS_PASSWORD);
-        return Redisson.create(config);
+    public Redis redisService() {
+        return new RedisImpl(REDIS_HOST,REDIS_PORT,REDIS_PASSWORD,REDIS_SSL);
     }
 
     @Bean
     @Conditional(KafkaCondition.class)
-    public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig()));
+    public Kafka kafkaService() {
+        return new KafkaImpl(kafkaConfig());
     }
 
     @Bean
     @Conditional(KafkaCondition.class)
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
+    public KafkaListenerContainerFactory<
+            ConcurrentMessageListenerContainer<String, String>>
     kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory;
-
         factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(kafkaConfig()));
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-
         return factory;
-    }
-
-    @Bean
-    @Conditional(KafkaCondition.class)
-    public DefaultKafkaConsumerFactory<String,String> consumerFactory(){
-        return new DefaultKafkaConsumerFactory<>(kafkaConfig()) ;
-    }
-
-    @Bean
-    @Conditional(KafkaCondition.class)
-    public AdminClient adminClient(){
-        return AdminClient.create(kafkaConfig()) ;
     }
 
     @Bean("kafkaConfig")
@@ -236,17 +123,16 @@ public class BeanConfiguration {
 
     @Bean
     @Conditional(OpenSearchCondition.class)
-    public RestHighLevelClient openSearchClient(){
-        RestClientBuilder builder = RestClient.builder(new HttpHost(openSearchHost,
-                Integer.parseInt(openSearchPort), "https"));
-        return new RestHighLevelClient(builder);
+    public OpenSearch openSearchService(){
+        return new OpenSearchImpl(openSearchHost,openSearchPort);
     }
 
     static class RedisCondition implements Condition {
         @Override
         public boolean matches(@NonNull ConditionContext context,
                                @NonNull AnnotatedTypeMetadata metadata) {
-            return StringUtils.isNotBlank(context.getEnvironment().getProperty("REDIS_ENABLE"));
+            return StringUtils.isNotBlank(
+                    context.getEnvironment().getProperty("REDIS_ENABLE"));
         }
     }
 
@@ -254,7 +140,8 @@ public class BeanConfiguration {
         @Override
         public boolean matches(@NonNull ConditionContext context,
                                @NonNull AnnotatedTypeMetadata metadata) {
-            return StringUtils.isNotBlank(context.getEnvironment().getProperty("KAFKA_ENABLE"));
+            return StringUtils.isNotBlank(
+                    context.getEnvironment().getProperty("KAFKA_ENABLE"));
         }
     }
 
@@ -262,8 +149,8 @@ public class BeanConfiguration {
         @Override
         public boolean matches(@NonNull ConditionContext context,
                                @NonNull AnnotatedTypeMetadata metadata) {
-            return StringUtils.isNotBlank(context.getEnvironment().getProperty(
-                    "OPEN_SEARCH_ENABLE"));
+            return StringUtils.isNotBlank(
+                    context.getEnvironment().getProperty("OPEN_SEARCH_ENABLE"));
         }
     }
 }

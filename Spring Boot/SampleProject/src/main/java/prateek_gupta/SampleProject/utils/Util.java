@@ -7,7 +7,7 @@ import net.sf.json.JSONObject;
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import prateek_gupta.SampleProject.base.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 public class Util {
 
@@ -49,7 +49,14 @@ public class Util {
         responseJSON.put("status", isSuccess?"Success":"Failure");
         responseJSON.put("message", message);
         if (data!=null)
-            responseJSON.set("data", objectMapper.valueToTree(data));
+            if (data instanceof String)
+                try{
+                    responseJSON.set("data", objectMapper.readTree(String.valueOf(data)));
+                }catch (Exception e){
+                    responseJSON.set("data", objectMapper.valueToTree(data));
+                }
+            else
+                responseJSON.set("data", objectMapper.valueToTree(data));
         return new ResponseEntity<>(responseJSON, status);
     }
 

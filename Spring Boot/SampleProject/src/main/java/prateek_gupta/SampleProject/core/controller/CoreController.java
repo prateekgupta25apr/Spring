@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import prateek_gupta.SampleProject.base.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 import prateek_gupta.SampleProject.core.service.CoreService;
 import prateek_gupta.SampleProject.core.vo.Table1VO;
