@@ -44,7 +44,8 @@ public class OpenSearchService {
     @Autowired
     RestHighLevelClient client;
 
-    public boolean indexExists(String indexName) throws Exception {
+    public boolean indexExists(String indexName)
+            throws Exception {
         boolean result;
         try {
             // Create the request
@@ -59,7 +60,8 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject getIndex(String indexName) throws Exception {
+    public JSONObject getIndex(String indexName)
+            throws Exception {
         JSONObject result = new JSONObject();
         try {
             GetIndexRequest request = new GetIndexRequest(indexName);
@@ -84,8 +86,8 @@ public class OpenSearchService {
     }
 
     public JSONObject createIndex(
-            String indexName, String source, String aliases, String settings, String mappings)
-            throws Exception {
+            String indexName, String source, String aliases, String settings,
+            String mappings) throws Exception {
         JSONObject result = new JSONObject();
         try {
             CreateIndexRequest request = new CreateIndexRequest(indexName);
@@ -127,7 +129,8 @@ public class OpenSearchService {
                             RequestOptions.DEFAULT);
                 }
 
-                if (StringUtils.isNotBlank(addAlias) || StringUtils.isNotBlank(removeAlias)) {
+                if (StringUtils.isNotBlank(addAlias) ||
+                        StringUtils.isNotBlank(removeAlias)) {
                     IndicesAliasesRequest request = new IndicesAliasesRequest();
                     IndicesAliasesRequest.AliasActions aliasAction;
 
@@ -139,7 +142,8 @@ public class OpenSearchService {
                                 .index(indexName).alias(removeAlias);
 
                     request.addAliasAction(aliasAction);
-                    response = client.indices().updateAliases(request, RequestOptions.DEFAULT);
+                    response = client.indices().updateAliases(request,
+                            RequestOptions.DEFAULT);
                 }
 
                 if (StringUtils.isNotBlank(mappings)) {
@@ -162,7 +166,8 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject deleteIndex(String indexName) throws Exception {
+    public JSONObject deleteIndex(String indexName)
+            throws Exception {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -182,8 +187,8 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject getRecord(String indexName, String recordId)
-            throws Exception {
+    public JSONObject getRecord(
+            String indexName, String recordId) throws Exception {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -201,8 +206,8 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject upsertRecord(String indexName, String recordId,
-                                   String data, boolean bulk)
+    public JSONObject upsertRecord(
+            String indexName, String recordId, String data, boolean bulk)
             throws Exception {
         JSONObject result = new JSONObject();
         try {
@@ -243,7 +248,8 @@ public class OpenSearchService {
                         .doc(data, XContentType.JSON);
 
                 if (!bulk) {
-                    UpdateResponse response = client.update(request, RequestOptions.DEFAULT);
+                    UpdateResponse response = client.update(request,
+                            RequestOptions.DEFAULT);
                     result.put("result", response.getResult().name());
                 } else {
                     BulkRequest bulkRequest = new BulkRequest();
@@ -265,8 +271,8 @@ public class OpenSearchService {
         return result;
     }
 
-    public JSONObject deleteRecord(String indexName, String recordId
-            , boolean bulk) throws Exception {
+    public JSONObject deleteRecord(
+            String indexName, String recordId , boolean bulk) throws Exception {
         JSONObject result = new JSONObject();
         try {
             if (indexExists(indexName)) {
@@ -338,7 +344,8 @@ public class OpenSearchService {
 
             request.setQuery(QueryBuilders.wrapperQuery(queryJSON));
 
-            BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
+            BulkByScrollResponse response = client.deleteByQuery(request,
+                    RequestOptions.DEFAULT);
             return Util.getObjectMapper().valueToTree(response);
         } catch (Exception e) {
             ServiceException.logException(e);

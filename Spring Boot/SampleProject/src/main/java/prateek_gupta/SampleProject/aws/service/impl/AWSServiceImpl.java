@@ -4,15 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import prateek_gupta.SampleProject.aws.service.AWSService;
+import prateek_gupta.SampleProject.base.ServiceException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
@@ -23,7 +21,7 @@ public class AWSServiceImpl implements AWSService {
     private final String bucketName = "pg25";
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) throws ServiceException {
         String keyName = Paths.get(file.getOriginalFilename()).getFileName().toString();
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -36,7 +34,7 @@ public class AWSServiceImpl implements AWSService {
 
             return response.eTag();
         } catch (IOException e) {
-            throw new RuntimeException("Error uploading file to S3", e);
+            throw new ServiceException("Error uploading file to S3");
         }
     }
 

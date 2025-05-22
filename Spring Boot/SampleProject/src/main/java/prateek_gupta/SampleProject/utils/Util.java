@@ -30,6 +30,11 @@ public class Util {
         return getNewResponse(true,message,data,HttpStatus.OK);
     }
 
+    public static ResponseEntity<ObjectNode> getSuccessResponse(
+            String message){
+        return getNewResponse(true,message,null,HttpStatus.OK);
+    }
+
     public static ResponseEntity<ObjectNode> getErrorResponse(
             ServiceException serviceException){
         return Util.getNewResponse(

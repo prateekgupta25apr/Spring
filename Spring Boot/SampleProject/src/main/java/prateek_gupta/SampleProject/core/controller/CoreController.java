@@ -1,8 +1,8 @@
 package prateek_gupta.SampleProject.core.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,15 +21,15 @@ public class CoreController {
     CoreService coreService;
 
     @GetMapping("get_table1_details")
-    ResponseEntity<JSONObject> getTable1Details(@RequestParam Integer primaryKey) {
-        JSONObject response;
+    ResponseEntity<ObjectNode> getTable1Details(@RequestParam Integer primaryKey) {
+        ResponseEntity<ObjectNode> response;
         try {
             if (primaryKey!=null&&primaryKey>0) {
                 Table1VO table1VO = coreService.getTable1Details(primaryKey);
                 if (table1VO != null) {
                     JSONObject data = new JSONObject();
                     data.put("table1", table1VO);
-                    response = Util.getResponse(true,
+                    response = Util.getSuccessResponse(
                             "Successfully fetched the data", data);
                 } else
                     throw new ServiceException(
@@ -39,30 +39,27 @@ public class CoreController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (ServiceException exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @PostMapping("save_table1_details")
-    ResponseEntity<JSONObject> saveTable1Details(HttpServletRequest request) {
-        JSONObject response;
+    ResponseEntity<ObjectNode> saveTable1Details(HttpServletRequest request) {
+        ResponseEntity<ObjectNode> response;
         try {
             String data=request.getParameter("data");
             if (data!=null) {
                 coreService.saveTable1Details(data);
-                response = Util.getResponse(true,
-                        "Successfully fetched the data", null);
+                response = Util.getSuccessResponse("Successfully fetched the data");
             }
             else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (ServiceException exception) {
-            response = Util.getResponse(false, exception.getMessage(), null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
 }

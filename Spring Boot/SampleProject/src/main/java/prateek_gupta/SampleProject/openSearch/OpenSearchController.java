@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.base.ServiceException;
@@ -17,13 +16,13 @@ public class OpenSearchController {
     OpenSearchService service;
 
     @GetMapping("get_index")
-    ResponseEntity<JSONObject> getIndexController(@RequestParam String indexName) {
-        JSONObject response;
+    ResponseEntity<ObjectNode> getIndexController(@RequestParam String indexName) {
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getIndex(indexName);
                 if (indexDetails != null) {
-                    response = Util.getResponse(true,
+                    response = Util.getSuccessResponse(
                             "Successfully fetched the index details",
                             indexDetails);
                 } else
@@ -34,24 +33,22 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(),
-                    null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @PostMapping("create_index")
-    ResponseEntity<JSONObject> createIndexController(
+    ResponseEntity<ObjectNode> createIndexController(
             String indexName,String source,String aliases,String settings,
             String mappings) {
-        JSONObject response;
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.createIndex(
                         indexName, source,aliases,settings,mappings);
                 if (indexDetails != null) {
-                    response = Util.getResponse(true,
+                    response = Util.getSuccessResponse(
                             "Successfully create the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -61,25 +58,23 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(),
-                    null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
 
     @PutMapping("update_index")
-    ResponseEntity<JSONObject> updateIndexController(
+    ResponseEntity<ObjectNode> updateIndexController(
             String indexName, String settings, String addAlias, String removeAlias,
             String mappings) {
-        JSONObject response;
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.updateIndex(
                         indexName, settings,addAlias,removeAlias,mappings);
                 if (indexDetails != null) {
-                    response = Util.getResponse(true,
+                    response = Util.getSuccessResponse(
                             "Successfully updated the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -89,21 +84,19 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(),
-                    null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @DeleteMapping("delete_index")
-    ResponseEntity<JSONObject> deleteIndexController(@RequestParam String indexName) {
-        JSONObject response;
+    ResponseEntity<ObjectNode> deleteIndexController(@RequestParam String indexName) {
+        ResponseEntity<ObjectNode> response;
         try {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteIndex(indexName);
                 if (indexDetails != null) {
-                    response = Util.getResponse(true,
+                    response = Util.getSuccessResponse(
                             "Successfully deleted the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -113,11 +106,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
         } catch (Exception exception) {
-            response = Util.getResponse(false, exception.getMessage(),
-                    null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return Util.getErrorResponse(new ServiceException());
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @GetMapping("get_record")
