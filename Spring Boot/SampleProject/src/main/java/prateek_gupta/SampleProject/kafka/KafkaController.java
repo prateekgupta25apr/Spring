@@ -36,7 +36,7 @@ public class KafkaController {
                 response = Util.getSuccessResponse("Message sent to topic: " + topic);
             } else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
             return Util.getErrorResponse(new ServiceException());
         }

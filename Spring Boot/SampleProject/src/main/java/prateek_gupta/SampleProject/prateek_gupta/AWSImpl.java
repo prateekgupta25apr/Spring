@@ -1,5 +1,6 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,9 +9,16 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.DeleteObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+
+import java.time.Duration;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -24,13 +32,14 @@ public class AWSImpl implements AWS {
 
     private final String bucketName;
 
+    private final S3Presigner preSigner;
+
     public AWSImpl(
-            String accessKey, String secretKey, String bucketName,String regionName)
+            String accessKey, String secretKey, String bucketName, String regionName)
             throws ServiceException {
 
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
         if (credentialsProvider.resolveCredentials() != null) {
-
 
 
             s3Client = S3Client.builder()
@@ -40,18 +49,22 @@ public class AWSImpl implements AWS {
         }
 //        if (s3Client == null && StringUtils.isNotBlank(accessKey)
 //                && StringUtils.isNotBlank(secretKey))
-            s3Client = S3Client.builder()
-                    .region(Region.of(regionName))
-                    .credentialsProvider(StaticCredentialsProvider.create(
-                            AwsBasicCredentials.create(accessKey, secretKey)))
-                    .build();
+        s3Client = S3Client.builder()
+                .region(Region.of(regionName))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)))
+                .build();
 
         System.out.println("Access Key: " +
                 credentialsProvider.resolveCredentials().accessKeyId());
-        if (s3Client==null)
+        if (s3Client == null)
             throw new ServiceException("Error while creating an instance of S3 Client");
 
-        this.bucketName=bucketName;
+        this.bucketName = bucketName;
+        preSigner = S3Presigner.builder()
+                .region(Region.of(regionName))
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
     }
 
     @Override
@@ -94,14 +107,14 @@ public class AWSImpl implements AWS {
         log.info("Entering uploadFile()");
         String fileName;
         try {
-            fileName=file.getOriginalFilename();
+            fileName = file.getOriginalFilename();
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
                     .contentType(file.getContentType())
                     .build();
 
-            s3Client.putObject(putObjectRequest,RequestBody.fromBytes(file.getBytes()));
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException("Error uploading file to S3");
@@ -112,6 +125,7 @@ public class AWSImpl implements AWS {
 
     @Override
     public void deleteFile(String fileName) throws ServiceException {
+        log.info("Entering deleteFile()");
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -123,24 +137,89 @@ public class AWSImpl implements AWS {
         } catch (Exception e) {
             throw new ServiceException("Error deleting file to S3");
         }
+        log.info("Exiting deleteFile()");
     }
 
     @Override
     public boolean fileExists(String fileName) {
+        log.info("Entering fileExists()");
         boolean exists = false;
-        try{
+        try {
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
                     .build();
 
             s3Client.headObject(headObjectRequest);
-            exists= true;
+            exists = true;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             ServiceException.logException(e);
         }
+        log.info("Exiting fileExists()");
         return exists;
     }
+
+    @Override
+    public String generatePreSignedUrl(String key, String method) throws ServiceException {
+        log.info("Entering generatePreSignedUrl()");
+        Duration duration = Duration.ofHours(1);
+        String url;
+        try {
+            switch (SdkHttpMethod.valueOf(method)) {
+                case GET:
+                    GetObjectRequest getRequest = GetObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .build();
+
+                    GetObjectPresignRequest getPreSign = GetObjectPresignRequest.builder()
+                            .getObjectRequest(getRequest)
+                            .signatureDuration(duration)
+                            .build();
+
+                    url = preSigner.presignGetObject(getPreSign).url().toString();
+                    break;
+
+                case PUT:
+                    PutObjectRequest putRequest = PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .build();
+
+                    PutObjectPresignRequest putPreSign = PutObjectPresignRequest.builder()
+                            .putObjectRequest(putRequest)
+                            .signatureDuration(duration)
+                            .build();
+
+                    url = preSigner.presignPutObject(putPreSign).url().toString();
+                    break;
+
+                case DELETE:
+                    DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .build();
+
+                    DeleteObjectPresignRequest deletePreSign =
+                            DeleteObjectPresignRequest.builder()
+                                    .deleteObjectRequest(deleteRequest)
+                                    .signatureDuration(duration)
+                                    .build();
+
+                    url = preSigner.presignDeleteObject(deletePreSign).url().toString();
+                    break;
+
+                default:
+                    throw new ServiceException(
+                            "Unsupported HTTP method for preSigned URL: " + method);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Error occurred while generating preSigned url");
+        }
+        log.info("Exiting generatePreSignedUrl()");
+        return url;
+    }
+
 }
 

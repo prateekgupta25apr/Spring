@@ -37,7 +37,7 @@ public class CoreController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -55,7 +55,7 @@ public class CoreController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
             return Util.getErrorResponse(new ServiceException());
         }

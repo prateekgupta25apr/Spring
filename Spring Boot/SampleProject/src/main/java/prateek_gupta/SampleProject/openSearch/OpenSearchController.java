@@ -32,7 +32,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -57,7 +57,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -83,7 +83,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -105,7 +105,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -128,7 +128,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -151,7 +151,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -176,7 +176,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -199,7 +199,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -222,7 +222,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -244,7 +244,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -268,7 +268,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -291,7 +291,7 @@ public class OpenSearchController {
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }

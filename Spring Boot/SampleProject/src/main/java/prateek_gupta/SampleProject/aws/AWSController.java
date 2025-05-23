@@ -34,9 +34,9 @@ public class AWSController {
                             HttpStatus.BAD_REQUEST,"File doesn't exists"));
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException e) {
+            return Util.getErrorResponse(e);
         }
         return Util.getSuccessResponse("");
     }
@@ -47,25 +47,55 @@ public class AWSController {
         try {
             String fileName = aws.uploadFile(file);
             response = Util.getSuccessResponse("Successfully uploaded the file " + fileName);
-        } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+        } catch (ServiceException e) {
+            return Util.getErrorResponse(e);
         }
         return response;
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ObjectNode> delete(@RequestParam("fileName") String fileName) {
+    public ResponseEntity<ObjectNode> delete(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            String fileName=request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
                 aws.deleteFile(fileName);
                 response = Util.getSuccessResponse("File deleted successfully");
             }
             else
                 throw new ServiceException(
-                        ServiceException.ExceptionType.MISSING_REQUIRED_DATA);
-        } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException e) {
+            return Util.getErrorResponse(e);
+        }
+        return response;
+    }
+
+    @GetMapping("/get_pre_signed_url")
+    public ResponseEntity<ObjectNode> getPreSignedUrl(HttpServletRequest request) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            String fileName=request.getParameter("fileName");
+            String method=request.getParameter("method");
+            if (StringUtils.isNotBlank(fileName))
+                if (aws.fileExists(fileName)) {
+                    if (StringUtils.isBlank(method))
+                        method = "GET";
+                    String url=aws.generatePreSignedUrl(fileName, method);
+                    ObjectNode responseData=Util.getObjectMapper().createObjectNode();
+                    responseData.put("method",method);
+                    responseData.put("preSingedUrl",url);
+                    response = Util.getSuccessResponse(
+                            "File deleted successfully",responseData);
+                }
+                else
+                    return Util.getErrorResponse(new ServiceException(
+                            HttpStatus.BAD_REQUEST,"File doesn't exists"));
+            else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException e) {
+            return Util.getErrorResponse(e);
         }
         return response;
     }

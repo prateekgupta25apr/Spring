@@ -10,21 +10,6 @@ import org.springframework.http.ResponseEntity;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 public class Util {
-
-    @Deprecated
-    public static JSONObject getResponse(boolean isSuccess,
-                                          String message,Object data){
-        JSONObject response = new JSONObject();
-        if (isSuccess)
-            response.put("status", "Success");
-        else
-            response.put("status", "Failure");
-        response.put("message", message);
-        if (data!=null)
-            response.put("data", data);
-        return response;
-    }
-
     public static ResponseEntity<ObjectNode> getSuccessResponse(
             String message, Object data){
         return getNewResponse(true,message,data,HttpStatus.OK);
