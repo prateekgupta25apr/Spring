@@ -8,13 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import prateek_gupta.SampleProject.core.dao.Table1Repository;
-import prateek_gupta.SampleProject.core.entities.Table1Entity;
-import prateek_gupta.SampleProject.core.service.CoreService;
-import prateek_gupta.SampleProject.core.service.impl.CoreServiceImpl;
-import prateek_gupta.SampleProject.core.vo.Table1VO;
+import prateek_gupta.SampleProject.db.dao.Table1Repository;
+import prateek_gupta.SampleProject.db.entities.Table1Entity;
+import prateek_gupta.SampleProject.db.service.DBService;
+import prateek_gupta.SampleProject.db.service.impl.DBServiceImpl;
+import prateek_gupta.SampleProject.db.vo.Table1VO;
 
-public class CoreServiceTest {
+public class DBServiceTest {
 
     // Step 1: Mock the Table1Repository
     @Mock
@@ -22,7 +22,7 @@ public class CoreServiceTest {
 
     // Step 2: Inject mocks into the service
     @InjectMocks
-    private CoreService coreService = new CoreServiceImpl();
+    private DBService DBService = new DBServiceImpl();
 
     // Step 3: Initialize mocks before each test
     @BeforeEach
@@ -40,7 +40,7 @@ public class CoreServiceTest {
         Mockito.when(table1Repository.findByPrimaryKey(primaryKey)).thenReturn(mockEntity);
 
         // Act (Call the method under test)
-        Table1VO actualVO = coreService.getTable1Details(primaryKey);
+        Table1VO actualVO = DBService.getTable1Details(primaryKey);
 
         // Assert (Verify the results)
         Assertions.assertNotNull(actualVO);
@@ -56,7 +56,7 @@ public class CoreServiceTest {
         Mockito.when(table1Repository.findByPrimaryKey(invalidPrimaryKey)).thenReturn(null);
 
         // Act
-        Table1VO result = coreService.getTable1Details(invalidPrimaryKey);
+        Table1VO result = DBService.getTable1Details(invalidPrimaryKey);
 
         // Assert
         Assertions.assertNull(result);
@@ -72,7 +72,7 @@ public class CoreServiceTest {
                 new RuntimeException("Database error"));
 
         // Act
-        Table1VO result = coreService.getTable1Details(primaryKey);
+        Table1VO result = DBService.getTable1Details(primaryKey);
 
         // Assert
         Assertions.assertNull(result);

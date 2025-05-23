@@ -2,6 +2,8 @@ package prateek_gupta.SampleProject.multitenancy;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,8 @@ import static prateek_gupta.SampleProject.multitenancy.TenantContext.
 
 @Component
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
+    private final Logger log =
+            LoggerFactory.getLogger(TenantConnectionProvider.class);
 
     /**
      * This field is like the Driver class which is used to connect to the Database
@@ -39,7 +43,14 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
         final Connection connection = getAnyConnection();
         try {
             if (schemaName != null) {
-                connection.createStatement().execute("USE " + schemaName);
+                try{
+                    connection.createStatement().execute("USE " + schemaName);
+                }catch (Exception e){
+                    log.error("Error occurred while setting schema for the tenant "+
+                            "provided hence setting default schema");
+                    TenantContext.setCurrentTenant(DEFAULT_SCHEMA_NAME);
+                    connection.createStatement().execute("USE " + DEFAULT_SCHEMA_NAME);
+                }
             } else {
                 connection.createStatement().execute("USE " + DEFAULT_SCHEMA_NAME);
             }

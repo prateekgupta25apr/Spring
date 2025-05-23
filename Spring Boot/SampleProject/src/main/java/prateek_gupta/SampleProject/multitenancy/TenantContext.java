@@ -15,7 +15,7 @@ public class TenantContext {
 
     String schemaName;
 
-    public static final String DEFAULT_SCHEMA_NAME = "spring_1";
+    public static final String DEFAULT_SCHEMA_NAME = "sample_project_1";
 
     public TenantContext(String schemaName) {
         this.schemaName = schemaName;
@@ -30,6 +30,6 @@ public class TenantContext {
     }
 
     public static void clear() {
-        currentTenant.set(null);
+        currentTenant.remove();
     }
 }

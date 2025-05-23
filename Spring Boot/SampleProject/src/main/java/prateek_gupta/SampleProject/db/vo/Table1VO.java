@@ -1,8 +1,8 @@
-package prateek_gupta.SampleProject.core.vo;
+package prateek_gupta.SampleProject.db.vo;
 
 import lombok.Getter;
 import lombok.Setter;
-import prateek_gupta.SampleProject.core.entities.Table1Entity;
+import prateek_gupta.SampleProject.db.entities.Table1Entity;
 
 @Getter
 @Setter

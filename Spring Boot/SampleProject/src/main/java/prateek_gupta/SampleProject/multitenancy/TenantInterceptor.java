@@ -18,11 +18,11 @@ public class TenantInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) {
-        String tenantIdStr=request.getHeader("tenantId");
+        String tenantIdStr=request.getHeader("tenant_id");
         if (tenantIdStr != null) {
             try {
                 int tenantId = Integer.parseInt(tenantIdStr);
-                TenantContext.setCurrentTenant("spring_" + tenantId);
+                TenantContext.setCurrentTenant("sample_project_" + tenantId);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

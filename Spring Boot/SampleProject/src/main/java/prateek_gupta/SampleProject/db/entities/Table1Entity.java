@@ -1,9 +1,9 @@
-package prateek_gupta.SampleProject.core.entities;
+package prateek_gupta.SampleProject.db.entities;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import prateek_gupta.SampleProject.core.vo.Table1VO;
+import prateek_gupta.SampleProject.db.vo.Table1VO;
 
 import javax.persistence.*;
 
