@@ -61,7 +61,7 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
-            JSONObject responseData= kafka.getTopic(topicName);
+            JSONObject responseData = kafka.getTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully retrieve details for the topic : " + topicName,
                     responseData);
@@ -87,7 +87,7 @@ public class KafkaController {
 
     @PutMapping("update_topic_increase_partition")
     public ResponseEntity<ObjectNode> updateTopicIncreasePartition(
-            String topicName,int partitions) {
+            String topicName, int partitions) {
         ResponseEntity<ObjectNode> response;
         try {
             kafka.updateTopicIncreasePartition(topicName, partitions);
@@ -101,7 +101,7 @@ public class KafkaController {
 
     @PutMapping("update_topic")
     public ResponseEntity<ObjectNode> updateTopic(
-            String topicName, String configKey,String configValue) {
+            String topicName, String configKey, String configValue) {
         ResponseEntity<ObjectNode> response;
         try {
             kafka.updateTopic(topicName, configKey, configValue);
@@ -129,10 +129,10 @@ public class KafkaController {
 
     @GetMapping("get_commited_offset")
     public ResponseEntity<ObjectNode> getCommitedOffset(
-            String topicName,int partitionId,String consumerGroupName) {
+            String topicName, int partitionId, String consumerGroupName) {
         ResponseEntity<ObjectNode> response;
         try {
-            OffsetAndMetadata offsetAndMetadata= kafka.getCommittedOffset(
+            OffsetAndMetadata offsetAndMetadata = kafka.getCommittedOffset(
                     topicName, partitionId, consumerGroupName);
             if (offsetAndMetadata != null) {
                 response = Util.getSuccessResponse(
@@ -152,13 +152,13 @@ public class KafkaController {
     @PostMapping("get_messages")
     public ResponseEntity<ObjectNode> getMessages(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
-        try{
+        try {
             // Extracting payload
             String dataStr = request.getParameter("data");
             JSONObject data = JSONObject.fromObject(dataStr);
-            JSONObject responseData= kafka.getMessages(data);
+            JSONObject responseData = kafka.getMessages(data);
             response = Util.getSuccessResponse(
-                    "Successfully fetched the messages" , responseData);
+                    "Successfully fetched the messages", responseData);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving topics", e);
         }
@@ -169,7 +169,11 @@ public class KafkaController {
     @KafkaListener(topics = "test", groupId = "my-group")
     public void test(ConsumerRecord<String, String> record,
                      Acknowledgment acknowledgment) {
-        log.info("Received message :  {} for topic {} for partition {} with offset {}",
+        log.info("""
+                        Received message :  {}
+                        topic : {}
+                        partition : {}
+                        offset : {}""",
                 record.value(), record.topic(), record.partition(), record.offset());
 
         log.info("Committing the message offset {}", record.offset());
