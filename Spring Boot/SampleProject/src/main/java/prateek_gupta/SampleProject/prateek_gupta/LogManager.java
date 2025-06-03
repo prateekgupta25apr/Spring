@@ -18,62 +18,73 @@ public class LogManager {
     private static final String LOG_FILE_SUFFIX = ".log";
     private static final int DAYS_GAP_FOR_ROTATION = 30;
 
-    public static void initializeLogger() {
-        ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+    public static void initializeLogger(boolean console_logs) {
+        ConfigurationBuilder<BuiltConfiguration> configurationBuilder =
+                ConfigurationBuilderFactory.newConfigurationBuilder();
 
-        builder.setStatusLevel(org.apache.logging.log4j.Level.WARN);
-        builder.setConfigurationName("RollingBuilder");
+        configurationBuilder.setStatusLevel(org.apache.logging.log4j.Level.WARN);
+        configurationBuilder.setConfigurationName("RollingBuilder");
 
         // Pattern layout
-        LayoutComponentBuilder layoutBuilder = builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} : %msg%n");
+        LayoutComponentBuilder layoutBuilder =
+                configurationBuilder.newLayout("PatternLayout")
+                        .addAttribute("pattern",
+                                "%d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} : %msg%n");
 
-        // Triggering Policies
-        ComponentBuilder<?> triggeringPolicies = builder.newComponent("Policies")
-                .addComponent(builder.newComponent("SizeBasedTriggeringPolicy")
-                        .addAttribute("size", "10MB"))
-                .addComponent(builder.newComponent("TimeBasedTriggeringPolicy")
-                        .addAttribute("interval", "1"));
+        // Log file rollover triggering Policies
+        ComponentBuilder<?> triggeringPolicies =
+                configurationBuilder.newComponent("Policies")
+                        .addComponent(configurationBuilder.newComponent(
+                                        "SizeBasedTriggeringPolicy")
+                                .addAttribute("size", "10MB"));
 
-        // RollingFile Appender
-        AppenderComponentBuilder rollingFileAppender = builder.newAppender("RollingFile", "RollingFile")
-                .addAttribute("fileName", LOG_DIR + "/logs.log")
-                .addAttribute("filePattern", LOG_DIR + "/logs.%d{yyyy-MM-dd}.%i.log")
-                .add(layoutBuilder)
-                .addComponent(triggeringPolicies)
-                .addComponent(builder.newComponent("DefaultRolloverStrategy")
-                        .addAttribute("max", "30"));
+        RootLoggerComponentBuilder rootLoggerComponentBuilder =
+                configurationBuilder.newRootLogger(org.apache.logging.log4j.Level.INFO);
 
-        builder.add(rollingFileAppender);
+        if (console_logs) {
+            // Console Appender
+            AppenderComponentBuilder consoleAppender =
+                    configurationBuilder.newAppender("LogConsole", "Console")
+                            .addAttribute("target", "SYSTEM_OUT")
+                            .add(layoutBuilder);
 
-        // Console Appender
-        AppenderComponentBuilder consoleAppender = builder.newAppender("Console", "Console")
-                .addAttribute("target", "SYSTEM_OUT")
-                .add(layoutBuilder);
+            configurationBuilder.add(consoleAppender);
+            rootLoggerComponentBuilder.add(configurationBuilder.newAppenderRef("LogConsole"));
+        } else {
+            // RollingFile Appender
+            AppenderComponentBuilder rollingFileAppender =
+                    configurationBuilder.newAppender("LogFiles",
+                                    "RollingFile")
+                            .addAttribute("fileName", LOG_DIR + "/logs.log")
+                            .addAttribute("filePattern", LOG_DIR +
+                                    "/logs.%d{yyyy-MM-dd}.%i.log")
+                            .add(layoutBuilder)
+                            .addComponent(triggeringPolicies);
 
-        builder.add(consoleAppender);
+            configurationBuilder.add(rollingFileAppender);
+            rootLoggerComponentBuilder.add(configurationBuilder.newAppenderRef("LogFiles"));
+        }
+
 
         // Root Logger
-        builder.add(builder.newRootLogger(org.apache.logging.log4j.Level.INFO)
-                .add(builder.newAppenderRef("RollingFile"))
-                .add(builder.newAppenderRef("Console")));
+        configurationBuilder.add(rootLoggerComponentBuilder);
 
-        LoggerContext ctx = Configurator.initialize(builder.build());
+        LoggerContext ctx = Configurator.initialize(configurationBuilder.build());
         ctx.updateLoggers();
     }
 
-    public static final Logger logger = org.apache.logging.log4j.LogManager.getLogger(LogManager.class);
-
     public static void rotateLogFiles() {
-        logger.info("Log files rotation begins");
+        //logger.info("Log files rotation begins");
         try {
             File logDirectory = new File(LOG_DIR);
             if (!logDirectory.exists()) {
-                logger.warn("Log directory not found.");
+                //logger.warn("Log directory not found.");
                 return;
             }
 
-            File[] files = logDirectory.listFiles((dir, name) -> name.startsWith(LOG_FILE_PREFIX) && name.endsWith(LOG_FILE_SUFFIX));
+            File[] files = logDirectory.listFiles(
+                    (dir, name) -> name.startsWith(LOG_FILE_PREFIX) &&
+                            name.endsWith(LOG_FILE_SUFFIX));
             if (files == null || files.length == 0) return;
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -85,27 +96,32 @@ public class LogManager {
                     String[] parts = name.split("\\.");
                     if (parts.length >= 3) {
                         LocalDate fileDate = LocalDate.parse(parts[1], formatter);
-                        if (fileDate.plusDays(DAYS_GAP_FOR_ROTATION).isBefore(LocalDate.now())) {
+                        if (fileDate.plusDays(DAYS_GAP_FOR_ROTATION).
+                                isBefore(LocalDate.now())) {
                             if (file.delete()) {
-                                logger.info("Deleted log file: {}", name);
+                                //logger.info("Deleted log file: {}", name);
                             } else {
-                                logger.warn("Failed to delete log file: {}", name);
+                                //logger.warn("Failed to delete log file: {}", name);
                             }
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Error parsing log file name: {}", file.getName(), e);
+//                    logger.error("Error parsing log file name: {}",
+//                            file.getName(), e);
                 }
             });
         } catch (Exception e) {
-            logger.error("Error while rotating log files", e);
+            //logger.error("Error while rotating log files", e);
         }
-        logger.info("Log files rotation ends");
+        //logger.info("Log files rotation ends");
     }
 
     public static void main(String[] args) {
-        initializeLogger();
+        System.out.println("Starts");
+        initializeLogger(true);
+        Logger logger =
+                org.apache.logging.log4j.LogManager.getLogger(LogManager.class);
         logger.info("Logger initialized.");
-        rotateLogFiles(); // Call this during startup or via a scheduled job
+        rotateLogFiles();
     }
 }
