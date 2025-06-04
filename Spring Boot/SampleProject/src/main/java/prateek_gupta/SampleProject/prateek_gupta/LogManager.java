@@ -2,23 +2,39 @@ package prateek_gupta.SampleProject.prateek_gupta;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.*;
 import org.apache.logging.log4j.core.config.builder.api.*;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-public class LogManager {
+@Plugin(name = "CustomConfigurationFactory",
+        category = ConfigurationFactory.CATEGORY)
+@Order(50)
+public class LogManager extends ConfigurationFactory{
 
     private static final String LOG_DIR = "logs";
     private static final String LOG_FILE_PREFIX = "logs.";
     private static final String LOG_FILE_SUFFIX = ".log";
     private static final int DAYS_GAP_FOR_ROTATION = 30;
 
-    public static void initializeLogger(boolean console_logs) {
+    @Override
+    public String[] getSupportedTypes() {
+        return new String[] { "*" };
+    }
+
+    @Override
+    public Configuration getConfiguration(
+            LoggerContext loggerContext, ConfigurationSource source) {
+        return LogManager.getBuiltConfiguration(true);
+    }
+
+    public static BuiltConfiguration getBuiltConfiguration(
+            boolean console_logs) {
         ConfigurationBuilder<BuiltConfiguration> configurationBuilder =
                 ConfigurationBuilderFactory.newConfigurationBuilder();
 
@@ -29,7 +45,7 @@ public class LogManager {
         LayoutComponentBuilder layoutBuilder =
                 configurationBuilder.newLayout("PatternLayout")
                         .addAttribute("pattern",
-                                "%d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} : %msg%n");
+                                "%d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} :: %msg%n");
 
         // Log file rollover triggering Policies
         ComponentBuilder<?> triggeringPolicies =
@@ -68,9 +84,7 @@ public class LogManager {
 
         // Root Logger
         configurationBuilder.add(rootLoggerComponentBuilder);
-
-        LoggerContext ctx = Configurator.initialize(configurationBuilder.build());
-        ctx.updateLoggers();
+        return configurationBuilder.build();
     }
 
     public static void rotateLogFiles() {
@@ -118,7 +132,8 @@ public class LogManager {
 
     public static void main(String[] args) {
         System.out.println("Starts");
-        initializeLogger(true);
+        LoggerContext ctx = Configurator.initialize(getBuiltConfiguration(true));
+        ctx.updateLoggers();
         Logger logger =
                 org.apache.logging.log4j.LogManager.getLogger(LogManager.class);
         logger.info("Logger initialized.");
