@@ -30,23 +30,6 @@ public class DBServiceImpl implements DBService {
     Table1Repository table1Repository;
 
     @Override
-    public ObjectNode test(String testData) throws ServiceException {
-        ObjectNode response= Util.getObjectMapper().createObjectNode();
-        try{
-            Object result= entityManager.createNativeQuery("select schema();")
-                    .getSingleResult();
-            response.put("test_data",testData);
-            response.put("schema_db",String.valueOf(result));
-            response.put("schema_name",
-                    TenantContext.getCurrentTenant().getSchemaName());
-        }catch (Exception e){
-            ServiceException.logException(e);
-            throw new ServiceException(ServiceException.ExceptionType.DB_ERROR);
-        }
-        return response;
-    }
-
-    @Override
     public Table1VO getTable1Details(Integer primaryKey) {
         log.info("getTable1Details started");
         try{

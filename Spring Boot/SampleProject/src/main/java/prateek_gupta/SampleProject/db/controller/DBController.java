@@ -18,19 +18,6 @@ public class DBController {
     @Autowired
     DBService dbService;
 
-    @GetMapping("test")
-    ResponseEntity<ObjectNode> test(@RequestParam String testData) {
-        ResponseEntity<ObjectNode> response;
-        try {
-            ObjectNode data = dbService.test(testData);
-            response = Util.getSuccessResponse("Success", data);
-
-        } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
-        }
-        return response;
-    }
-
     @GetMapping("get_table1_details")
     ResponseEntity<ObjectNode> getTable1Details(@RequestParam Integer primaryKey) {
         ResponseEntity<ObjectNode> response;
