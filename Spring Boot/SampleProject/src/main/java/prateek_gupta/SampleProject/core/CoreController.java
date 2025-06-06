@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,9 @@ public class CoreController {
     @Autowired
     CoreService coreService;
 
+    @Autowired
+    HealthEndpoint healthEndpoint;
+
     @GetMapping("test")
     ResponseEntity<ObjectNode> test(@RequestParam String testData) {
         logger.info("Entering test() Controller");
@@ -36,6 +41,23 @@ public class CoreController {
             return Util.getErrorResponse(new ServiceException());
         }
         logger.info("Exiting test() Controller");
+        return response;
+    }
+
+    @GetMapping("health_check")
+    ResponseEntity<ObjectNode> healthCheck() {
+        logger.info("Entering healthCheck() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            if (healthEndpoint.health().getStatus().toString().equals("UP"))
+                response = Util.getResponse("Healthy",HttpStatus.OK);
+            else
+                response = Util.getResponse("Unhealthy",HttpStatus.OK);
+
+        } catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
+        }
+        logger.info("Exiting healthCheck() Controller");
         return response;
     }
 

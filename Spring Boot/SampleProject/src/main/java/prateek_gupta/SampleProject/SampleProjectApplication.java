@@ -21,7 +21,8 @@ public class SampleProjectApplication {
 		System.out.println("Good to go");
 	}
 
-	@PostConstruct
+	@SuppressWarnings("unused")
+    @PostConstruct
 	public void onLoad() {
 		LogManager.getLogManager().reset();
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
