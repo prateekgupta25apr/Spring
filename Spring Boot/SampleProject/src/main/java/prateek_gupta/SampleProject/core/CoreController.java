@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import prateek_gupta.SampleProject.prateek_gupta.Init;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
@@ -80,6 +82,28 @@ public class CoreController {
             return Util.getErrorResponse(new ServiceException());
         }
         logger.info("Exiting rotateLogFiles() Controller");
+        return response;
+    }
+
+
+    /**
+     The idea for this api is to reload only the configs and not to recreate the beans,
+     if configs are updated such that beans need to be created then it's better to restart
+     the service.
+     */
+    @GetMapping("load_config_values")
+    ResponseEntity<ObjectNode> loadConfigValues(HttpServletRequest request) {
+        logger.info("Entering loadConfigValues() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            Init.onLoad();
+            coreService.loadConfigValueFromDB();
+            response = Util.getSuccessResponse("Successfully loaded the config values");
+
+        } catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
+        }
+        logger.info("Exiting loadConfigValues() Controller");
         return response;
     }
 }

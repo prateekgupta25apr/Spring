@@ -1,6 +1,7 @@
 package prateek_gupta.SampleProject.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
@@ -55,6 +56,19 @@ public class Util {
         objectMapper.addMixIn(ParsedStringTerms.ParsedBucket.class,
                 IgnoreParsedBucketMixin.class);
         return objectMapper;
+    }
+
+    public static JsonNode getJsonNode(Object data){
+        JsonNode response ;
+        if (data instanceof String)
+            try{
+                response= getObjectMapper().readTree(String.valueOf(data));
+            }catch (Exception e){
+                response= getObjectMapper().valueToTree(data);
+            }
+        else
+            response= getObjectMapper().valueToTree(data);
+        return response;
     }
 
     abstract static class IgnoreParsedBucketMixin {

@@ -5,4 +5,5 @@ import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 public interface CoreService {
     ObjectNode test(String testData) throws ServiceException;
+    void loadConfigValueFromDB() throws ServiceException;
 }
