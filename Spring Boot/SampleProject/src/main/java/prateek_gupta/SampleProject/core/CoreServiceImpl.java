@@ -31,7 +31,7 @@ public class CoreServiceImpl implements CoreService {
         try {
             Object result = entityManager.createNativeQuery("select schema();")
                     .getSingleResult();
-            response.put("test", test);
+            response.set("test", getJsonNode(Init.getConfiguration("test",test)));
             response.put("test_data", testData);
             response.put("schema_db", String.valueOf(result));
             response.put("schema_name",

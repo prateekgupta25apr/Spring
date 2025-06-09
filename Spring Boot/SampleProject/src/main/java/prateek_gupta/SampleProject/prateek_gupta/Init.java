@@ -20,4 +20,8 @@ public class Init {
             configuration_properties.put(key, properties.getProperty(key));
         }
     }
+
+    public static Object getConfiguration(String key,String value){
+        return configuration_properties.getOrDefault(key,value);
+    }
 }
