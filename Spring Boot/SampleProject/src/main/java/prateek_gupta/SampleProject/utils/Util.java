@@ -9,7 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
+import java.lang.reflect.Method;
+
 public class Util {
+
+    public static Object getClassObject(Method method) throws Exception {
+        Object instance;
+        try{
+            instance= ApplicationContextSetter.context.getBean(method.getDeclaringClass());
+        }catch (Exception e){
+            instance=method.getDeclaringClass().getDeclaredConstructor().newInstance();
+        }
+        return instance;
+    }
+
     public static ResponseEntity<ObjectNode>
     getSuccessResponse(String message, Object data){
         return getResponse(true,message,data,HttpStatus.OK);

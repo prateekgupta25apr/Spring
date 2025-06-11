@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.http.HttpServletRequest;
+import static prateek_gupta.SampleProject.prateek_gupta.ProjectSettings.*;
 
 @RestController
 public class CoreController {
@@ -96,8 +96,8 @@ public class CoreController {
         logger.info("Entering loadConfigValues() Controller");
         ResponseEntity<ObjectNode> response;
         try {
-            Init.onLoad();
-            coreService.loadConfigValueFromDB();
+            Init.loadConfigPropertiesFromFile(configuration_properties_file_path);
+            coreService.loadConfigValueFromDB("*");
             response = Util.getSuccessResponse("Successfully loaded the config values");
 
         } catch (Exception exception) {

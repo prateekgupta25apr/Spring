@@ -6,11 +6,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.Init;
+import prateek_gupta.SampleProject.prateek_gupta.PostConstructMethod;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static prateek_gupta.SampleProject.utils.Util.getJsonNode;
 
@@ -22,7 +26,7 @@ public class CoreServiceImpl implements CoreService {
     @Autowired
     ConfigurationsRepository configurationsRepository;
 
-    @Value("${test}")
+    @Value("${test:}")
     String test;
 
     @Override
@@ -46,12 +50,16 @@ public class CoreServiceImpl implements CoreService {
     }
 
     @Override
-    public void loadConfigValueFromDB() throws ServiceException {
+    @PostConstructMethod("*")
+    public void loadConfigValueFromDB(String keyList) throws ServiceException {
         try {
+            List<String> keys= Arrays.asList(keyList.split(","));
             for (Configurations configurations : configurationsRepository.findAll())
-                Init.configuration_properties.put(
+                if (keyList.equals("*")||keys.contains(configurations.getKey()))
+                    Init.configuration_properties.put(
                         configurations.getKey(), configurations.getValue());
         } catch (Exception e) {
+            ServiceException.logException(e);
             throw new ServiceException();
         }
     }
