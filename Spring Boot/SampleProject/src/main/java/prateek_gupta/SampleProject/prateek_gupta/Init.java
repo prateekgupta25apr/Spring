@@ -23,10 +23,10 @@ public class Init {
         }
     }
 
-    @PreConstructMethod(configuration_properties_file_path)
-    public static void loadConfigPropertiesFromFile(String filePath) throws Exception {
+    @PreConstructMethod
+    public static void loadConfigPropertiesFromFile() throws Exception {
         Utils.loadPropertiesFromFile(
-                filePath,
+                configuration_properties_file_path,
                 configuration_properties,
                 ProjectSettings.required_fields,
                 ProjectSettings.expected_fields);
@@ -44,9 +44,13 @@ public class Init {
         Set<Method> methods = reflections.getMethodsAnnotatedWith(PreConstructMethod.class);
         System.out.println("PreConstructMethods : "+methods);
 
-        for (Method method:methods)
-            method.invoke(Util.getClassObject(method),
+        for (Method method:methods) {
+            if(method.getParameters().length>0)
+                method.invoke(Util.getClassObject(method),
                     method.getAnnotation(PreConstructMethod.class).value());
+            else
+                method.invoke(Util.getClassObject(method));
+        }
 
     }
 

@@ -96,7 +96,7 @@ public class CoreController {
         logger.info("Entering loadConfigValues() Controller");
         ResponseEntity<ObjectNode> response;
         try {
-            Init.loadConfigPropertiesFromFile(configuration_properties_file_path);
+            Init.loadConfigPropertiesFromFile();
             coreService.loadConfigValueFromDB("*");
             response = Util.getSuccessResponse("Successfully loaded the config values");
 

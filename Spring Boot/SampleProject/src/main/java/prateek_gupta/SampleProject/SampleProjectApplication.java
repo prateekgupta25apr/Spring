@@ -33,7 +33,7 @@ public class SampleProjectApplication {
 
 	@PreConstructMethod
 	@SuppressWarnings("unused")
-	public void julToSLF4J(String value){
+	public void julToSLF4J(){
 		// Redirecting java.util.logging to SLF4J
             LogManager.getLogManager().reset();
             SLF4JBridgeHandler.removeHandlersForRootLogger();
