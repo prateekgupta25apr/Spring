@@ -2,6 +2,7 @@ package prateek_gupta.SampleProject.prateek_gupta;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import prateek_gupta.SampleProject.utils.Util;
 
@@ -37,10 +38,27 @@ public class Init {
         return configuration_properties.getOrDefault(key,value);
     }
 
-    public static void preConstructMethodExecution() throws Exception {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackage("prateek_gupta.SampleProject")
-                .addScanners(Scanners.MethodsAnnotated));
+    public static ConfigurationBuilder getScanConfiguration(){
+        ConfigurationBuilder configurationBuilder;
+        if(!scanned_files.isEmpty()){
+            configurationBuilder=new ConfigurationBuilder()
+                    .addScanners(Scanners.MethodsAnnotated);
+
+            for(Class<?> classToBeScanned:scanned_files)
+                configurationBuilder.addUrls(ClasspathHelper.forClass(classToBeScanned));
+
+        }
+        else
+            configurationBuilder=new ConfigurationBuilder()
+                    .forPackage("prateek_gupta.SampleProject")
+                    .addScanners(Scanners.MethodsAnnotated);
+
+        return configurationBuilder;
+    }
+
+    public static void preConstructMethodExecution()
+            throws Exception {
+        Reflections reflections = new Reflections(getScanConfiguration());
         Set<Method> methods = reflections.getMethodsAnnotatedWith(PreConstructMethod.class);
         System.out.println("PreConstructMethods : "+methods);
 
@@ -54,10 +72,9 @@ public class Init {
 
     }
 
-    public static void postConstructMethodExecution() throws Exception {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackage("prateek_gupta.SampleProject")
-                .addScanners(Scanners.MethodsAnnotated));
+    public static void postConstructMethodExecution()
+            throws Exception {
+        Reflections reflections = new Reflections(getScanConfiguration());
         Set<Method> methods = reflections.getMethodsAnnotatedWith(PostConstructMethod.class);
         System.out.println("PostConstructMethods : "+methods);
 
