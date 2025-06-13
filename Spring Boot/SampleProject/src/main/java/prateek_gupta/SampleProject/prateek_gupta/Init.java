@@ -26,12 +26,10 @@ public class Init {
 
     @PreConstructMethod
     public static void loadConfigPropertiesFromFile() throws Exception {
-        Utils.loadPropertiesFromFile(
+        configuration_properties=Utils.loadPropertiesFromFile(
                 configuration_properties_file_path,
-                configuration_properties,
                 ProjectSettings.required_fields,
-                ProjectSettings.expected_fields);
-
+                ProjectSettings.expected_fields,false);
     }
 
     public static Object getConfiguration(String key,String value){
