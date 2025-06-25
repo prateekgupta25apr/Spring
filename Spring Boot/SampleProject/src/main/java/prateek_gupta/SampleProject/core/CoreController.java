@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import prateek_gupta.SampleProject.prateek_gupta.Init;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
@@ -19,7 +20,7 @@ import prateek_gupta.SampleProject.utils.Util;
 import javax.servlet.http.HttpServletRequest;
 import static prateek_gupta.SampleProject.prateek_gupta.ProjectSettings.*;
 
-@RestController
+@Controller
 public class CoreController {
 
     private static final Logger logger = LogManager.getLogger(
@@ -105,5 +106,11 @@ public class CoreController {
         }
         logger.info("Exiting loadConfigValues() Controller");
         return response;
+    }
+
+    @GetMapping("render_html")
+    public String renderHtml(Model model) {
+        model.addAttribute("variable_data", "PG");
+        return "SampleHtml";
     }
 }
