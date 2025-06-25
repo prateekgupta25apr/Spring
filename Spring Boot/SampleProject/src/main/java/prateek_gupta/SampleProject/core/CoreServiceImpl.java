@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.Init;
 import prateek_gupta.SampleProject.prateek_gupta.PostConstructMethod;
@@ -38,8 +39,10 @@ public class CoreServiceImpl implements CoreService {
             response.set("test", getJsonNode(Init.getConfiguration("test",test)));
             response.put("test_data", testData);
             response.put("schema_db", String.valueOf(result));
-            response.put("schema_name",
+            response.put("tenant_schema_name",
                     TenantContext.getCurrentTenant().getSchemaName());
+            response.put("context_user_id",
+                    Context.getCurrentContext().userId);
             response.set("configuration_properties",
                     getJsonNode(Init.configuration_properties));
         } catch (Exception e) {
