@@ -21,6 +21,7 @@ import java.time.Duration;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.util.Calendar;
 
 
 public class AWSImpl implements AWS {
@@ -102,14 +103,12 @@ public class AWSImpl implements AWS {
     }
 
     @Override
-    public String uploadFile(MultipartFile file) throws ServiceException {
+    public String uploadFile(MultipartFile file,String fileKey) throws ServiceException {
         log.info("Entering uploadFile()");
-        String fileName;
         try {
-            fileName = file.getOriginalFilename();
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(fileName)
+                    .key(fileKey)
                     .contentType(file.getContentType())
                     .build();
 
@@ -119,7 +118,7 @@ public class AWSImpl implements AWS {
             throw new ServiceException("Error uploading file to S3");
         }
         log.info("Exiting uploadFile()");
-        return fileName;
+        return fileKey;
     }
 
     @Override
@@ -220,5 +219,17 @@ public class AWSImpl implements AWS {
         return url;
     }
 
+    @Override
+    public String updateFileName(String fileName, String prefix) {
+        int dotIndex = fileName.lastIndexOf('.');
+        String name = (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+        String ext  = (dotIndex == -1) ? ""       : fileName.substring(dotIndex);
+        return (prefix+name+"_"+Calendar.getInstance().getTimeInMillis()+ext);
+    }
+
+    @Override
+    public String updateFileName(String fileName) {
+        return updateFileName(fileName,"");
+    }
 }
 

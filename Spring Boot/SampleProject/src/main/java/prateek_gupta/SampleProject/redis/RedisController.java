@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/redis")
 public class RedisController {
-    @Autowired
+    @Autowired(required = false)
     Redis redis;
 
     @GetMapping("get")

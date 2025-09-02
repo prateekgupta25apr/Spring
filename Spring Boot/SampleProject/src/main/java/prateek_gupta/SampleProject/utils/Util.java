@@ -10,10 +10,13 @@ import org.springframework.http.ResponseEntity;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Util {
 
-    public static Object getClassObject(Method method) throws Exception {
+    public static Object getClassObject(Method method)
+            throws Exception {
         Object instance;
         try{
             instance= ApplicationContextSetter.context.getBean(method.getDeclaringClass());
@@ -52,15 +55,23 @@ public class Util {
         if (isSuccess!=null)
             responseJSON.put("status", isSuccess?"Success":"Failure");
         responseJSON.put("message", message);
+        JsonNode dataNode=getObjectMapper().createObjectNode();
         if (data!=null)
             if (data instanceof String)
                 try{
-                    responseJSON.set("data", objectMapper.readTree(String.valueOf(data)));
+                    dataNode=objectMapper.readTree(String.valueOf(data));
                 }catch (Exception e){
-                    responseJSON.set("data", objectMapper.valueToTree(data));
+                    dataNode=objectMapper.valueToTree(data);
                 }
             else
-                responseJSON.set("data", objectMapper.valueToTree(data));
+                dataNode=objectMapper.valueToTree(data);
+
+
+        Iterator<Map.Entry<String, JsonNode>> fields = dataNode.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            responseJSON.set(field.getKey(),field.getValue());
+        }
         return new ResponseEntity<>(responseJSON, status);
     }
 

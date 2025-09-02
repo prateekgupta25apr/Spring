@@ -45,8 +45,15 @@ public class AWSController {
     public ResponseEntity<ObjectNode> upload(@RequestParam("file") MultipartFile file) {
         ResponseEntity<ObjectNode> response;
         try {
-            String fileName = aws.uploadFile(file);
-            response = Util.getSuccessResponse("Successfully uploaded the file " + fileName);
+            String fileName=file.getOriginalFilename();
+            String fileKey= aws.updateFileName(file.getOriginalFilename());
+            fileKey= aws.uploadFile(file,fileKey);
+            ObjectNode responseData=Util.getObjectMapper().createObjectNode();
+            responseData.put("file_name",fileName);
+            responseData.put("file_key",fileKey);
+            response = Util.getSuccessResponse(
+                    "Successfully uploaded the file : " + fileName,
+                    responseData);
         } catch (ServiceException e) {
             return Util.getErrorResponse(e);
         }
