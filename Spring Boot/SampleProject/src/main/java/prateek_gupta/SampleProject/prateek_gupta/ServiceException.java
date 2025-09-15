@@ -11,7 +11,8 @@ public class ServiceException extends Exception {
     public enum ExceptionType {
         UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
-        MISSING_REQUIRED_PARAMETERS(HttpStatus.BAD_REQUEST);
+        MISSING_REQUIRED_PARAMETERS(HttpStatus.BAD_REQUEST),
+        MODULE_LOCK(HttpStatus.FORBIDDEN);
 
         final HttpStatus status;
 
@@ -71,5 +72,21 @@ public class ServiceException extends Exception {
         String message = e instanceof ServiceException ?
                 ((ServiceException) e).exceptionMessage : e.getMessage();
         logUtil.error(message, e);
+    }
+
+    public static void moduleLockCheck(
+            String fieldKey,boolean isNotBlank) throws ServiceException {
+        moduleLockCheck(fieldKey,null,isNotBlank);
+    }
+
+    public static void moduleLockCheck(
+            String fieldKey,String fieldValue,boolean isNotBlank) throws ServiceException {
+        Object configValue=Init.getConfiguration(fieldKey,"");
+        if (isNotBlank) {
+            if (StringUtils.isBlank(String.valueOf(configValue)))
+                throw new ServiceException(ExceptionType.MODULE_LOCK);
+        }
+        else if (StringUtils.isBlank(String.valueOf(configValue)) || !configValue.equals(fieldValue))
+                throw new ServiceException(ExceptionType.MODULE_LOCK);
     }
 }

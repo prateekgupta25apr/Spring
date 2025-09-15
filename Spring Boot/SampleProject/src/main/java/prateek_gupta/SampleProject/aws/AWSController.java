@@ -25,6 +25,8 @@ public class AWSController {
     public ResponseEntity<?> get(
             HttpServletRequest request, HttpServletResponse response) {
         try {
+            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+
             String fileName=request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName))
                 if (aws.fileExists(fileName))
@@ -45,6 +47,8 @@ public class AWSController {
     public ResponseEntity<ObjectNode> upload(@RequestParam("file") MultipartFile file) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+
             String fileName=file.getOriginalFilename();
             String fileKey= aws.updateFileName(file.getOriginalFilename());
             fileKey= aws.uploadFile(file,fileKey);
@@ -64,6 +68,8 @@ public class AWSController {
     public ResponseEntity<ObjectNode> delete(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+
             String fileName=request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
                 aws.deleteFile(fileName);
@@ -82,6 +88,8 @@ public class AWSController {
     public ResponseEntity<ObjectNode> getPreSignedUrl(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+
             String fileName=request.getParameter("fileName");
             String method=request.getParameter("method");
             if (StringUtils.isNotBlank(fileName))
