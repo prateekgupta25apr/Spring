@@ -31,6 +31,8 @@ public class KafkaController {
                                            @RequestParam String message) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             if (StringUtils.isNotBlank(topic) && StringUtils.isNotBlank(message)) {
                 kafka.sendMessage(topic, message);
                 response = Util.getSuccessResponse("Message sent to topic: " + topic);
@@ -47,6 +49,8 @@ public class KafkaController {
     ResponseEntity<ObjectNode> getAllTopics() {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             JSONObject responseData = new JSONObject();
             responseData.put("topics", kafka.getAllTopics());
             response = Util.getSuccessResponse(
@@ -61,6 +65,8 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             JSONObject responseData = kafka.getTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully retrieve details for the topic : " + topicName,
@@ -76,6 +82,8 @@ public class KafkaController {
                                                   int partitions, short replicationFactor) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             kafka.createTopic(topicName, partitions, replicationFactor);
             response = Util.getSuccessResponse(
                     "Successfully created the topic : " + topicName);
@@ -90,6 +98,8 @@ public class KafkaController {
             String topicName, int partitions) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             kafka.updateTopicIncreasePartition(topicName, partitions);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic's partition to : " + partitions);
@@ -104,6 +114,8 @@ public class KafkaController {
             String topicName, String configKey, String configValue) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             kafka.updateTopic(topicName, configKey, configValue);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic : " + topicName);
@@ -118,6 +130,8 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> deleteTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             kafka.deleteTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully deleted the topic : " + topicName);
@@ -132,6 +146,8 @@ public class KafkaController {
             String topicName, int partitionId, String consumerGroupName) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             OffsetAndMetadata offsetAndMetadata = kafka.getCommittedOffset(
                     topicName, partitionId, consumerGroupName);
             if (offsetAndMetadata != null) {
@@ -153,6 +169,8 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getMessages(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+
             // Extracting payload
             String dataStr = request.getParameter("data");
             JSONObject data = JSONObject.fromObject(dataStr);

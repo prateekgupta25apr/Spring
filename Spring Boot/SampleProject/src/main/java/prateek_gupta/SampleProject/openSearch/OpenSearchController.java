@@ -20,6 +20,8 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> getIndexController(@RequestParam String indexName) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getIndex(indexName);
                 if (indexDetails != null) {
@@ -45,6 +47,8 @@ public class OpenSearchController {
             String mappings) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.createIndex(
                         indexName, source,aliases,settings,mappings);
@@ -71,6 +75,8 @@ public class OpenSearchController {
             String mappings) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.updateIndex(
                         indexName, settings,addAlias,removeAlias,mappings);
@@ -94,6 +100,8 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> deleteIndexController(@RequestParam String indexName) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteIndex(indexName);
                 if (indexDetails != null) {
@@ -117,6 +125,8 @@ public class OpenSearchController {
                                                    @RequestParam String docId) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getRecord(indexName,docId);
                 if (indexDetails != null) {
@@ -140,6 +150,8 @@ public class OpenSearchController {
             String indexName, String docId,String data,boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.upsertRecord(indexName,docId,data,bulk);
                 if (indexDetails != null) {
@@ -164,6 +176,8 @@ public class OpenSearchController {
             String indexName, String docId,String data,boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.partialUpdateRecord(indexName,
                         docId,data,bulk);
@@ -188,6 +202,8 @@ public class OpenSearchController {
                                                       String docId,boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteRecord(indexName,docId,bulk);
                 if (indexDetails != null) {
@@ -211,6 +227,8 @@ public class OpenSearchController {
         Object data;
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                  data = service.searchRecord(indexName,searchJSON);
                 if (data!=null) {
@@ -233,6 +251,8 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> countRecordController(String indexName, String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                  Object data = service.countRecord(indexName,searchJSON);
                 if (data!=null) {
@@ -257,6 +277,8 @@ public class OpenSearchController {
                                                              String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                  Object data = service.deleteByQueryRecord(indexName,searchJSON);
                 if (data!=null) {
@@ -280,6 +302,8 @@ public class OpenSearchController {
             String indexName, String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+
             if (StringUtils.isNotBlank(indexName)) {
                 Object data = service.aggregateRecord(indexName,searchJSON);
                 if (data!=null) {

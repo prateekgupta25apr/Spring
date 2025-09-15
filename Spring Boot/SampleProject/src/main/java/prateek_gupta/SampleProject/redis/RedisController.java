@@ -23,6 +23,7 @@ public class RedisController {
                                    @RequestParam(required = false) String useMap) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("REDIS_ENABLE",true);
 
             if (StringUtils.isNotBlank(key)) {
                 Object value= redis.get(key,Boolean.parseBoolean(useMap));
@@ -42,6 +43,8 @@ public class RedisController {
     ResponseEntity<ObjectNode> upsert(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("REDIS_ENABLE",true);
+
             String key=request.getParameter("key");
             String value=request.getParameter("value");
             String useMap=request.getParameter("useMap");
@@ -62,6 +65,8 @@ public class RedisController {
     ResponseEntity<ObjectNode> searchKeys(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("REDIS_ENABLE",true);
+
             String pattern=request.getParameter("pattern");
             JSONObject value = redis.searchKeys(pattern);
             response = Util.getSuccessResponse(
@@ -77,6 +82,8 @@ public class RedisController {
                                    @RequestParam(required = false) String useMap) {
         ResponseEntity<ObjectNode> response;
         try {
+            ServiceException.moduleLockCheck("REDIS_ENABLE",true);
+
             if (StringUtils.isNotBlank(key)) {
                 redis.delete(key,Boolean.parseBoolean(useMap));
                 response = Util.getSuccessResponse("Successfully deleted the key");
