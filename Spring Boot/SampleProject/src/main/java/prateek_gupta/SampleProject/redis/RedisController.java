@@ -34,7 +34,7 @@ public class RedisController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         return response;
     }
@@ -56,7 +56,7 @@ public class RedisController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         return response;
     }
@@ -72,7 +72,7 @@ public class RedisController {
             response = Util.getSuccessResponse(
                     "Successfully fetched the value", value);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         return response;
     }
@@ -92,7 +92,7 @@ public class RedisController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         return response;
     }

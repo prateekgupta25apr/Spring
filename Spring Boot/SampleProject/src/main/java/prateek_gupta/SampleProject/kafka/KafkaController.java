@@ -31,7 +31,7 @@ public class KafkaController {
                                            @RequestParam String message) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             if (StringUtils.isNotBlank(topic) && StringUtils.isNotBlank(message)) {
                 kafka.sendMessage(topic, message);
@@ -40,7 +40,7 @@ public class KafkaController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         return response;
     }
@@ -49,12 +49,14 @@ public class KafkaController {
     ResponseEntity<ObjectNode> getAllTopics() {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             JSONObject responseData = new JSONObject();
             responseData.put("topics", kafka.getAllTopics());
             response = Util.getSuccessResponse(
                     "Successfully fetched topics", responseData);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -65,12 +67,14 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             JSONObject responseData = kafka.getTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully retrieve details for the topic : " + topicName,
                     responseData);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -82,11 +86,13 @@ public class KafkaController {
                                                   int partitions, short replicationFactor) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.createTopic(topicName, partitions, replicationFactor);
             response = Util.getSuccessResponse(
                     "Successfully created the topic : " + topicName);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -98,11 +104,13 @@ public class KafkaController {
             String topicName, int partitions) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.updateTopicIncreasePartition(topicName, partitions);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic's partition to : " + partitions);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -114,11 +122,13 @@ public class KafkaController {
             String topicName, String configKey, String configValue) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.updateTopic(topicName, configKey, configValue);
             response = Util.getSuccessResponse(
                     "Successfully updated the topic : " + topicName);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -130,11 +140,13 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> deleteTopic(String topicName) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.deleteTopic(topicName);
             response = Util.getSuccessResponse(
                     "Successfully deleted the topic : " + topicName);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -146,7 +158,7 @@ public class KafkaController {
             String topicName, int partitionId, String consumerGroupName) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             OffsetAndMetadata offsetAndMetadata = kafka.getCommittedOffset(
                     topicName, partitionId, consumerGroupName);
@@ -159,6 +171,8 @@ public class KafkaController {
                         "No committed offset found for the specified partition.");
 
             }
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -169,7 +183,7 @@ public class KafkaController {
     public ResponseEntity<ObjectNode> getMessages(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("KAFKA_ENABLE",true);
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             // Extracting payload
             String dataStr = request.getParameter("data");
@@ -177,6 +191,8 @@ public class KafkaController {
             JSONObject responseData = kafka.getMessages(data);
             response = Util.getSuccessResponse(
                     "Successfully fetched the messages", responseData);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving topics", e);
         }

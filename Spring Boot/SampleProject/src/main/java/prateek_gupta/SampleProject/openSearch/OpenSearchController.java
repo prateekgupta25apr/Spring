@@ -20,7 +20,7 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> getIndexController(@RequestParam String indexName) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getIndex(indexName);
@@ -31,10 +31,11 @@ public class OpenSearchController {
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -43,25 +44,26 @@ public class OpenSearchController {
 
     @PostMapping("create_index")
     ResponseEntity<ObjectNode> createIndexController(
-            String indexName,String source,String aliases,String settings,
+            String indexName, String source, String aliases, String settings,
             String mappings) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.createIndex(
-                        indexName, source,aliases,settings,mappings);
+                        indexName, source, aliases, settings, mappings);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully create the index", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -75,21 +77,22 @@ public class OpenSearchController {
             String mappings) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.updateIndex(
-                        indexName, settings,addAlias,removeAlias,mappings);
+                        indexName, settings, addAlias, removeAlias, mappings);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully updated the index", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -100,7 +103,7 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> deleteIndexController(@RequestParam String indexName) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteIndex(indexName);
@@ -110,10 +113,11 @@ public class OpenSearchController {
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -125,20 +129,21 @@ public class OpenSearchController {
                                                    @RequestParam String docId) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                JSONObject indexDetails = service.getRecord(indexName,docId);
+                JSONObject indexDetails = service.getRecord(indexName, docId);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully fetched the record", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -147,23 +152,24 @@ public class OpenSearchController {
 
     @PostMapping("upsert_record")
     ResponseEntity<ObjectNode> upsertRecordController(
-            String indexName, String docId,String data,boolean bulk) {
+            String indexName, String docId, String data, boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                JSONObject indexDetails = service.upsertRecord(indexName,docId,data,bulk);
+                JSONObject indexDetails = service.upsertRecord(indexName, docId, data, bulk);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully inserted the record", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -173,24 +179,25 @@ public class OpenSearchController {
 
     @PatchMapping("partial_update_record")
     ResponseEntity<ObjectNode> partialUpdateRecordController(
-            String indexName, String docId,String data,boolean bulk) {
+            String indexName, String docId, String data, boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.partialUpdateRecord(indexName,
-                        docId,data,bulk);
+                        docId, data, bulk);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully updated the record", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -199,23 +206,24 @@ public class OpenSearchController {
 
     @DeleteMapping("delete_record")
     ResponseEntity<ObjectNode> deleteRecordController(String indexName,
-                                                      String docId,boolean bulk) {
+                                                      String docId, boolean bulk) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                JSONObject indexDetails = service.deleteRecord(indexName,docId,bulk);
+                JSONObject indexDetails = service.deleteRecord(indexName, docId, bulk);
                 if (indexDetails != null) {
                     response = Util.getSuccessResponse(
                             "Successfully deleted the record", indexDetails);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -227,20 +235,21 @@ public class OpenSearchController {
         Object data;
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                 data = service.searchRecord(indexName,searchJSON);
-                if (data!=null) {
-                    response =  Util.getSuccessResponse(
+                data = service.searchRecord(indexName, searchJSON);
+                if (data != null) {
+                    response = Util.getSuccessResponse(
                             "Successfully searched the record", data);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -251,20 +260,21 @@ public class OpenSearchController {
     ResponseEntity<ObjectNode> countRecordController(String indexName, String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                 Object data = service.countRecord(indexName,searchJSON);
-                if (data!=null) {
+                Object data = service.countRecord(indexName, searchJSON);
+                if (data != null) {
                     response = Util.getSuccessResponse(
                             "Successfully fetched the record count", data);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -277,20 +287,21 @@ public class OpenSearchController {
                                                              String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                 Object data = service.deleteByQueryRecord(indexName,searchJSON);
-                if (data!=null) {
+                Object data = service.deleteByQueryRecord(indexName, searchJSON);
+                if (data != null) {
                     response = Util.getSuccessResponse(
                             "Successfully deleted the records", data);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
@@ -302,20 +313,21 @@ public class OpenSearchController {
             String indexName, String searchJSON) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE",true);
+            ServiceException.moduleLockCheck("OPEN_SEARCH_ENABLE", true);
 
             if (StringUtils.isNotBlank(indexName)) {
-                Object data = service.aggregateRecord(indexName,searchJSON);
-                if (data!=null) {
+                Object data = service.aggregateRecord(indexName, searchJSON);
+                if (data != null) {
                     response = Util.getSuccessResponse(
                             "Successfully aggregated the record", data);
                 } else
                     throw new ServiceException(
                             ServiceException.ExceptionType.DB_ERROR);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
         } catch (Exception exception) {
             return Util.getErrorResponse(new ServiceException());
         }
