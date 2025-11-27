@@ -42,16 +42,21 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
     public Connection getConnection(String schemaName) throws SQLException {
         final Connection connection = getAnyConnection();
         try {
+            boolean useDefaultSchema=false;
             if (schemaName != null) {
                 try{
                     connection.createStatement().execute("USE " + schemaName);
                 }catch (Exception e){
                     log.error("Error occurred while setting schema for the tenant "+
                             "provided hence setting default schema");
-                    TenantContext.setCurrentTenant(DEFAULT_SCHEMA_NAME);
-                    connection.createStatement().execute("USE " + DEFAULT_SCHEMA_NAME);
+                    useDefaultSchema=true;
                 }
-            } else {
+            } else
+                useDefaultSchema=true;
+
+
+            if(useDefaultSchema) {
+                TenantContext.setCurrentTenant(DEFAULT_SCHEMA_NAME);
                 connection.createStatement().execute("USE " + DEFAULT_SCHEMA_NAME);
             }
         }
