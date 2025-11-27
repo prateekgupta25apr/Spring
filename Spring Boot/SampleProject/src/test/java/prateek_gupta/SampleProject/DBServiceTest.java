@@ -31,7 +31,7 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetTable1Details_ValidPrimaryKey_ReturnsVO() {
+    public void testGetData_ValidPrimaryKey_ReturnsVO() {
         // Arrange (Set up mock behavior and test data)
         Integer primaryKey = 1;
         Table1Entity mockEntity = Mockito.mock(Table1Entity.class);
@@ -40,7 +40,7 @@ public class DBServiceTest {
         Mockito.when(table1Repository.findByPrimaryKey(primaryKey)).thenReturn(mockEntity);
 
         // Act (Call the method under test)
-        Table1VO actualVO = DBService.getTable1Details(primaryKey);
+        Table1VO actualVO = DBService.getData(primaryKey);
 
         // Assert (Verify the results)
         Assertions.assertNotNull(actualVO);
@@ -50,13 +50,13 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetTable1Details_InvalidPrimaryKey_ReturnsNull() {
+    public void testGetData_InvalidPrimaryKey_ReturnsNull() {
         // Arrange
         Integer invalidPrimaryKey = 999;
         Mockito.when(table1Repository.findByPrimaryKey(invalidPrimaryKey)).thenReturn(null);
 
         // Act
-        Table1VO result = DBService.getTable1Details(invalidPrimaryKey);
+        Table1VO result = DBService.getData(invalidPrimaryKey);
 
         // Assert
         Assertions.assertNull(result);
@@ -65,14 +65,14 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetTable1Details_ExceptionHandling_ReturnsNull() {
+    public void testGetData_ExceptionHandling_ReturnsNull() {
         // Arrange
         Integer primaryKey = 1;
         Mockito.when(table1Repository.findByPrimaryKey(primaryKey)).thenThrow(
                 new RuntimeException("Database error"));
 
         // Act
-        Table1VO result = DBService.getTable1Details(primaryKey);
+        Table1VO result = DBService.getData(primaryKey);
 
         // Assert
         Assertions.assertNull(result);
