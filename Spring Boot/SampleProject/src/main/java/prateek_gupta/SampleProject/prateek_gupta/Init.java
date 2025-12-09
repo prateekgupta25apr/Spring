@@ -4,6 +4,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.springframework.boot.system.ApplicationHome;
 import prateek_gupta.SampleProject.utils.Util;
 
 import java.lang.reflect.Method;
@@ -15,9 +16,13 @@ public class Init {
 
     public static Map<String,Object> configuration_properties=new HashMap<>();
 
+    public static String projectDir ="";
+
 
     static {
         try {
+            ApplicationHome home = new ApplicationHome();
+            projectDir =home.getDir().getAbsolutePath()+"\\SampleProject\\src\\main\\";
             preConstructMethodExecution();
         } catch (Exception e) {
             ServiceException.logException(e);

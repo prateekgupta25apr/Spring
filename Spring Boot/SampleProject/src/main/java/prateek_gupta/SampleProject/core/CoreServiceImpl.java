@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
-import prateek_gupta.SampleProject.prateek_gupta.Init;
-import prateek_gupta.SampleProject.prateek_gupta.PostConstructMethod;
-import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
+import prateek_gupta.SampleProject.prateek_gupta.*;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +44,13 @@ public class CoreServiceImpl implements CoreService {
                     Context.getCurrentContext().userId);
             response.set("configuration_properties",
                     getJsonNode(Init.configuration_properties));
+
+            response.set("exception_messages",
+                    getJsonNode(Utils.loadPropertiesFromFile(
+                            Init.projectDir +
+                                    "resources\\ServiceExceptionMessages.properties",
+                            new ArrayList<>(),
+                            new ArrayList<>(),true)));
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException(ServiceException.ExceptionType.DB_ERROR);

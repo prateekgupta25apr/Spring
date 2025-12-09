@@ -14,7 +14,7 @@ public class Utils {
     public static Map<String,Object>
     loadPropertiesFromFile(String filePath,List<String> requiredFields,
                            List<String> expectedFields,boolean fetchAll) throws Exception {
-        Map<String,Object> propertiesHolder=new HashMap<>();
+        Map<String,Object> propertiesHolder=new LinkedHashMap<>();
         Properties properties = new Properties();
         try (FileInputStream fis = new FileInputStream(filePath)) {
             properties.load(fis);

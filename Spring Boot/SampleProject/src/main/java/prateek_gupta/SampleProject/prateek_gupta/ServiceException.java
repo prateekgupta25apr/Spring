@@ -12,7 +12,10 @@ public class ServiceException extends Exception {
         UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         MISSING_REQUIRED_PARAMETERS(HttpStatus.BAD_REQUEST),
-        MODULE_LOCK(HttpStatus.FORBIDDEN);
+        MODULE_LOCK(HttpStatus.FORBIDDEN),
+        FORBIDDEN(HttpStatus.FORBIDDEN),
+        LOGIN_REQUIRED(HttpStatus.OK)
+        ;
 
         final HttpStatus status;
 
