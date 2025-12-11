@@ -51,7 +51,10 @@ public class CoreServiceImpl implements CoreService {
                                     "resources\\ServiceExceptionMessages.properties",
                             new ArrayList<>(),
                             new ArrayList<>(),true)));
-        } catch (Exception e) {
+        } catch (ServiceException e) {
+            ServiceException.logException(e);
+            throw e;
+        }catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException(ServiceException.ExceptionType.DB_ERROR);
         }

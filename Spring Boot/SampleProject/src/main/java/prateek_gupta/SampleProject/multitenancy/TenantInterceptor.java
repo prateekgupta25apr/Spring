@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import prateek_gupta.SampleProject.prateek_gupta.Init;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,9 @@ public class TenantInterceptor implements HandlerInterceptor {
                 try {
                     int tenantId = Integer.parseInt(tenantIdStr);
                     TenantContext.setCurrentTenant("sample_project_" + tenantId);
+
+                    TenantContext.getCurrentTenant().baseUrl =
+                            Init.getConfiguration("base_url", "").toString();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }

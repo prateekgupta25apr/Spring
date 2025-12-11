@@ -15,6 +15,8 @@ public class TenantContext {
 
     String schemaName;
 
+    String baseUrl;
+
     public static final String DEFAULT_SCHEMA_NAME = "sample_project_1";
 
     public TenantContext(String schemaName) {

@@ -143,19 +143,30 @@ public class AWSImpl implements AWS {
         log.info("Entering fileExists()");
         boolean exists = false;
         try {
-            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .build();
-
-            s3Client.headObject(headObjectRequest);
-            exists = true;
-
+            exists = getFileDetails(fileName)==null;
         } catch (Exception e) {
             ServiceException.logException(e);
         }
         log.info("Exiting fileExists()");
         return exists;
+    }
+
+    public HeadObjectResponse getFileDetails(String fileName) {
+        log.info("Entering getFileDetails()");
+        HeadObjectResponse response=null;
+        try {
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+
+            response=s3Client.headObject(headObjectRequest);
+
+        } catch (Exception e) {
+            ServiceException.logException(e);
+        }
+        log.info("Exiting getFileDetails()");
+        return response;
     }
 
     @Override

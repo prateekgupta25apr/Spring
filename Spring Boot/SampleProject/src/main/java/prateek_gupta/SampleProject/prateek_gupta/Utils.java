@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
+import java.net.URI;
 import java.util.*;
 
 public class Utils {
@@ -52,5 +53,11 @@ public class Utils {
         }
 
         return propertiesHolder;
+    }
+
+    public static String buildUrl(String relativeUrl){
+        return URI.create(Init.getConfiguration("base_url","").toString())
+                .resolve(Init.getConfiguration("context_path","").toString())
+                .resolve(relativeUrl).toString();
     }
 }

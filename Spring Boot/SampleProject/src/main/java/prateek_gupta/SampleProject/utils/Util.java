@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 import java.lang.reflect.Method;
@@ -100,4 +101,8 @@ public class Util {
         public abstract Number getKeyAsNumber();
     }
 
+    public static void validateUserLogin() throws ServiceException {
+        if (Context.getCurrentContext().userId<=0)
+            throw new ServiceException(ServiceException.ExceptionType.LOGIN_REQUIRED);
+    }
 }

@@ -41,7 +41,7 @@ public class CoreController {
             response = Util.getSuccessResponse("Success", data);
 
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Util.getErrorResponse(exception);
         }
         logger.info("Exiting test() Controller");
         return response;
