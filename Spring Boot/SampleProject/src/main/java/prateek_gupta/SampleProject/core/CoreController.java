@@ -110,7 +110,9 @@ public class CoreController {
 
     @GetMapping("render_html")
     public String renderHtml(Model model) {
+        logger.info("Entering renderHtml() Controller");
         model.addAttribute("variable_data", "PG");
+        logger.info("Exiting renderHtml() Controller");
         return "SampleHtml";
     }
 }

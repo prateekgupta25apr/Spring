@@ -44,7 +44,7 @@ public class LogManager extends ConfigurationFactory{
         LayoutComponentBuilder layoutBuilder =
                 configurationBuilder.newLayout("PatternLayout")
                         .addAttribute("pattern",
-                                "%d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} : %msg%n");
+                                "[%T(%t)] %d{yyyy-MM-dd HH:mm:ss.SSS} %M(){%F} : %msg%n");
 
         // Log file rollover triggering Policies
         ComponentBuilder<?> triggeringPolicies =

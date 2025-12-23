@@ -1,9 +1,10 @@
-package prateek_gupta.SampleProject.base;
+package prateek_gupta.SampleProject.core;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.*;
