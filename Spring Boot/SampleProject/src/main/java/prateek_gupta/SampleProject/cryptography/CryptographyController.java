@@ -29,7 +29,7 @@ public class CryptographyController {
     ResponseEntity<ObjectNode> desEncrypt(@RequestParam String plainText) {
         ResponseEntity<ObjectNode> response;
         try {
-            //ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
             if (StringUtils.isNotBlank(plainText)) {
                 byte[] encryptedData=cryptography.desEncrypt(plainText);
@@ -49,17 +49,14 @@ public class CryptographyController {
         log.info("Entering Controller : desDecrypt()");
         ResponseEntity<ObjectNode> response;
         try {
-            //ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
             if (StringUtils.isNotBlank(encryptedText)) {
-                Object[] objectArray =
-                        Arrays.stream(encryptedText.substring(1, encryptedText.length() - 1)
-                                .split(","))
-                        .map(i->Byte.parseByte(i.trim()))
-                        .toArray();
-                byte[] bytes=new byte[objectArray.length];
-                for (int i = 0; i < objectArray.length; i++) {
-                    bytes[i]=Byte.parseByte(objectArray[i].toString());
+                String[] strArray=encryptedText.substring(1, encryptedText.length() - 1)
+                        .split(",");
+                byte[] bytes=new byte[strArray.length];
+                for (int i = 0; i < strArray.length; i++) {
+                    bytes[i]=Byte.parseByte(strArray[i].trim());
                 }
                 String plainText=cryptography.desDecrypt(bytes);
                 response = Util.getSuccessResponse("Decrypted Data : " +plainText);
