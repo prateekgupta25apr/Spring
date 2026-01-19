@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.base;
+package prateek_gupta.SampleProject.core;
 
 import lombok.NonNull;
 import org.apache.commons.lang.StringUtils;
@@ -125,6 +125,12 @@ public class BeanConfiguration {
     @Conditional(OpenSearchCondition.class)
     public OpenSearch openSearchService(){
         return new OpenSearchImpl(openSearchHost,openSearchPort);
+    }
+
+
+    @Bean
+    public Cryptography cryptography() throws ServiceException {
+        return new CryptographyImpl();
     }
 
     static class RedisCondition implements Condition {
