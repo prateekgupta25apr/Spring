@@ -11,14 +11,15 @@ import java.security.SecureRandom;
 
 public class CryptographyImpl implements Cryptography {
     private final Logger log = LoggerFactory.getLogger(CryptographyImpl.class);
-    private final String key = "PrateekG";
 
     /**
      * This method takes Secret Key in String format and return as an object of the class
      * {@link SecretKey}
      */
-    public static SecretKey getDESKey(String secretKey) throws Exception {
+    public static SecretKey getDESKey()
+            throws Exception {
         // Getting bytes for Secret Key in String format
+        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
         byte[] key = secretKey.getBytes();
 
         // Getting specifications for the DES keys
@@ -37,9 +38,10 @@ public class CryptographyImpl implements Cryptography {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             // Getting Secret Key
-            SecretKey secretKey = getDESKey(key);
+            SecretKey secretKey = getDESKey();
 
-            // Generating random string using the algorithm SHA1PRNG which can be used as IV later
+            // Generating random string using the algorithm SHA1PRNG which can be
+            // used as IV later
             byte[] iv = new byte[8];
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
             sr.nextBytes(iv);
@@ -54,15 +56,13 @@ public class CryptographyImpl implements Cryptography {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
 
             // Inserting IV first
-            BufferedOutputStream bufferedOutputStream =
-                    new BufferedOutputStream(byteArrayOutputStream);
-            bufferedOutputStream.write(iv);
-            bufferedOutputStream.flush();
+            byteArrayOutputStream.write(iv);
+            byteArrayOutputStream.flush();
 
             // Creating an object of CipherOutputStream using cipher and an output stream so
             // any data passed through this will be automatically encrypted using Cipher and
             // added in the output stream
-            CipherOutputStream cos = new CipherOutputStream(bufferedOutputStream, cipher);
+            CipherOutputStream cos = new CipherOutputStream(byteArrayOutputStream, cipher);
 
             // Creating an object of ObjectOutputStream which helps us to write data along with
             // metadata like length of the content written which will help us while decrypting
@@ -81,15 +81,14 @@ public class CryptographyImpl implements Cryptography {
     @Override
     public String desDecrypt(byte[] encryptedText) throws Exception {
         // Getting Secret Key
-        SecretKey secretKey = getDESKey(key);
+        SecretKey secretKey = getDESKey();
 
         // Setting encrypted data as input source
-        ByteArrayInputStream bais = new ByteArrayInputStream(encryptedText);
-        BufferedInputStream bis = new BufferedInputStream(bais);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encryptedText);
 
         // Reading IV first as it was inserted first while encrypting
         byte[] iv = new byte[8];
-        int ivSize = bis.read(iv, 0, 8);
+        int ivSize = byteArrayInputStream.read(iv, 0, 8);
         log.info("IVSize : {}", ivSize);
 
         // Generating IV from random string
@@ -104,7 +103,7 @@ public class CryptographyImpl implements Cryptography {
         // Creating an object of CipherInputStream using cipher and an input stream so
         // any data passed through this will be automatically decrypted using Cipher and
         // added in the input stream
-        CipherInputStream cis = new CipherInputStream(bis, cipher);
+        CipherInputStream cis = new CipherInputStream(byteArrayInputStream, cipher);
 
         // Creating an object of ObjectInputStream which helps us to read data from an
         // input source correctly using the metadata like length of the content
