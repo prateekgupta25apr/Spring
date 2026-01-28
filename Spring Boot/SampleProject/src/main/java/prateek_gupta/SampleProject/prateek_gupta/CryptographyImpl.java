@@ -7,6 +7,7 @@ import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 public class CryptographyImpl implements Cryptography {
@@ -62,14 +63,14 @@ public class CryptographyImpl implements Cryptography {
             // Creating an object of CipherOutputStream using cipher and an output stream so
             // any data passed through this will be automatically encrypted using Cipher and
             // added in the output stream
-            CipherOutputStream cos = new CipherOutputStream(byteArrayOutputStream, cipher);
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(
+                    byteArrayOutputStream, cipher);
 
-            // Creating an object of ObjectOutputStream which helps us to write data along with
-            // metadata like length of the content written which will help us while decrypting
-            ObjectOutputStream oos = new ObjectOutputStream(cos);
-            oos.writeUTF(plaintext);
-            oos.close();
-
+            // Writing plain text bytes to cipherOutputStream which will internally
+            // update the byteArrayOutputStream
+            cipherOutputStream.write(plaintext.getBytes(StandardCharsets.UTF_8));
+            cipherOutputStream.flush();
+            cipherOutputStream.close();
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
@@ -103,11 +104,20 @@ public class CryptographyImpl implements Cryptography {
         // Creating an object of CipherInputStream using cipher and an input stream so
         // any data passed through this will be automatically decrypted using Cipher and
         // added in the input stream
-        CipherInputStream cis = new CipherInputStream(byteArrayInputStream, cipher);
+        CipherInputStream cipherInputStream = new CipherInputStream(byteArrayInputStream, cipher);
 
-        // Creating an object of ObjectInputStream which helps us to read data from an
-        // input source correctly using the metadata like length of the content
-        ObjectInputStream ois = new ObjectInputStream(cis);
-        return ois.readUTF();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        // Reading decrypted bytes from cipherInputStream and writing in the
+        // byteArrayOutputStream object
+        while ((bytesRead = cipherInputStream.read(buffer)) != -1)
+            byteArrayOutputStream.write(buffer, 0, bytesRead);
+
+        cipherInputStream.close();
+
+        // Convert decrypted bytes to String
+        return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
 }

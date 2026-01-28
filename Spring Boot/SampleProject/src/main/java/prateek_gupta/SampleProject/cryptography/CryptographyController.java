@@ -1,6 +1,7 @@
 package prateek_gupta.SampleProject.cryptography;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import prateek_gupta.SampleProject.prateek_gupta.Cryptography;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
-import java.util.Arrays;
+import java.util.HexFormat;
 
 @RestController
 @RequestMapping("cryptography")
@@ -26,15 +27,18 @@ public class CryptographyController {
 
 
     @PostMapping("/des_encrypt")
-    ResponseEntity<ObjectNode> desEncrypt(@RequestParam String plainText) {
+    ResponseEntity<ObjectNode> desEncrypt(@RequestParam String plain_text) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
-            if (StringUtils.isNotBlank(plainText)) {
-                byte[] encryptedData=cryptography.desEncrypt(plainText);
-                response = Util.getSuccessResponse("Encrypted Data : " +
-                        Arrays.toString(encryptedData));
+            if (StringUtils.isNotBlank(plain_text)) {
+                byte[] encryptedData=cryptography.desEncrypt(plain_text);
+                String hex = HexFormat.of().formatHex(encryptedData);
+                JSONObject data = new JSONObject();
+                data.put("Encrypted Data(Hex)", hex);
+
+                response = Util.getSuccessResponse("Successfully encrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
@@ -45,19 +49,14 @@ public class CryptographyController {
     }
 
     @PostMapping("/des_decrypt")
-    ResponseEntity<ObjectNode> desDecrypt(@RequestParam String encryptedText) {
+    ResponseEntity<ObjectNode> desDecrypt(@RequestParam String encrypted_text) {
         log.info("Entering Controller : desDecrypt()");
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
-            if (StringUtils.isNotBlank(encryptedText)) {
-                String[] strArray=encryptedText.substring(1, encryptedText.length() - 1)
-                        .split(",");
-                byte[] bytes=new byte[strArray.length];
-                for (int i = 0; i < strArray.length; i++) {
-                    bytes[i]=Byte.parseByte(strArray[i].trim());
-                }
+            if (StringUtils.isNotBlank(encrypted_text)) {
+                byte[] bytes=HexFormat.of().parseHex(encrypted_text);
                 String plainText=cryptography.desDecrypt(bytes);
                 response = Util.getSuccessResponse("Decrypted Data : " +plainText);
             } else
