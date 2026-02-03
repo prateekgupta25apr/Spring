@@ -8,7 +8,10 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HexFormat;
 
 public class CryptographyImpl implements Cryptography {
     private final Logger log = LoggerFactory.getLogger(CryptographyImpl.class);
@@ -119,5 +122,18 @@ public class CryptographyImpl implements Cryptography {
 
         // Convert decrypted bytes to String
         return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public String hashSHA256(String plaintext) throws ServiceException {
+        String hex;
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = messageDigest.digest(plaintext.getBytes(StandardCharsets.UTF_8));
+            hex = HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return hex;
     }
 }

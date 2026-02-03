@@ -20,7 +20,8 @@ import java.util.HexFormat;
 @RestController
 @RequestMapping("cryptography")
 public class CryptographyController {
-    private final Logger log = LoggerFactory.getLogger(CryptographyController.class);
+    private final Logger log = LoggerFactory.getLogger(
+            CryptographyController.class);
 
     @Autowired
     Cryptography cryptography;
@@ -58,7 +59,10 @@ public class CryptographyController {
             if (StringUtils.isNotBlank(encrypted_text)) {
                 byte[] bytes=HexFormat.of().parseHex(encrypted_text);
                 String plainText=cryptography.desDecrypt(bytes);
-                response = Util.getSuccessResponse("Decrypted Data : " +plainText);
+                JSONObject data = new JSONObject();
+                data.put("Decrypted Data", plainText);
+
+                response = Util.getSuccessResponse("Successfully decrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
@@ -69,6 +73,31 @@ public class CryptographyController {
                     new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
         }
         log.info("Exiting Controller : desDecrypt()");
+        return response;
+    }
+
+    @PostMapping("/hash_sha_256")
+    ResponseEntity<ObjectNode> hashSHA256(@RequestParam String plain_text) {
+        log.info("Entering Controller : hashSHA256()");
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
+
+            if (StringUtils.isNotBlank(plain_text)) {
+                String hex=cryptography.hashSHA256(plain_text);
+                JSONObject data = new JSONObject();
+                data.put("Hashed Data(Hex)", hex);
+                response = Util.getSuccessResponse("Successfully hashed data",data);
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception e) {
+            return Util.getErrorResponse(
+                    new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
+        }
+        log.info("Exiting Controller : hashSHA256()");
         return response;
     }
 }
