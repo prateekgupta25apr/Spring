@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.HexFormat;
 
 public class CryptographyImpl implements Cryptography {
@@ -35,17 +36,6 @@ public class CryptographyImpl implements Cryptography {
 
         // Generating Secret Key as per DES Key specification
         return keyFactory.generateSecret(desKeySpec);
-    }
-
-    /**
-     * This method gets Secret Key in String format and return as an object of the class
-     * {@link SecretKeySpec}
-     */
-    public static SecretKeySpec getHMacSHA256Key() {
-        // Getting bytes for Secret Key in String format
-        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
-        byte[] key = secretKey.getBytes(StandardCharsets.UTF_8);
-        return new SecretKeySpec(key, "HmacSHA256");
     }
 
     @Override
@@ -149,6 +139,17 @@ public class CryptographyImpl implements Cryptography {
         return hex;
     }
 
+    /**
+     * This method gets Secret Key in String format and return as an object of the class
+     * {@link SecretKeySpec}
+     */
+    public static SecretKeySpec getHMacSHA256Key() {
+        // Getting bytes for Secret Key in String format
+        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
+        byte[] key = secretKey.getBytes(StandardCharsets.UTF_8);
+        return new SecretKeySpec(key, "HmacSHA256");
+    }
+
     @Override
     public String hMacSHA256(String plaintext) throws ServiceException {
         String hex;
@@ -164,5 +165,116 @@ public class CryptographyImpl implements Cryptography {
             throw new ServiceException(e.getMessage());
         }
         return hex;
+    }
+
+    /**
+     * This method gets Secret Key in String format and return as an object of the class
+     * {@link SecretKeySpec}
+     */
+    public static SecretKeySpec getAESKey()
+            throws NoSuchAlgorithmException {
+        // Getting secret key string
+        String secretKeyStr = Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY", "").toString();
+
+        // Convert to bytes (UTF-8)
+        byte[] keyBytes = secretKeyStr.getBytes(StandardCharsets.UTF_8);
+
+        // Generating hash, which will be of size 32
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        keyBytes = sha256.digest(keyBytes);
+
+        // Ensure key length is valid for AES (16 bytes = AES-128)
+        keyBytes = Arrays.copyOf(keyBytes, 16); // 16 bytes = 128-bit key
+
+        // Create AES key
+        return new SecretKeySpec(keyBytes, "AES");
+    }
+
+    @Override
+    public byte[] aesEncrypt(String plaintext) throws ServiceException {
+        log.info("Entering aesEncrypt()");
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            // Getting Secret Key
+            SecretKey secretKey = getAESKey();
+
+            // Generating random string using the algorithm SHA1PRNG which can be
+            // used as IV later
+            byte[] iv = new byte[16];
+            SecureRandom sr = SecureRandom.getInstanceStrong();
+            sr.nextBytes(iv);
+
+            // Generating IV from random string
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+            // Creating Cipher(engine) for encrypting
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+            // Initializing Cipher with secret key and IV
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
+
+            // Inserting IV first
+            byteArrayOutputStream.write(iv);
+            byteArrayOutputStream.flush();
+
+            // Creating an object of CipherOutputStream using cipher and an output stream so
+            // any data passed through this will be automatically encrypted using Cipher and
+            // added in the output stream
+            CipherOutputStream cipherOutputStream = new CipherOutputStream(
+                    byteArrayOutputStream, cipher);
+
+            // Writing plain text bytes to cipherOutputStream which will internally
+            // update the byteArrayOutputStream
+            cipherOutputStream.write(plaintext.getBytes(StandardCharsets.UTF_8));
+            cipherOutputStream.flush();
+            cipherOutputStream.close();
+        } catch (Exception e) {
+            ServiceException.logException(e);
+            throw new ServiceException();
+        }
+        log.info("Exiting aesEncrypt()");
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    @Override
+    public String aesDecrypt(byte[] encryptedText) throws Exception {
+        // Getting Secret Key
+        SecretKey secretKey = getAESKey();
+
+        // Setting encrypted data as input source
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encryptedText);
+
+        // Reading IV first as it was inserted first while encrypting
+        byte[] iv = new byte[16];
+        int ivSize = byteArrayInputStream.read(iv, 0, 16);
+        log.info("IVSize : {}", ivSize);
+
+        // Generating IV from random string
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+        // Creating Cipher(engine) for decrypting
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+        // Initializing Cipher with secret key and IV
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+
+        // Creating an object of CipherInputStream using cipher and an input stream so
+        // any data passed through this will be automatically decrypted using Cipher and
+        // added in the input stream
+        CipherInputStream cipherInputStream = new CipherInputStream(byteArrayInputStream, cipher);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        // Reading decrypted bytes from cipherInputStream and writing in the
+        // byteArrayOutputStream object
+        while ((bytesRead = cipherInputStream.read(buffer)) != -1)
+            byteArrayOutputStream.write(buffer, 0, bytesRead);
+
+        cipherInputStream.close();
+
+        // Convert decrypted bytes to String
+        return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
 }

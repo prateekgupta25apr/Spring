@@ -125,4 +125,53 @@ public class CryptographyController {
         log.info("Exiting Controller : hMacSHA256()");
         return response;
     }
+
+    @PostMapping("/aes_encrypt")
+    ResponseEntity<ObjectNode> aesEncrypt(@RequestParam String plain_text) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
+
+            if (StringUtils.isNotBlank(plain_text)) {
+                byte[] encryptedData=cryptography.aesEncrypt(plain_text);
+                String hex = HexFormat.of().formatHex(encryptedData);
+                JSONObject data = new JSONObject();
+                data.put("Encrypted Data(Hex)", hex);
+
+                response = Util.getSuccessResponse("Successfully encrypted data",data);
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        return response;
+    }
+
+    @PostMapping("/aes_decrypt")
+    ResponseEntity<ObjectNode> aesDecrypt(@RequestParam String encrypted_text) {
+        log.info("Entering Controller : aesDecrypt()");
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
+
+            if (StringUtils.isNotBlank(encrypted_text)) {
+                byte[] bytes=HexFormat.of().parseHex(encrypted_text);
+                String plainText=cryptography.aesDecrypt(bytes);
+                JSONObject data = new JSONObject();
+                data.put("Decrypted Data", plainText);
+
+                response = Util.getSuccessResponse("Successfully decrypted data",data);
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception e) {
+            return Util.getErrorResponse(
+                    new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
+        }
+        log.info("Exiting Controller : aesDecrypt()");
+        return response;
+    }
 }
