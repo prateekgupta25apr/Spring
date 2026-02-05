@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.*;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,7 +18,7 @@ public class CryptographyImpl implements Cryptography {
     private final Logger log = LoggerFactory.getLogger(CryptographyImpl.class);
 
     /**
-     * This method takes Secret Key in String format and return as an object of the class
+     * This method gets Secret Key in String format and return as an object of the class
      * {@link SecretKey}
      */
     public static SecretKey getDESKey()
@@ -34,6 +35,17 @@ public class CryptographyImpl implements Cryptography {
 
         // Generating Secret Key as per DES Key specification
         return keyFactory.generateSecret(desKeySpec);
+    }
+
+    /**
+     * This method gets Secret Key in String format and return as an object of the class
+     * {@link SecretKeySpec}
+     */
+    public static SecretKeySpec getHMacSHA256Key() {
+        // Getting bytes for Secret Key in String format
+        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
+        byte[] key = secretKey.getBytes(StandardCharsets.UTF_8);
+        return new SecretKeySpec(key, "HmacSHA256");
     }
 
     @Override
@@ -132,6 +144,23 @@ public class CryptographyImpl implements Cryptography {
             byte[] hash = messageDigest.digest(plaintext.getBytes(StandardCharsets.UTF_8));
             hex = HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return hex;
+    }
+
+    @Override
+    public String hMacSHA256(String plaintext) throws ServiceException {
+        String hex;
+        try {
+            SecretKeySpec secretKeySpec=getHMacSHA256Key();
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(secretKeySpec);
+
+            byte[] plainTextBytes=plaintext.getBytes(StandardCharsets.UTF_8);
+            byte[] hMac = mac.doFinal(plainTextBytes);
+            hex = HexFormat.of().formatHex(hMac);
+        } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
         return hex;

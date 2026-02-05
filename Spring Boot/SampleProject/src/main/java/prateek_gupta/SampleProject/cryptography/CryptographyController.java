@@ -100,4 +100,29 @@ public class CryptographyController {
         log.info("Exiting Controller : hashSHA256()");
         return response;
     }
+
+    @PostMapping("/hmac_sha_256")
+    ResponseEntity<ObjectNode> hMacSHA256(@RequestParam String plain_text) {
+        log.info("Entering Controller : hMacSHA256()");
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
+
+            if (StringUtils.isNotBlank(plain_text)) {
+                String hex=cryptography.hMacSHA256(plain_text);
+                JSONObject data = new JSONObject();
+                data.put("HMac(Hex)", hex);
+                response = Util.getSuccessResponse("Successfully generated HMac",data);
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception e) {
+            return Util.getErrorResponse(
+                    new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
+        }
+        log.info("Exiting Controller : hMacSHA256()");
+        return response;
+    }
 }
