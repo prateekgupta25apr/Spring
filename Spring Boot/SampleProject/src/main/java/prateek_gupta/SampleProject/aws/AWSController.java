@@ -114,4 +114,27 @@ public class AWSController {
         }
         return response;
     }
+
+    @PostMapping("/extract_file_name")
+    public ResponseEntity<ObjectNode> extractFilename(HttpServletRequest request) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+
+            String filePath=request.getParameter("file_path");
+            if (StringUtils.isNotBlank(filePath)) {
+                String fileName = aws.extractFileName(filePath, true);
+                ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+                responseData.put("file_name", fileName);
+                response = Util.getSuccessResponse(
+                        "Extracted file name successfully", responseData);
+            }
+            else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException e) {
+            return Util.getErrorResponse(e);
+        }
+        return response;
+    }
 }

@@ -16,4 +16,5 @@ public interface AWS {
             String key, String method) throws ServiceException;
     String updateFileName(String fileName,String prefix);
     String updateFileName(String fileName);
+    String extractFileName(String urlOrFileKey,boolean onlyFileName);
 }

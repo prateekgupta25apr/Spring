@@ -17,6 +17,10 @@ import software.amazon.awssdk.services.s3.presigner.model.DeleteObjectPresignReq
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.Duration;
 
 import javax.servlet.http.HttpServletResponse;
@@ -241,6 +245,28 @@ public class AWSImpl implements AWS {
     @Override
     public String updateFileName(String fileName) {
         return updateFileName(fileName,"");
+    }
+
+    @Override
+    public String extractFileName(String urlOrFileKey,boolean onlyFileName) {
+        String key;
+
+        if (urlOrFileKey.contains("https://")) {
+            URI uri = URI.create(urlOrFileKey);
+
+            // Remove leading "/" and URL-decode
+            key = URLDecoder.decode(
+                    uri.getPath().replaceFirst("^/", ""),
+                    StandardCharsets.UTF_8
+            );
+        } else
+            key = urlOrFileKey;
+
+        // Extracting filename from the path
+        String filename = Paths.get(key).getFileName().toString();
+
+        return onlyFileName ? filename : key;
+
     }
 }
 
