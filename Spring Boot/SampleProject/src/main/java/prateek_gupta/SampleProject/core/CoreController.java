@@ -18,7 +18,6 @@ import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.http.HttpServletRequest;
-import static prateek_gupta.SampleProject.prateek_gupta.ProjectSettings.*;
 
 @Controller
 public class CoreController {

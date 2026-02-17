@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.*;
 
@@ -59,5 +60,28 @@ public class Utils {
         return URI.create(Init.getConfiguration("base_url","").toString())
                 .resolve(Init.getConfiguration("context_path","").toString())
                 .resolve(relativeUrl).toString();
+    }
+
+    public static Map<String,String> getContentType(String fileName){
+        String contentType = HttpURLConnection.guessContentTypeFromName(fileName);
+        String mainType;
+        String subType;
+
+        if (contentType != null && contentType.contains("/")) {
+            String[] parts = contentType.split("/");
+            mainType = parts[0];
+            subType = parts[1];
+        } else {
+            mainType = "application";
+            subType = "octet-stream";
+            contentType = "application/octet-stream";
+        }
+
+        Map<String, String> result = new HashMap<>();
+        result.put("main_type", mainType);
+        result.put("sub_type", subType);
+        result.put("content_type", contentType);
+
+        return result;
     }
 }
