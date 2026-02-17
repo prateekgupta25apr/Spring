@@ -55,6 +55,8 @@ public class AWSController {
             ObjectNode responseData=Util.getObjectMapper().createObjectNode();
             responseData.put("file_name",fileName);
             responseData.put("file_key",fileKey);
+            responseData.put("pre_signed_url",
+                    aws.generatePreSignedUrl(fileKey,"GET"));
             response = Util.getSuccessResponse(
                     "Successfully uploaded the file : " + fileName,
                     responseData);
