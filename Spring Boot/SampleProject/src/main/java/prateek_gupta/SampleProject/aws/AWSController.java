@@ -25,15 +25,15 @@ public class AWSController {
     public ResponseEntity<?> get(
             HttpServletRequest request, HttpServletResponse response) {
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+            ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
-            String fileName=request.getParameter("fileName");
+            String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName))
                 if (aws.fileExists(fileName))
-                    aws.getFile(fileName,response);
+                    aws.getFile(fileName, response);
                 else
                     return Util.getErrorResponse(new ServiceException(
-                            HttpStatus.BAD_REQUEST,"File doesn't exists"));
+                            HttpStatus.BAD_REQUEST, "File doesn't exists"));
             else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
@@ -44,19 +44,22 @@ public class AWSController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ObjectNode> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ObjectNode> upload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "prefix", required = false) String prefix) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+            ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
-            String fileName=file.getOriginalFilename();
-            String fileKey= aws.updateFileName(file.getOriginalFilename());
-            fileKey= aws.uploadFile(file,fileKey);
-            ObjectNode responseData=Util.getObjectMapper().createObjectNode();
-            responseData.put("file_name",fileName);
-            responseData.put("file_key",fileKey);
+            String fileName = file.getOriginalFilename();
+            String fileKey = aws.updateFileName(
+                    file.getOriginalFilename(), StringUtils.isNotBlank(prefix) ? prefix : "");
+            fileKey = aws.uploadFile(file, fileKey);
+            ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+            responseData.put("file_name", fileName);
+            responseData.put("file_key", fileKey);
             responseData.put("pre_signed_url",
-                    aws.generatePreSignedUrl(fileKey,"GET"));
+                    aws.generatePreSignedUrl(fileKey, "GET"));
             response = Util.getSuccessResponse(
                     "Successfully uploaded the file : " + fileName,
                     responseData);
@@ -70,14 +73,13 @@ public class AWSController {
     public ResponseEntity<ObjectNode> delete(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+            ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
-            String fileName=request.getParameter("fileName");
+            String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
                 aws.deleteFile(fileName);
                 response = Util.getSuccessResponse("File deleted successfully");
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
@@ -90,24 +92,23 @@ public class AWSController {
     public ResponseEntity<ObjectNode> getPreSignedUrl(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+            ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
-            String fileName=request.getParameter("fileName");
-            String method=request.getParameter("method");
+            String fileName = request.getParameter("fileName");
+            String method = request.getParameter("method");
             if (StringUtils.isNotBlank(fileName))
                 if (aws.fileExists(fileName)) {
                     if (StringUtils.isBlank(method))
                         method = "GET";
-                    String url=aws.generatePreSignedUrl(fileName, method);
-                    ObjectNode responseData=Util.getObjectMapper().createObjectNode();
-                    responseData.put("method",method);
-                    responseData.put("preSingedUrl",url);
+                    String url = aws.generatePreSignedUrl(fileName, method);
+                    ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+                    responseData.put("method", method);
+                    responseData.put("preSingedUrl", url);
                     response = Util.getSuccessResponse(
-                            "File deleted successfully",responseData);
-                }
-                else
+                            "File deleted successfully", responseData);
+                } else
                     return Util.getErrorResponse(new ServiceException(
-                            HttpStatus.BAD_REQUEST,"File doesn't exists"));
+                            HttpStatus.BAD_REQUEST, "File doesn't exists"));
             else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
@@ -121,17 +122,16 @@ public class AWSController {
     public ResponseEntity<ObjectNode> extractFilename(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE",true);
+            ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
-            String filePath=request.getParameter("file_path");
+            String filePath = request.getParameter("file_path");
             if (StringUtils.isNotBlank(filePath)) {
                 String fileName = aws.extractFileName(filePath, true);
                 ObjectNode responseData = Util.getObjectMapper().createObjectNode();
                 responseData.put("file_name", fileName);
                 response = Util.getSuccessResponse(
                         "Extracted file name successfully", responseData);
-            }
-            else
+            } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
