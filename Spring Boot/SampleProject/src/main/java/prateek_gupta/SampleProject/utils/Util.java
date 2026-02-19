@@ -29,12 +29,12 @@ public class Util {
 
     public static ResponseEntity<ObjectNode>
     getSuccessResponse(String message, Object data){
-        return getResponse(true,message,data,HttpStatus.OK);
+        return getResponse(message,data,HttpStatus.OK);
     }
 
     public static ResponseEntity<ObjectNode>
     getSuccessResponse(String message){
-        return getResponse(true,message,null,HttpStatus.OK);
+        return getResponse(message,null,HttpStatus.OK);
     }
 
     public static ResponseEntity<ObjectNode> getErrorResponse(
@@ -49,20 +49,18 @@ public class Util {
             message=exception.getMessage();
             status=HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        return Util.getResponse(false,message,null,status);
+        return Util.getResponse(message,null,status);
     }
 
     public static ResponseEntity<ObjectNode> getResponse(
             String message,HttpStatus status){
-        return getResponse(null,message,null,status);
+        return getResponse(message,null,status);
     }
 
     public static ResponseEntity<ObjectNode> getResponse(
-            Boolean isSuccess,String message, Object data,HttpStatus status){
+            String message, Object data,HttpStatus status){
         ObjectMapper objectMapper=getObjectMapper();
         ObjectNode responseJSON = objectMapper.createObjectNode();
-        if (isSuccess!=null)
-            responseJSON.put("status", isSuccess?"Success":"Failure");
         responseJSON.put("message", message);
         JsonNode dataNode=getObjectMapper().createObjectNode();
         if (data!=null)
