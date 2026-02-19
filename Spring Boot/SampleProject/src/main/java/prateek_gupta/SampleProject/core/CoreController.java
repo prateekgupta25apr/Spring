@@ -38,8 +38,10 @@ public class CoreController {
         try {
             ObjectNode data = coreService.test(testData);
             response = Util.getSuccessResponse("Success", data);
-
         } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        catch (Exception exception) {
             return Util.getErrorResponse(exception);
         }
         logger.info("Exiting test() Controller");

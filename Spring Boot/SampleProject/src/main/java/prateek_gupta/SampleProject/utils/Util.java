@@ -38,10 +38,18 @@ public class Util {
     }
 
     public static ResponseEntity<ObjectNode> getErrorResponse(
-            ServiceException serviceException){
-        return Util.getResponse(
-                false,serviceException.exceptionMessage,null,
-                serviceException.status);
+            Exception exception){
+        String message;
+        HttpStatus status;
+        if (exception instanceof ServiceException) {
+            message=((ServiceException)exception).exceptionMessage;
+            status=((ServiceException)exception).status;
+        }
+        else {
+            message=exception.getMessage();
+            status=HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return Util.getResponse(false,message,null,status);
     }
 
     public static ResponseEntity<ObjectNode> getResponse(
