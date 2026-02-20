@@ -113,16 +113,19 @@ public class KafkaImpl implements Kafka {
             JSONObject partitions = new JSONObject();
             JSONObject partitionInfo = new JSONObject();
             for (TopicPartition topicPartition : entries) {
-                partitionInfo.put("messageCount", (endOffsets.get(topicPartition).offset() -
-                        startOffsets.get(topicPartition).offset()));
                 partitionInfo.put("earliest(start)Offset",
                         startOffsets.get(topicPartition).offset());
                 partitionInfo.put("latest(end)Offset",
                         endOffsets.get(topicPartition).offset());
+                partitionInfo.put("messageCount", (endOffsets.get(topicPartition).offset() -
+                        startOffsets.get(topicPartition).offset()));
                 partitions.put(topicPartition.partition(), partitionInfo);
             }
 
             responseData.put("partitions", partitions);
+
+            responseData.put("replication.factor",
+                    topicDescription.partitions().get(0).replicas().size());
 
             ConfigResource topicResource =
                     new ConfigResource(ConfigResource.Type.TOPIC, topicName);
