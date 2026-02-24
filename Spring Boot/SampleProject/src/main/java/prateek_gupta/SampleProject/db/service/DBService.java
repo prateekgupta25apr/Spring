@@ -13,4 +13,7 @@ public interface DBService {
     void partialUpdateData(Integer primaryKey,String col1,Boolean col2) throws ServiceException;
 
     void deleteData(Integer primaryKey) throws ServiceException;
+
+    void addAttachment(Integer table1PrimaryKey,String attachmentPath) throws ServiceException;
+    String getAttachmentPath(Integer primaryKey) throws ServiceException;
 }

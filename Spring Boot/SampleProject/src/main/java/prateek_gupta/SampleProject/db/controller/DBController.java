@@ -8,13 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prateek_gupta.SampleProject.prateek_gupta.KafkaImpl;
+import org.springframework.web.multipart.MultipartFile;
+import prateek_gupta.SampleProject.prateek_gupta.AWS;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 import prateek_gupta.SampleProject.db.service.DBService;
 import prateek_gupta.SampleProject.db.vo.Table1VO;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("db")
@@ -23,6 +25,9 @@ public class DBController {
     private final Logger log = LoggerFactory.getLogger(DBController.class);
     @Autowired
     DBService dbService;
+
+    @Autowired
+    AWS aws;
 
     @GetMapping("get_data")
     ResponseEntity<ObjectNode> getData(@RequestParam Integer primaryKey) {
@@ -168,6 +173,40 @@ public class DBController {
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        return response;
+    }
+
+    @PostMapping("add_attachment")
+    ResponseEntity<ObjectNode> addAttachment(
+            @RequestParam("table_1_primary_key") Integer table1PrimaryKey,
+            @RequestParam("attachment") MultipartFile attachment
+        ) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            String fileKey = "Table1AttachmentMapping/"+table1PrimaryKey+"/"+
+                    attachment.getOriginalFilename();
+            aws.uploadFile(attachment, fileKey);
+            dbService.addAttachment(table1PrimaryKey, fileKey);
+            response = Util.getSuccessResponse("Attachment added successfully");
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        return response;
+    }
+
+    @GetMapping("get_attachment")
+    ResponseEntity<ObjectNode> getAttachment(
+            @RequestParam Integer primaryKey,
+            HttpServletResponse servletResponse
+    ) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            String fileKey = dbService.getAttachmentPath(primaryKey);
+            aws.getFile(fileKey, servletResponse);
+            response = Util.getSuccessResponse("Attachment added successfully");
         } catch (ServiceException exception) {
             return Util.getErrorResponse(exception);
         }
