@@ -13,10 +13,13 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import prateek_gupta.SampleProject.prateek_gupta.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 public class BeanConfiguration {
@@ -61,6 +64,35 @@ public class BeanConfiguration {
 
     @Value("${OPEN_SEARCH_PORT:}")
     String openSearchPort;
+
+    @Value("${EMAILS_SEND_GRID_ENABLED:false}")
+    public String EMAILS_SEND_GRID_ENABLED;
+
+    // SendGrid Config
+    @Value("${EMAILS_SEND_GRID_SERVER:}")
+    public String EMAILS_SEND_GRID_SERVER;
+
+    @Value("${EMAILS_SEND_GRID_PORT:0}")
+    public String EMAILS_SEND_GRID_PORT;
+
+    @Value("${EMAILS_SEND_GRID_USERNAME:}")
+    public String EMAILS_SEND_GRID_USERNAME;
+
+    @Value("${EMAILS_SEND_GRID_PASSWORD:}")
+    public String EMAILS_SEND_GRID_PASSWORD;
+
+    // SMTP Config
+    @Value("${EMAILS_SMTP_SERVER:}")
+    public String EMAILS_SMTP_SERVER;
+
+    @Value("${EMAILS_SMTP_PORT:0}")
+    public String EMAILS_SMTP_PORT;
+
+    @Value("${EMAILS_SMTP_USERNAME:}")
+    public String EMAILS_SMTP_USERNAME;
+
+    @Value("${EMAILS_SMTP_PASSWORD:}")
+    public String EMAILS_SMTP_PASSWORD;
 
     @Bean
     public AWS aws() throws ServiceException {
@@ -122,6 +154,40 @@ public class BeanConfiguration {
     }
 
     @Bean
+    @Conditional(EmailCondition.class)
+    public JavaMailSender javaMailSender() {
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        boolean sendGridEnabled = Boolean.parseBoolean(EMAILS_SEND_GRID_ENABLED);
+
+        if (sendGridEnabled) {
+
+            mailSender.setHost(EMAILS_SEND_GRID_SERVER);
+            mailSender.setPort(Integer.parseInt(EMAILS_SEND_GRID_PORT));
+            mailSender.setUsername(EMAILS_SEND_GRID_USERNAME);
+            mailSender.setPassword(EMAILS_SEND_GRID_PASSWORD);
+
+        } else {
+
+            mailSender.setHost(EMAILS_SMTP_SERVER);
+            mailSender.setPort(Integer.parseInt(EMAILS_SMTP_PORT));
+            mailSender.setUsername(EMAILS_SMTP_USERNAME);
+            mailSender.setPassword(EMAILS_SMTP_PASSWORD);
+        }
+
+        Properties javaMailProps = mailSender.getJavaMailProperties();
+
+        javaMailProps.put("mail.smtp.auth", "true");
+        javaMailProps.put("mail.smtp.starttls.enable", "true");
+        javaMailProps.put("mail.smtp.connectiontimeout", "5000");
+        javaMailProps.put("mail.smtp.timeout", "5000");
+        javaMailProps.put("mail.smtp.writetimeout", "5000");
+
+        return mailSender;
+    }
+
+    @Bean
     @Conditional(OpenSearchCondition.class)
     public OpenSearch openSearchService(){
         return new OpenSearchImpl(openSearchHost,openSearchPort);
@@ -157,6 +223,15 @@ public class BeanConfiguration {
                                @NonNull AnnotatedTypeMetadata metadata) {
             return StringUtils.isNotBlank(
                     context.getEnvironment().getProperty("OPEN_SEARCH_ENABLE"));
+        }
+    }
+
+    static class EmailCondition implements Condition {
+        @Override
+        public boolean matches(@NonNull ConditionContext context,
+                               @NonNull AnnotatedTypeMetadata metadata) {
+            return StringUtils.isNotBlank(
+                    context.getEnvironment().getProperty("EMAILS_ENABLED"));
         }
     }
 }
