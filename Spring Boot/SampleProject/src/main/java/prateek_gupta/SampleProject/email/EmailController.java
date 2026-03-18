@@ -20,7 +20,7 @@ import prateek_gupta.SampleProject.utils.Util;
 public class EmailController {
     private final Logger log = LoggerFactory.getLogger(EmailController.class);
 
-    @Autowired
+    @Autowired(required = false)
     Email email;
 
 

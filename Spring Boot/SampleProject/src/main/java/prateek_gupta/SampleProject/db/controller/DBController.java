@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import prateek_gupta.SampleProject.db.vo.Table1VO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 
 @RestController
 @RequestMapping("db")
@@ -198,19 +200,29 @@ public class DBController {
     }
 
     @GetMapping("get_attachment")
-    ResponseEntity<ObjectNode> getAttachment(
+    ResponseEntity<?> getAttachment(
             @RequestParam Integer primaryKey,
-            HttpServletResponse servletResponse
+            HttpServletResponse response
     ) {
-        ResponseEntity<ObjectNode> response;
         try {
-            String fileKey = dbService.getAttachmentPath(primaryKey);
-            aws.getFile(fileKey, servletResponse);
-            response = Util.getSuccessResponse("Attachment added successfully");
+            String fileName = dbService.getAttachmentPath(primaryKey);
+            byte[] fileContent = aws.getFileContentInBytes(fileName);
+
+            response.setContentType(aws.getFileDetails(fileName).contentType());
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=" + fileName);
+
+            // Write content to response output stream
+            OutputStream output = response.getOutputStream();
+            output.write(fileContent);
+            output.flush();
+
         } catch (ServiceException exception) {
             return Util.getErrorResponse(exception);
+        }catch (Exception exception) {
+            return Util.getErrorResponse(new Exception());
         }
-        return response;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -13,6 +13,7 @@ import prateek_gupta.SampleProject.utils.Util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 
 @RestController
 @RequestMapping("/aws")
@@ -29,9 +30,18 @@ public class AWSController {
 
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName))
-                if (aws.fileExists(fileName))
-                    aws.getFile(fileName, response);
-                else
+                if (aws.fileExists(fileName)) {
+                    byte[] fileContent = aws.getFileContentInBytes(fileName);
+
+                    response.setContentType(aws.getFileDetails(fileName).contentType());
+                    response.setHeader("Content-Disposition",
+                            "attachment; filename=" + fileName);
+
+                    // Write content to response output stream
+                    OutputStream output = response.getOutputStream();
+                    output.write(fileContent);
+                    output.flush();
+                } else
                     return Util.getErrorResponse(new ServiceException(
                             HttpStatus.BAD_REQUEST, "File doesn't exists"));
             else
@@ -39,8 +49,10 @@ public class AWSController {
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
             return Util.getErrorResponse(e);
+        } catch (Exception e) {
+            return Util.getErrorResponse(new ServiceException());
         }
-        return Util.getSuccessResponse("");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/upload")

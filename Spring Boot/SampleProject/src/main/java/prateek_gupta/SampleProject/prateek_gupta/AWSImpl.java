@@ -24,7 +24,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
 import java.util.Calendar;
 
 
@@ -72,9 +71,9 @@ public class AWSImpl implements AWS {
     }
 
     @Override
-    public void getFile(String fileName, HttpServletResponse response)
-            throws ServiceException {
+    public byte[] getFileContentInBytes(String fileName) throws ServiceException {
         log.info("Entering getFile()");
+        byte[] fileContent;
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
@@ -84,26 +83,15 @@ public class AWSImpl implements AWS {
             ResponseInputStream<GetObjectResponse> s3Object =
                     s3Client.getObject(getObjectRequest);
 
-
-            response.setContentType(s3Object.response().contentType());
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=" + fileName);
-
-            // Write content to response output stream
-            OutputStream output = response.getOutputStream();
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = s3Object.read(buffer)) != -1)
-                output.write(buffer, 0, bytesRead);
-
-
+            fileContent=s3Object.readAllBytes();
             s3Object.close();
-            output.flush();
+
 
         } catch (Exception e) {
             throw new ServiceException("Error while getting file from S3");
         }
         log.info("Exiting getFile()");
+        return fileContent;
     }
 
     @Override
@@ -147,7 +135,7 @@ public class AWSImpl implements AWS {
         log.info("Entering fileExists()");
         boolean exists = false;
         try {
-            exists = getFileDetails(fileName)==null;
+            exists = getFileDetails(fileName)!=null;
         } catch (Exception e) {
             ServiceException.logException(e);
         }
