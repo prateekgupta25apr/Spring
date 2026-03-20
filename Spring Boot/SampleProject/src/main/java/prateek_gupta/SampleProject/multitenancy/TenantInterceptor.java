@@ -34,6 +34,8 @@ public class TenantInterceptor implements HandlerInterceptor {
 
                     TenantContext.getCurrentTenant().baseUrl =
                             Init.getConfiguration("base_url", "").toString();
+                    TenantContext.getCurrentTenant().apiUrl =
+                            Init.getConfiguration("api_url", "").toString();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
