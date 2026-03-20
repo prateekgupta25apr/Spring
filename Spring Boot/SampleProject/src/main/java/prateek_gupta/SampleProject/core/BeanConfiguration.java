@@ -155,36 +155,12 @@ public class BeanConfiguration {
 
     @Bean
     @Conditional(EmailCondition.class)
-    public JavaMailSender javaMailSender() {
-
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
-        boolean sendGridEnabled = Boolean.parseBoolean(EMAILS_SEND_GRID_ENABLED);
-
-        if (sendGridEnabled) {
-
-            mailSender.setHost(EMAILS_SEND_GRID_SERVER);
-            mailSender.setPort(Integer.parseInt(EMAILS_SEND_GRID_PORT));
-            mailSender.setUsername(EMAILS_SEND_GRID_USERNAME);
-            mailSender.setPassword(EMAILS_SEND_GRID_PASSWORD);
-
-        } else {
-
-            mailSender.setHost(EMAILS_SMTP_SERVER);
-            mailSender.setPort(Integer.parseInt(EMAILS_SMTP_PORT));
-            mailSender.setUsername(EMAILS_SMTP_USERNAME);
-            mailSender.setPassword(EMAILS_SMTP_PASSWORD);
-        }
-
-        Properties javaMailProps = mailSender.getJavaMailProperties();
-
-        javaMailProps.put("mail.smtp.auth", "true");
-        javaMailProps.put("mail.smtp.starttls.enable", "true");
-        javaMailProps.put("mail.smtp.connectiontimeout", "5000");
-        javaMailProps.put("mail.smtp.timeout", "5000");
-        javaMailProps.put("mail.smtp.writetimeout", "5000");
-
-        return mailSender;
+    public Email email() {
+        return new EmailImpl(
+                EMAILS_SMTP_SERVER,EMAILS_SMTP_PORT,EMAILS_SMTP_USERNAME,EMAILS_SMTP_PASSWORD,
+                EMAILS_SEND_GRID_ENABLED,EMAILS_SEND_GRID_SERVER,EMAILS_SEND_GRID_PORT,
+                EMAILS_SEND_GRID_USERNAME,EMAILS_SEND_GRID_PASSWORD
+        );
     }
 
     @Bean

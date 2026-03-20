@@ -16,7 +16,7 @@ import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
 @RestController
-@RequestMapping("email")
+@RequestMapping("emails")
 public class EmailController {
     private final Logger log = LoggerFactory.getLogger(EmailController.class);
 
@@ -24,20 +24,20 @@ public class EmailController {
     Email email;
 
 
-    @PostMapping("/send")
+    @PostMapping("/send_email")
     ResponseEntity<ObjectNode> send(
             @RequestParam("from_email") String fromEmail,
             @RequestParam("to_email") String toEmail,
             @RequestParam("subject") String subject,
             @RequestParam("content") String content,
-            @RequestParam("attachments") JSONArray attachments,
+            @RequestParam("attachments") String attachments,
             @RequestParam(value = "native",required = false) boolean nativeEnabled
     ) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("EMAILS_ENABLED", true);
                 JSONArray failedAttachments =email.send(
-                        fromEmail, toEmail, subject, content, attachments);
+                        fromEmail, toEmail, subject, content, JSONArray.fromObject(attachments));
                 JSONObject data = new JSONObject();
                 data.put("failedAttachments", failedAttachments);
 
