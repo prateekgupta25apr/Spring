@@ -4,16 +4,31 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import prateek_gupta.SampleProject.base.Context;
+import prateek_gupta.SampleProject.prateek_gupta.AWS;
+import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
+import javax.activation.DataSource;
+import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
 
+@Component
 public class Util {
 
     public static Object getClassObject(Method method)
@@ -110,5 +125,117 @@ public class Util {
     public static void validateUserLogin() throws ServiceException {
         if (Context.getCurrentContext().userId<=0)
             throw new ServiceException(ServiceException.ExceptionType.LOGIN_REQUIRED);
+    }
+
+    @Autowired(required = false)
+    JavaMailSender mailSender;
+
+    @Autowired(required = false)
+    Email email;
+
+    @Autowired(required = false)
+    AWS aws;
+
+    public JSONArray sendEmail(
+            String fromEmail, String toEmail, String subject,
+            String content, JSONArray attachments) {
+
+        JSONArray failedAttachments = new JSONArray();
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+
+            String plainContent = email.getPlainContent(content);
+            Object[] htmlContentAndInlineAttachments =
+                    email.getHtmlContentAndInlineAttachments(content);
+            String htmlContent = htmlContentAndInlineAttachments[0].toString();
+            JSONArray inlineAttachment = (JSONArray) htmlContentAndInlineAttachments[1];
+
+            helper.setText(plainContent, htmlContent);
+            JSONObject attachment;
+
+            // Processing Inline Attachments
+            if (inlineAttachment != null) {
+                for (Object attachmentObj : inlineAttachment) {
+                    attachment=JSONObject.fromObject(attachmentObj.toString());
+                    String fileUrl = attachment.has("file_url")?
+                            attachment.getString("file_url"):"";
+                    String fileName = attachment.getString("file_name");
+                    String cid = attachment.getString("cid");
+                    try {
+                        byte[] fileContent;
+
+                        // Fetching file based on file name
+                        if (!fileUrl.contains("https://"))
+                            fileContent=aws.getFileContentInBytes(fileUrl);
+                            // Fetching file based on pre-signed url
+                        else
+                            fileContent=new RestTemplate().getForObject(
+                                    new URI(fileUrl), byte[].class);
+
+                        String contentType = aws.getFileDetails(fileName).contentType();
+
+                        if (fileContent != null) {
+                            DataSource dataSource =
+                                    new ByteArrayDataSource(fileContent, contentType);
+
+                            helper.addInline(cid,dataSource);
+
+                        } else {
+                            failedAttachments.add(fileName);
+                        }
+                    } catch (Exception e) {
+                        failedAttachments.add(fileName);
+                    }
+                }
+            }
+
+            // Processing Normal Attachments
+            if (attachments != null) {
+                for (Object attachmentObj : attachments) {
+                    attachment=JSONObject.fromObject(attachmentObj.toString());
+                    String fileUrl = attachment.has("file_url")?
+                            attachment.getString("file_url"):"";
+                    String fileKey = attachment.has("file_key")?
+                            attachment.getString("file_key"):"";
+                    String fileName = attachment.getString("file_name");
+                    try {
+                        byte[] fileContent;
+
+                        // Fetching file based on file name
+                        if (StringUtils.isNotBlank(fileKey))
+                            fileContent=aws.getFileContentInBytes(fileKey);
+                            // Fetching file based on pre-signed url
+                        else
+                            fileContent=new RestTemplate().getForObject(
+                                    new URI(fileUrl), byte[].class);
+
+                        String contentType = aws.getFileDetails(fileName).contentType();
+
+                        if (fileContent != null) {
+                            DataSource dataSource =
+                                    new ByteArrayDataSource(fileContent, contentType);
+
+                            helper.addAttachment(fileName,dataSource);
+
+                        } else {
+                            failedAttachments.add(fileName);
+                        }
+                    } catch (Exception e) {
+                        failedAttachments.add(fileName);
+                    }
+                }
+            }
+            mailSender.send(message);
+        } catch (Exception e) {
+            ServiceException.logException(e);
+        }
+        return failedAttachments;
     }
 }

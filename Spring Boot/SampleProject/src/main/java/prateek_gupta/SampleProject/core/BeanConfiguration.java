@@ -164,6 +164,33 @@ public class BeanConfiguration {
     }
 
     @Bean
+    @Conditional(EmailCondition.class)
+    public JavaMailSender javaMailSender() {
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        boolean sendGrid = Boolean.parseBoolean(EMAILS_SEND_GRID_ENABLED);
+
+        if (sendGrid) {
+            mailSender.setHost(EMAILS_SEND_GRID_SERVER);
+            mailSender.setPort(Integer.parseInt(EMAILS_SEND_GRID_PORT));
+            mailSender.setUsername(EMAILS_SEND_GRID_USERNAME);
+            mailSender.setPassword(EMAILS_SEND_GRID_PASSWORD);
+        } else {
+            mailSender.setHost(EMAILS_SMTP_SERVER);
+            mailSender.setPort(Integer.parseInt(EMAILS_SMTP_PORT));
+            mailSender.setUsername(EMAILS_SMTP_USERNAME);
+            mailSender.setPassword(EMAILS_SMTP_PASSWORD);
+        }
+
+        Properties javaMailProperties = mailSender.getJavaMailProperties();
+
+        javaMailProperties.put("mail.smtp.auth", "true");
+        javaMailProperties.put("mail.smtp.starttls.enable", "true");
+        return  mailSender;
+    }
+
+    @Bean
     @Conditional(OpenSearchCondition.class)
     public OpenSearch openSearchService(){
         return new OpenSearchImpl(openSearchHost,openSearchPort);

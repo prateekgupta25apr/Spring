@@ -23,6 +23,9 @@ public class EmailController {
     @Autowired(required = false)
     Email email;
 
+    @Autowired(required = false)
+    Util util;
+
 
     @PostMapping("/send_email")
     ResponseEntity<ObjectNode> send(
@@ -31,17 +34,23 @@ public class EmailController {
             @RequestParam("subject") String subject,
             @RequestParam("content") String content,
             @RequestParam("attachments") String attachments,
-            @RequestParam(value = "native",required = false) boolean nativeEnabled
+            @RequestParam(value = "native", required = false) boolean nativeEnabled
     ) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("EMAILS_ENABLED", true);
-                JSONArray failedAttachments =email.send(
-                        fromEmail, toEmail, subject, content, JSONArray.fromObject(attachments));
-                JSONObject data = new JSONObject();
-                data.put("failedAttachments", failedAttachments);
+            JSONArray failedAttachments;
 
-                response = Util.getSuccessResponse("Successfully sent email",data);
+            if (nativeEnabled)
+                failedAttachments = util.sendEmail(
+                        fromEmail, toEmail, subject, content, JSONArray.fromObject(attachments));
+            else
+                failedAttachments = email.send(
+                        fromEmail, toEmail, subject, content, JSONArray.fromObject(attachments));
+            JSONObject data = new JSONObject();
+            data.put("failedAttachments", failedAttachments);
+
+            response = Util.getSuccessResponse("Successfully sent email", data);
         } catch (ServiceException exception) {
             return Util.getErrorResponse(exception);
         }

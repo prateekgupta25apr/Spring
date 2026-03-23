@@ -6,4 +6,8 @@ public interface Email {
     JSONArray send(
             String fromEmail, String toEmail, String subject,
             String content, JSONArray attachments);
+
+    String getPlainContent(String content);
+
+    Object[] getHtmlContentAndInlineAttachments(String content);
 }

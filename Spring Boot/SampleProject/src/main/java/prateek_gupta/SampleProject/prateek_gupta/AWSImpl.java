@@ -1,5 +1,6 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +36,7 @@ public class AWSImpl implements AWS {
 
     private final String bucketName;
 
-    private final S3Presigner preSigner;
+    private S3Presigner preSigner;
 
     public AWSImpl(
             String accessKey, String secretKey, String bucketName, String regionName)
@@ -43,31 +44,37 @@ public class AWSImpl implements AWS {
 
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
         if (credentialsProvider.resolveCredentials() != null) {
-
-
             s3Client = S3Client.builder()
                     .credentialsProvider(credentialsProvider)
                     .region(Region.of(regionName))
                     .build();
+
+            preSigner = S3Presigner.builder()
+                    .region(Region.of(regionName))
+                    .credentialsProvider(DefaultCredentialsProvider.create())
+                    .build();
         }
 //        if (s3Client == null && StringUtils.isNotBlank(accessKey)
-//                && StringUtils.isNotBlank(secretKey))
+//                && StringUtils.isNotBlank(secretKey)) {
         s3Client = S3Client.builder()
                 .region(Region.of(regionName))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
 
+        preSigner = S3Presigner.builder()
+                .region(Region.of(regionName))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)))
+                .build();
+//         }
         System.out.println("Access Key: " +
                 credentialsProvider.resolveCredentials().accessKeyId());
         if (s3Client == null)
             throw new ServiceException("Error while creating an instance of S3 Client");
 
         this.bucketName = bucketName;
-        preSigner = S3Presigner.builder()
-                .region(Region.of(regionName))
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
+
     }
 
     @Override
