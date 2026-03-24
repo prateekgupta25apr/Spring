@@ -106,21 +106,24 @@ public class EmailImpl implements Email {
                     String fileName = attachment.getString("file_name");
                     String cid = attachment.getString("cid");
                     try {
-                        byte[] fileContent;
+                        byte[] fileContent=null;
 
                         // Fetching file based on file name
                         if (!fileUrl.contains("https://"))
                             fileContent = aws.getFileContentInBytes(fileUrl);
                             // Fetching file based on pre-signed url
-                        else
-                            fileContent = HttpClient.newHttpClient()
+                        else {
+                            HttpResponse<byte[]> response = HttpClient.newHttpClient()
                                     .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
                                             HttpResponse.BodyHandlers.ofByteArray()
-                                    ).body();
+                                    );
+                            if (response.statusCode() == 200)
+                                fileContent = response.body();
+                        }
 
                         String contentType = aws.getFileDetails(fileName).contentType();
 
-                        if (fileContent != null && fileContent.length != 0) {
+                        if (fileContent != null) {
 
                             MimeBodyPart inlinePart = new MimeBodyPart();
 
@@ -153,17 +156,20 @@ public class EmailImpl implements Email {
                             attachment.getString("file_key"):"";
                     String fileName = attachment.getString("file_name");
                     try {
-                        byte[] fileContent;
+                        byte[] fileContent=null;
 
                         // Fetching file based on file name
                         if (StringUtils.isNotBlank(fileKey))
                             fileContent=aws.getFileContentInBytes(fileKey);
                         // Fetching file based on pre-signed url
-                        else
-                            fileContent = java.net.http.HttpClient.newHttpClient()
+                        else{
+                            HttpResponse<byte[]> response = HttpClient.newHttpClient()
                                     .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
-                                          HttpResponse.BodyHandlers.ofByteArray()
-                                    ).body();
+                                            HttpResponse.BodyHandlers.ofByteArray()
+                                    );
+                            if (response.statusCode() == 200)
+                                fileContent = response.body();
+                        }
 
                         String contentType = aws.getFileDetails(fileName).contentType();
 

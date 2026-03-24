@@ -9,6 +9,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -169,15 +170,20 @@ public class Util {
                     String fileName = attachment.getString("file_name");
                     String cid = attachment.getString("cid");
                     try {
-                        byte[] fileContent;
+                        byte[] fileContent=null;
 
                         // Fetching file based on file name
                         if (!fileUrl.contains("https://"))
                             fileContent=aws.getFileContentInBytes(fileUrl);
                             // Fetching file based on pre-signed url
-                        else
-                            fileContent=new RestTemplate().getForObject(
-                                    new URI(fileUrl), byte[].class);
+                        else {
+                            ResponseEntity<byte[]> response= new RestTemplate().exchange(
+                                    fileUrl, HttpMethod.GET,
+                                    null, byte[].class);
+
+                            if (response.getStatusCodeValue()==200)
+                                fileContent = response.getBody();
+                        }
 
                         String contentType = aws.getFileDetails(fileName).contentType();
 
@@ -206,15 +212,20 @@ public class Util {
                             attachment.getString("file_key"):"";
                     String fileName = attachment.getString("file_name");
                     try {
-                        byte[] fileContent;
+                        byte[] fileContent=null;
 
                         // Fetching file based on file name
                         if (StringUtils.isNotBlank(fileKey))
                             fileContent=aws.getFileContentInBytes(fileKey);
                             // Fetching file based on pre-signed url
-                        else
-                            fileContent=new RestTemplate().getForObject(
-                                    new URI(fileUrl), byte[].class);
+                        else {
+                            ResponseEntity<byte[]> response= new RestTemplate().exchange(
+                                    fileUrl, HttpMethod.GET,
+                                    null, byte[].class);
+
+                            if (response.getStatusCodeValue()==200)
+                                fileContent = response.getBody();
+                        }
 
                         String contentType = aws.getFileDetails(fileName).contentType();
 
