@@ -8,17 +8,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.web.client.RestTemplate;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.annotation.Nonnull;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -32,7 +26,7 @@ import java.util.Properties;
 
 public class EmailImpl implements Email {
 
-    private Session mailSender;
+    private final Session session;
 
     @Autowired
     AWS aws;
@@ -45,14 +39,17 @@ public class EmailImpl implements Email {
         Properties properties = new Properties();
 
         boolean sendGrid = Boolean.parseBoolean(sendGridEnabled);
-
+        String username;
+        String password;
         if (sendGrid) {
-
+            username = sendGridUsername;
+            password = sendGridPassword;
             properties.put("mail.smtp.host", sendGridServer);
             properties.put("mail.smtp.port", sendGridPort);
 
         } else {
-
+            username=smtpUsername;
+            password=smtpPassword;
             properties.put("mail.smtp.host", smtpServer);
             properties.put("mail.smtp.port", smtpPort);
         }
@@ -61,12 +58,8 @@ public class EmailImpl implements Email {
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
 
-        // Authentication
-        String username = sendGrid ? sendGridUsername : smtpUsername;
-        String password = sendGrid ? sendGridPassword : smtpPassword;
-
-        this.mailSender = Session.getInstance(
-                properties, new javax.mail.Authenticator() {
+        this.session = Session.getInstance(
+                properties, new Authenticator() {
                     @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(username, password);
@@ -82,7 +75,7 @@ public class EmailImpl implements Email {
         JSONArray failedAttachments = new JSONArray();
 
         try {
-            MimeMessage message = new MimeMessage(mailSender);
+            MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(toEmail));
@@ -93,29 +86,13 @@ public class EmailImpl implements Email {
             String htmlContent = htmlContentAndInlineAttachments[0].toString();
             JSONArray inlineAttachment = (JSONArray) htmlContentAndInlineAttachments[1];
 
-            // 🔥 multipart/related (root)
+            // Creating multipart/related content
             MimeMultipart relatedMultipart = new MimeMultipart("related");
 
-            // 🔥 multipart/alternative (text + html)
-            MimeMultipart alternativeMultipart = new MimeMultipart("alternative");
+            // Creating multipart/alternative content for plain and HTML text
+            MimeBodyPart alternativeWrapper = wrapPlainAndHTMLContent(plainContent, htmlContent);
 
-            // Plain text part
-            MimeBodyPart textPart = new MimeBodyPart();
-            textPart.setText(plainContent);
-
-            // HTML part
-            MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent(htmlContent, "text/html; charset=UTF-8");
-
-            // Add to alternative
-            alternativeMultipart.addBodyPart(textPart);
-            alternativeMultipart.addBodyPart(htmlPart);
-
-            // Wrap alternative inside a body part
-            MimeBodyPart alternativeWrapper = new MimeBodyPart();
-            alternativeWrapper.setContent(alternativeMultipart);
-
-            // Add to related
+            // Adding plain and HTML content to multipart/related part
             relatedMultipart.addBodyPart(alternativeWrapper);
 
             JSONObject attachment;
@@ -136,10 +113,8 @@ public class EmailImpl implements Email {
                             fileContent = aws.getFileContentInBytes(fileUrl);
                             // Fetching file based on pre-signed url
                         else
-                            fileContent =
-                                    HttpClient.newHttpClient()
-                                    .send(
-                                            HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
+                            fileContent = HttpClient.newHttpClient()
+                                    .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
                                             HttpResponse.BodyHandlers.ofByteArray()
                                     ).body();
 
@@ -149,9 +124,10 @@ public class EmailImpl implements Email {
 
                             MimeBodyPart inlinePart = new MimeBodyPart();
 
-                            DataSource ds = new ByteArrayDataSource(fileContent, contentType);
+                            DataSource dataSource = new ByteArrayDataSource(
+                                    fileContent, contentType);
 
-                            inlinePart.setDataHandler(new DataHandler(ds));
+                            inlinePart.setDataHandler(new DataHandler(dataSource));
                             inlinePart.setHeader("Content-ID", "<" + cid + ">");
                             inlinePart.setDisposition(MimeBodyPart.INLINE);
                             inlinePart.setFileName(fileName);
@@ -168,7 +144,7 @@ public class EmailImpl implements Email {
             }
 
             // Processing Normal Attachments
-            /*if (attachments != null) {
+            if (attachments != null) {
                 for (Object attachmentObj : attachments) {
                     attachment=JSONObject.fromObject(attachmentObj.toString());
                     String fileUrl = attachment.has("file_url")?
@@ -185,9 +161,8 @@ public class EmailImpl implements Email {
                         // Fetching file based on pre-signed url
                         else
                             fileContent = java.net.http.HttpClient.newHttpClient()
-                                    .send(
-                                            java.net.http.HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
-                                            java.net.http.HttpResponse.BodyHandlers.ofByteArray()
+                                    .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
+                                          HttpResponse.BodyHandlers.ofByteArray()
                                     ).body();
 
                         String contentType = aws.getFileDetails(fileName).contentType();
@@ -196,7 +171,13 @@ public class EmailImpl implements Email {
                             DataSource dataSource =
                                     new ByteArrayDataSource(fileContent, contentType);
 
-                            helper.addAttachment(fileName,dataSource);
+                            MimeBodyPart normalPart = new MimeBodyPart();
+
+                            normalPart.setDataHandler(new DataHandler(dataSource));
+                            normalPart.setDisposition(MimeBodyPart.ATTACHMENT);
+                            normalPart.setFileName(fileName);
+
+                            relatedMultipart.addBodyPart(normalPart);
 
                         } else {
                             failedAttachments.add(fileName);
@@ -205,11 +186,15 @@ public class EmailImpl implements Email {
                         failedAttachments.add(fileName);
                     }
                 }
-            }*/
+            }
 
-            // Set final content
+            // Adding multipart/related data to email
             message.setContent(relatedMultipart);
+
+            // Saving all the changes
             message.saveChanges();
+
+            // Sending email
             Transport.send(message);
         } catch (Exception e) {
             ServiceException.logException(e);
@@ -217,7 +202,32 @@ public class EmailImpl implements Email {
         return failedAttachments;
     }
 
-    public Object[] getHtmlContentAndInlineAttachments(String content) {
+    @Nonnull
+    MimeBodyPart wrapPlainAndHTMLContent(
+            String plainContent, String htmlContent) throws MessagingException {
+        MimeMultipart alternativeMultipart = new MimeMultipart("alternative");
+
+        // Creating Plain text part
+        MimeBodyPart textPart = new MimeBodyPart();
+        textPart.setText(plainContent);
+
+        // Creating HTML text part
+        MimeBodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(htmlContent, "text/html; charset=UTF-8");
+
+        // Setting HTML and Plain text parts
+        alternativeMultipart.addBodyPart(textPart);
+        alternativeMultipart.addBodyPart(htmlPart);
+
+        // Converting MimeMultipart class object to MimeBodyPart,
+        // so we can add to multipart/related content
+        MimeBodyPart alternativeWrapper = new MimeBodyPart();
+        alternativeWrapper.setContent(alternativeMultipart);
+        return alternativeWrapper;
+    }
+
+    public Object[] getHtmlContentAndInlineAttachments(
+            String content) {
         JSONArray inlineAttachments = new JSONArray();
         Document html = Jsoup.parse(content);
         html.select("img").forEach(tag -> {
