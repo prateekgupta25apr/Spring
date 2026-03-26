@@ -1,9 +1,7 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -24,13 +22,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.time.Duration;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 
 
-public class AWSImpl implements AWS {
+public class S3Impl implements S3 {
 
-    private final Logger log = LoggerFactory.getLogger(AWSImpl.class);
+    private final Logger log = LoggerFactory.getLogger(S3Impl.class);
 
     private S3Client s3Client;
 
@@ -38,7 +35,7 @@ public class AWSImpl implements AWS {
 
     private S3Presigner preSigner;
 
-    public AWSImpl(
+    public S3Impl(
             String accessKey, String secretKey, String bucketName, String regionName)
             throws ServiceException {
 

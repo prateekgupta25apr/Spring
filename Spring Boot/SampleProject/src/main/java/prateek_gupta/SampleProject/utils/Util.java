@@ -17,7 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import prateek_gupta.SampleProject.base.Context;
-import prateek_gupta.SampleProject.prateek_gupta.AWS;
+import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
@@ -25,7 +25,6 @@ import javax.activation.DataSource;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -135,7 +134,7 @@ public class Util {
     Email email;
 
     @Autowired(required = false)
-    AWS aws;
+    S3 s3;
 
     public JSONArray sendEmail(
             String fromEmail, String toEmail, String subject,
@@ -174,7 +173,7 @@ public class Util {
 
                         // Fetching file based on file name
                         if (!fileUrl.contains("https://"))
-                            fileContent=aws.getFileContentInBytes(fileUrl);
+                            fileContent= s3.getFileContentInBytes(fileUrl);
                             // Fetching file based on pre-signed url
                         else {
                             ResponseEntity<byte[]> response= new RestTemplate().exchange(
@@ -185,7 +184,7 @@ public class Util {
                                 fileContent = response.getBody();
                         }
 
-                        String contentType = aws.getFileDetails(fileName).contentType();
+                        String contentType = s3.getFileDetails(fileName).contentType();
 
                         if (fileContent != null) {
                             DataSource dataSource =
@@ -216,7 +215,7 @@ public class Util {
 
                         // Fetching file based on file name
                         if (StringUtils.isNotBlank(fileKey))
-                            fileContent=aws.getFileContentInBytes(fileKey);
+                            fileContent= s3.getFileContentInBytes(fileKey);
                             // Fetching file based on pre-signed url
                         else {
                             ResponseEntity<byte[]> response= new RestTemplate().exchange(
@@ -227,7 +226,7 @@ public class Util {
                                 fileContent = response.getBody();
                         }
 
-                        String contentType = aws.getFileDetails(fileName).contentType();
+                        String contentType = s3.getFileDetails(fileName).contentType();
 
                         if (fileContent != null) {
                             DataSource dataSource =

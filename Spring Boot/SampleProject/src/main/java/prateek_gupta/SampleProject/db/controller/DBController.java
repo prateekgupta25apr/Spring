@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import prateek_gupta.SampleProject.prateek_gupta.AWS;
+import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 import prateek_gupta.SampleProject.db.service.DBService;
@@ -29,7 +29,7 @@ public class DBController {
     DBService dbService;
 
     @Autowired
-    AWS aws;
+    S3 s3;
 
     @GetMapping("get_data")
     ResponseEntity<ObjectNode> getData(@RequestParam Integer primaryKey) {
@@ -190,7 +190,7 @@ public class DBController {
         try {
             String fileKey = "Table1AttachmentMapping/"+table1PrimaryKey+"/"+
                     attachment.getOriginalFilename();
-            aws.uploadFile(attachment.getBytes(), fileKey,attachment.getContentType());
+            s3.uploadFile(attachment.getBytes(), fileKey,attachment.getContentType());
             dbService.addAttachment(table1PrimaryKey, fileKey);
             response = Util.getSuccessResponse("Attachment added successfully");
         } catch (ServiceException exception) {
@@ -208,9 +208,9 @@ public class DBController {
     ) {
         try {
             String fileName = dbService.getAttachmentPath(primaryKey);
-            byte[] fileContent = aws.getFileContentInBytes(fileName);
+            byte[] fileContent = s3.getFileContentInBytes(fileName);
 
-            response.setContentType(aws.getFileDetails(fileName).contentType());
+            response.setContentType(s3.getFileDetails(fileName).contentType());
             response.setHeader("Content-Disposition",
                     "attachment; filename=" + fileName);
 

@@ -1,11 +1,8 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
-import javax.servlet.http.HttpServletResponse;
-
-public interface AWS {
+public interface S3 {
     byte[] getFileContentInBytes(String fileName) throws ServiceException;
     String uploadFile(byte[] fileContent,String fileKey,String contentType) throws ServiceException;
     void deleteFile(String fileName) throws ServiceException;

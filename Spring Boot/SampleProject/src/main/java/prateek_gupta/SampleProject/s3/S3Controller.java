@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.aws;
+package prateek_gupta.SampleProject.s3;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import prateek_gupta.SampleProject.prateek_gupta.AWS;
+import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
 
@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 
 @RestController
-@RequestMapping("/aws")
-public class AWSController {
+@RequestMapping("/s3")
+public class S3Controller {
 
     @Autowired
-    private AWS aws;
+    private S3 s3;
 
     @GetMapping("/get")
     public ResponseEntity<?> get(
@@ -30,10 +30,10 @@ public class AWSController {
 
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName))
-                if (aws.fileExists(fileName)) {
-                    byte[] fileContent = aws.getFileContentInBytes(fileName);
+                if (s3.fileExists(fileName)) {
+                    byte[] fileContent = s3.getFileContentInBytes(fileName);
 
-                    response.setContentType(aws.getFileDetails(fileName).contentType());
+                    response.setContentType(s3.getFileDetails(fileName).contentType());
                     response.setHeader("Content-Disposition",
                             "attachment; filename=" + fileName);
 
@@ -64,14 +64,14 @@ public class AWSController {
             ServiceException.moduleLockCheck("AWS_ENABLE", true);
 
             String fileName = file.getOriginalFilename();
-            String fileKey = aws.updateFileName(
+            String fileKey = s3.updateFileName(
                     file.getOriginalFilename(), StringUtils.isNotBlank(prefix) ? prefix : "");
-            fileKey = aws.uploadFile(file.getBytes(), fileKey,file.getContentType());
+            fileKey = s3.uploadFile(file.getBytes(), fileKey,file.getContentType());
             ObjectNode responseData = Util.getObjectMapper().createObjectNode();
             responseData.put("file_name", fileName);
             responseData.put("file_key", fileKey);
             responseData.put("pre_signed_url",
-                    aws.generatePreSignedUrl(fileKey, "GET"));
+                    s3.generatePreSignedUrl(fileKey, "GET"));
             response = Util.getSuccessResponse(
                     "Successfully uploaded the file : " + fileName,
                     responseData);
@@ -91,7 +91,7 @@ public class AWSController {
 
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
-                aws.deleteFile(fileName);
+                s3.deleteFile(fileName);
                 response = Util.getSuccessResponse("File deleted successfully");
             } else
                 throw new ServiceException(
@@ -111,10 +111,10 @@ public class AWSController {
             String fileName = request.getParameter("fileName");
             String method = request.getParameter("method");
             if (StringUtils.isNotBlank(fileName))
-                if (aws.fileExists(fileName)) {
+                if (s3.fileExists(fileName)) {
                     if (StringUtils.isBlank(method))
                         method = "GET";
-                    String url = aws.generatePreSignedUrl(fileName, method);
+                    String url = s3.generatePreSignedUrl(fileName, method);
                     ObjectNode responseData = Util.getObjectMapper().createObjectNode();
                     responseData.put("method", method);
                     responseData.put("preSingedUrl", url);
@@ -140,7 +140,7 @@ public class AWSController {
 
             String filePath = request.getParameter("file_path");
             if (StringUtils.isNotBlank(filePath)) {
-                String fileName = aws.extractFileName(filePath, true);
+                String fileName = s3.extractFileName(filePath, true);
                 ObjectNode responseData = Util.getObjectMapper().createObjectNode();
                 responseData.put("file_name", fileName);
                 response = Util.getSuccessResponse(

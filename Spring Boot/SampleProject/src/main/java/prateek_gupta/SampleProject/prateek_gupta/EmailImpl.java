@@ -32,7 +32,7 @@ public class EmailImpl implements Email {
     private final Session session;
 
     @Autowired
-    AWS aws;
+    S3 s3;
 
     public EmailImpl(
             String smtpServer, String smtpPort, String smtpUsername, String smtpPassword,
@@ -79,7 +79,7 @@ public class EmailImpl implements Email {
 
             InputStream emailContent=null;
             if (StringUtils.isNotBlank(messageId)){
-                byte[] emailContentBytes= aws.getFileContentInBytes("emails/"+messageId);
+                byte[] emailContentBytes= s3.getFileContentInBytes("emails/"+messageId);
                 emailContent = new ByteArrayInputStream(emailContentBytes);
             }
 
@@ -165,11 +165,11 @@ public class EmailImpl implements Email {
                 // Uploading file
                 if (fetchFileUrl) {
 
-                    String newFileName = aws.updateFileName(fileName,"emails_attachment/");
+                    String newFileName = s3.updateFileName(fileName,"emails_attachment/");
 
-                    aws.uploadFile(fileBytes, newFileName, contentType);
+                    s3.uploadFile(fileBytes, newFileName, contentType);
 
-                    String url = aws.generatePreSignedUrl(newFileName,"GET");
+                    String url = s3.generatePreSignedUrl(newFileName,"GET");
 
                     attachment.put("file_url", url);
                 }
@@ -224,7 +224,7 @@ public class EmailImpl implements Email {
 
                         // Fetching file based on file name
                         if (!fileUrl.contains("https://"))
-                            fileContent = aws.getFileContentInBytes(fileUrl);
+                            fileContent = s3.getFileContentInBytes(fileUrl);
                             // Fetching file based on pre-signed url
                         else {
                             HttpResponse<byte[]> response = HttpClient.newHttpClient()
@@ -236,7 +236,7 @@ public class EmailImpl implements Email {
                                 fileContent = response.body();
                         }
 
-                        String contentType = aws.getFileDetails(fileName).contentType();
+                        String contentType = s3.getFileDetails(fileName).contentType();
 
                         if (fileContent != null) {
 
@@ -275,7 +275,7 @@ public class EmailImpl implements Email {
 
                         // Fetching file based on file name
                         if (StringUtils.isNotBlank(fileKey))
-                            fileContent=aws.getFileContentInBytes(fileKey);
+                            fileContent= s3.getFileContentInBytes(fileKey);
                         // Fetching file based on pre-signed url
                         else{
                             HttpResponse<byte[]> response =
@@ -288,7 +288,7 @@ public class EmailImpl implements Email {
                                 fileContent = response.body();
                         }
 
-                        String contentType = aws.getFileDetails(fileName).contentType();
+                        String contentType = s3.getFileDetails(fileName).contentType();
 
                         if (fileContent != null) {
                             DataSource dataSource =
@@ -356,8 +356,8 @@ public class EmailImpl implements Email {
         html.select("img").forEach(tag -> {
             // Getting image tag message
             String imageUrl = tag.attr("src");
-            String fileName = aws.extractFileName(imageUrl, true);
-            String fileKey = aws.updateFileName(fileName);
+            String fileName = s3.extractFileName(imageUrl, true);
+            String fileKey = s3.updateFileName(fileName);
             int dotIndex = fileKey.lastIndexOf('.');
             String cid = (dotIndex == -1) ? fileKey : fileKey.substring(0, dotIndex);
             String ext = (dotIndex == -1) ? "" : fileKey.substring(dotIndex);
@@ -402,7 +402,7 @@ public class EmailImpl implements Email {
 
             InputStream emailContent=null;
             if (StringUtils.isNotBlank(messageId)){
-                byte[] emailContentBytes= aws.getFileContentInBytes(
+                byte[] emailContentBytes= s3.getFileContentInBytes(
                         "emails/"+messageId);
                 emailContent = new ByteArrayInputStream(emailContentBytes);
             }
