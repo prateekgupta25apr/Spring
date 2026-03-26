@@ -26,7 +26,7 @@ public class S3Controller {
     public ResponseEntity<?> get(
             HttpServletRequest request, HttpServletResponse response) {
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE", true);
+            ServiceException.moduleLockCheck("S3_ENABLE", true);
 
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName))
@@ -61,7 +61,7 @@ public class S3Controller {
             @RequestParam(value = "prefix", required = false) String prefix) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE", true);
+            ServiceException.moduleLockCheck("S3_ENABLE", true);
 
             String fileName = file.getOriginalFilename();
             String fileKey = s3.updateFileName(
@@ -87,7 +87,7 @@ public class S3Controller {
     public ResponseEntity<ObjectNode> delete(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE", true);
+            ServiceException.moduleLockCheck("S3_ENABLE", true);
 
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
@@ -106,7 +106,7 @@ public class S3Controller {
     public ResponseEntity<ObjectNode> getPreSignedUrl(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE", true);
+            ServiceException.moduleLockCheck("S3_ENABLE", true);
 
             String fileName = request.getParameter("fileName");
             String method = request.getParameter("method");
@@ -136,7 +136,7 @@ public class S3Controller {
     public ResponseEntity<ObjectNode> extractFilename(HttpServletRequest request) {
         ResponseEntity<ObjectNode> response;
         try {
-            ServiceException.moduleLockCheck("AWS_ENABLE", true);
+            ServiceException.moduleLockCheck("S3_ENABLE", true);
 
             String filePath = request.getParameter("file_path");
             if (StringUtils.isNotBlank(filePath)) {

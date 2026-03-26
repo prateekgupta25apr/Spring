@@ -95,7 +95,7 @@ public class BeanConfiguration {
     public String EMAILS_SMTP_PASSWORD;
 
     @Bean
-    public S3 aws() throws ServiceException {
+    public S3 s3() throws ServiceException {
         return new S3Impl(AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_BUCKET_NAME,AWS_REGION_NAME);
     }
 
@@ -198,7 +198,7 @@ public class BeanConfiguration {
 
 
     @Bean
-    public Cryptography cryptography() throws ServiceException {
+    public Cryptography cryptography() {
         return new CryptographyImpl();
     }
 
