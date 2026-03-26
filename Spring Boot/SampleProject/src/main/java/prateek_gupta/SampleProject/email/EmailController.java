@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.utils.Util;
@@ -27,6 +24,31 @@ public class EmailController {
     Util util;
 
 
+    @GetMapping("/get_email_content")
+    ResponseEntity<ObjectNode> getEmailContent(
+            @RequestParam(value = "message_id",required = false) String messageId,
+            @RequestParam(value = "file_path",required = false) String filePath,
+            @RequestParam(value = "fetch_file_url",required = false) boolean fetchFileUrl
+    ) {
+        log.info("Entered Controller : getEmailContent()");
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("EMAILS_ENABLED", true);
+            JSONObject emailContent;
+
+            emailContent= email.getEmailContent(
+                        messageId, filePath, fetchFileUrl);
+
+            response = Util.getSuccessResponse("Successfully fetched email data",
+                    emailContent);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        log.info("Exiting Controller : getEmailContent()");
+        return response;
+    }
+
+
     @PostMapping("/send_email")
     ResponseEntity<ObjectNode> send(
             @RequestParam("from_email") String fromEmail,
@@ -36,6 +58,7 @@ public class EmailController {
             @RequestParam("attachments") String attachments,
             @RequestParam(value = "native", required = false) boolean nativeEnabled
     ) {
+        log.info("Entered Controller : send()");
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("EMAILS_ENABLED", true);
@@ -54,6 +77,7 @@ public class EmailController {
         } catch (ServiceException exception) {
             return Util.getErrorResponse(exception);
         }
+        log.info("Exiting Controller : send()");
         return response;
     }
 

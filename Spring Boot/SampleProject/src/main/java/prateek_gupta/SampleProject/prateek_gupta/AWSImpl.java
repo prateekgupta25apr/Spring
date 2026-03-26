@@ -102,16 +102,16 @@ public class AWSImpl implements AWS {
     }
 
     @Override
-    public String uploadFile(MultipartFile file,String fileKey) throws ServiceException {
+    public String uploadFile(byte[] fileContent,String fileKey,String contentType) throws ServiceException {
         log.info("Entering uploadFile()");
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileKey)
-                    .contentType(file.getContentType())
+                    .contentType(contentType)
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException("Error uploading file to S3");

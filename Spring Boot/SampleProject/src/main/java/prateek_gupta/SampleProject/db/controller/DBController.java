@@ -190,11 +190,13 @@ public class DBController {
         try {
             String fileKey = "Table1AttachmentMapping/"+table1PrimaryKey+"/"+
                     attachment.getOriginalFilename();
-            aws.uploadFile(attachment, fileKey);
+            aws.uploadFile(attachment.getBytes(), fileKey,attachment.getContentType());
             dbService.addAttachment(table1PrimaryKey, fileKey);
             response = Util.getSuccessResponse("Attachment added successfully");
         } catch (ServiceException exception) {
             return Util.getErrorResponse(exception);
+        }catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
         }
         return response;
     }

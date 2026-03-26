@@ -66,7 +66,7 @@ public class AWSController {
             String fileName = file.getOriginalFilename();
             String fileKey = aws.updateFileName(
                     file.getOriginalFilename(), StringUtils.isNotBlank(prefix) ? prefix : "");
-            fileKey = aws.uploadFile(file, fileKey);
+            fileKey = aws.uploadFile(file.getBytes(), fileKey,file.getContentType());
             ObjectNode responseData = Util.getObjectMapper().createObjectNode();
             responseData.put("file_name", fileName);
             responseData.put("file_key", fileKey);
@@ -77,6 +77,8 @@ public class AWSController {
                     responseData);
         } catch (ServiceException e) {
             return Util.getErrorResponse(e);
+        }catch (Exception e) {
+            return Util.getErrorResponse(new ServiceException());
         }
         return response;
     }

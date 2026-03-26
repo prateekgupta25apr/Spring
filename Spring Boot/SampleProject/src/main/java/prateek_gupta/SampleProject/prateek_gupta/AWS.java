@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface AWS {
     byte[] getFileContentInBytes(String fileName) throws ServiceException;
-    String uploadFile(MultipartFile file,String fileName) throws ServiceException;
+    String uploadFile(byte[] fileContent,String fileKey,String contentType) throws ServiceException;
     void deleteFile(String fileName) throws ServiceException;
     boolean fileExists(String fileName) throws ServiceException;
     HeadObjectResponse getFileDetails(String fileName) throws ServiceException;

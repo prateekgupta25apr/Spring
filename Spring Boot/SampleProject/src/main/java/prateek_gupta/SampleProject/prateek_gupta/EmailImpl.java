@@ -18,6 +18,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -65,6 +68,115 @@ public class EmailImpl implements Email {
                         return new PasswordAuthentication(username, password);
                     }
                 });
+    }
+
+    @Override
+    public JSONObject getEmailContent(String messageId, String filePath, boolean fetchFileUrl) {
+        JSONObject response = new JSONObject();
+        try{
+            if (StringUtils.isEmpty(messageId)&&StringUtils.isEmpty(filePath))
+                throw new ServiceException("Invalid message id and file path");
+
+            InputStream emailContent=null;
+            if (StringUtils.isNotBlank(messageId)){
+                byte[] emailContentBytes= aws.getFileContentInBytes("emails/"+messageId);
+                emailContent = new ByteArrayInputStream(emailContentBytes);
+            }
+
+            if (StringUtils.isNotBlank(filePath)){
+                emailContent = new FileInputStream(filePath);
+            }
+
+            MimeMessage message = new MimeMessage(session, emailContent);
+            response.put("sender",((InternetAddress)message.getFrom()[0]).getAddress());
+            response.put("subject",message.getSubject());
+
+            Object content = message.getContent();
+
+            JSONArray attachments = new JSONArray();
+
+            if (content instanceof String) {
+                response.put("text_body", content);
+            } else if (content instanceof Multipart) {
+                parseMultipart((Multipart) content,attachments,response,fetchFileUrl);
+            }
+
+            // Adding attachments
+            response.put("attachments",attachments);
+
+        }catch(Exception e){
+            ServiceException.logException(e);
+        }
+        return response;
+    }
+
+    private void parseMultipart(Multipart multipart,
+                                JSONArray attachments,
+                                JSONObject emailDetails,
+                                boolean fetchFileUrl) throws Exception {
+
+        for (int i = 0; i < multipart.getCount(); i++) {
+
+            BodyPart part = multipart.getBodyPart(i);
+
+            if (part.isMimeType("multipart/*")) {
+                parseMultipart((Multipart) part.getContent(),
+                        attachments, emailDetails, fetchFileUrl);
+                continue;
+            }
+
+            String contentType = part.getContentType().split(";")[0];
+            String disposition = part.getDisposition();
+
+            // Setting HTML body
+            if (part.isMimeType("text/html") && disposition == null)
+                emailDetails.put("html_body", part.getContent().toString());
+
+
+            // Setting Plain text body
+            else if (part.isMimeType("text/plain") && disposition == null)
+                emailDetails.put("text_body", part.getContent().toString());
+
+
+            // Attachments / Inline
+            else if (MimeBodyPart.ATTACHMENT.equalsIgnoreCase(disposition)
+                    || MimeBodyPart.INLINE.equalsIgnoreCase(disposition)
+                    || part.getFileName() != null) {
+
+                JSONObject attachment = new JSONObject();
+
+                String fileName = part.getFileName();
+
+                attachment.put("filename", fileName);
+                attachment.put("mime_type", contentType);
+
+                if (MimeBodyPart.INLINE.equalsIgnoreCase(disposition)) {
+                    attachment.put("content-type", "Inline");
+                    attachment.put("content_id",
+                            part.getHeader("Content-ID") != null ?
+                                    part.getHeader("Content-ID")[0] : null);
+                } else {
+                    attachment.put("content-type", "Attachment");
+                }
+
+                // Get binary data
+                byte[] fileBytes = part.getInputStream().readAllBytes();
+
+                // Uploading file
+                if (fetchFileUrl) {
+
+                    String newFileName = aws.updateFileName(fileName,"emails_attachment/");
+
+                    aws.uploadFile(fileBytes, newFileName, contentType);
+
+                    String url = aws.generatePreSignedUrl(newFileName,"GET");
+
+                    attachment.put("file_url", url);
+                }
+
+                attachments.add(attachment);
+            }
+        }
     }
 
     @Override
