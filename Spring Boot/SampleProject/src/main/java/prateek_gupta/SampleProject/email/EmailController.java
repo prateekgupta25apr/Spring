@@ -81,4 +81,25 @@ public class EmailController {
         return response;
     }
 
+    @PostMapping("/process_email")
+    ResponseEntity<ObjectNode> processEmail(
+            @RequestParam(value = "message_id",required = false) String messageId,
+            @RequestParam(value = "file_path",required = false) String filePath,
+            @RequestParam(value = "to_email",required = false) String toEmail
+    ) {
+        log.info("Entered Controller : processEmail()");
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("EMAILS_ENABLED", true);
+
+            email.processEmail(messageId, filePath, toEmail);
+
+            response = Util.getSuccessResponse("Successfully processed email");
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        }
+        log.info("Exiting Controller : processEmail()");
+        return response;
+    }
+
 }

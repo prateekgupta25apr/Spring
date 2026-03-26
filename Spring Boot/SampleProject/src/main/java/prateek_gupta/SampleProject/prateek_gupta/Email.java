@@ -10,6 +10,8 @@ public interface Email {
             String fromEmail, String toEmail, String subject,
             String content, JSONArray attachments);
 
+    void processEmail(String messageId,String filePath,String toEmail);
+
     String getPlainContent(String content);
 
     Object[] getHtmlContentAndInlineAttachments(String content);

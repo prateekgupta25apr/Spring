@@ -194,7 +194,8 @@ public class EmailImpl implements Email {
             message.setSubject(subject);
 
             String plainContent = getPlainContent(content);
-            Object[] htmlContentAndInlineAttachments = getHtmlContentAndInlineAttachments(content);
+            Object[] htmlContentAndInlineAttachments =
+                    getHtmlContentAndInlineAttachments(content);
             String htmlContent = htmlContentAndInlineAttachments[0].toString();
             JSONArray inlineAttachment = (JSONArray) htmlContentAndInlineAttachments[1];
 
@@ -202,7 +203,8 @@ public class EmailImpl implements Email {
             MimeMultipart relatedMultipart = new MimeMultipart("related");
 
             // Creating multipart/alternative content for plain and HTML text
-            MimeBodyPart alternativeWrapper = wrapPlainAndHTMLContent(plainContent, htmlContent);
+            MimeBodyPart alternativeWrapper = wrapPlainAndHTMLContent
+                    (plainContent, htmlContent);
 
             // Adding plain and HTML content to multipart/related part
             relatedMultipart.addBodyPart(alternativeWrapper);
@@ -226,7 +228,8 @@ public class EmailImpl implements Email {
                             // Fetching file based on pre-signed url
                         else {
                             HttpResponse<byte[]> response = HttpClient.newHttpClient()
-                                    .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
+                                    .send(HttpRequest.newBuilder(
+                                            new URI(fileUrl)).GET().build(),
                                             HttpResponse.BodyHandlers.ofByteArray()
                                     );
                             if (response.statusCode() == 200)
@@ -275,8 +278,10 @@ public class EmailImpl implements Email {
                             fileContent=aws.getFileContentInBytes(fileKey);
                         // Fetching file based on pre-signed url
                         else{
-                            HttpResponse<byte[]> response = HttpClient.newHttpClient()
-                                    .send(HttpRequest.newBuilder(new URI(fileUrl)).GET().build(),
+                            HttpResponse<byte[]> response =
+                                    HttpClient.newHttpClient()
+                                    .send(HttpRequest.newBuilder(
+                                            new URI(fileUrl)).GET().build(),
                                             HttpResponse.BodyHandlers.ofByteArray()
                                     );
                             if (response.statusCode() == 200)
@@ -389,4 +394,149 @@ public class EmailImpl implements Email {
         return html.text();
     }
 
+    @Override
+    public void processEmail(String messageId, String filePath, String toEmail) {
+        try{
+            if (StringUtils.isEmpty(messageId) && StringUtils.isEmpty(filePath))
+                throw new ServiceException("Invalid message id and file path");
+
+            InputStream emailContent=null;
+            if (StringUtils.isNotBlank(messageId)){
+                byte[] emailContentBytes= aws.getFileContentInBytes(
+                        "emails/"+messageId);
+                emailContent = new ByteArrayInputStream(emailContentBytes);
+            }
+
+            if (StringUtils.isNotBlank(filePath)){
+                emailContent = new FileInputStream(filePath);
+            }
+
+            if (StringUtils.isBlank(toEmail))
+                toEmail="prateek.gupta25apr@gmail.com";
+
+            MimeMessage receivedMessage = new MimeMessage(session, emailContent);
+
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(((InternetAddress)receivedMessage.getFrom()[0]));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(toEmail));
+            message.setSubject("Email Received");
+
+            String textBody = "Received an email from "+
+                    ((InternetAddress)receivedMessage.getFrom()[0]).getAddress()
+            +"with subject "+receivedMessage.getSubject();
+            String htmlBody = "<p>Received an email from <b>"+
+                    ((InternetAddress)receivedMessage.getFrom()[0]).getAddress()
+            +"</b> with subject <b>"+receivedMessage.getSubject()+"</b></p>";
+
+            String[] texts=extractTexts((Multipart) receivedMessage.getContent());
+            textBody +=texts[0];
+            htmlBody +=texts[1];
+
+            // Creating multipart/related content
+            MimeMultipart relatedMultipart = new MimeMultipart("related");
+
+            // Creating multipart/alternative content for plain and HTML text
+            MimeBodyPart alternativeWrapper = wrapPlainAndHTMLContent(textBody, htmlBody);
+
+            // Adding plain and HTML content to multipart/related part
+            relatedMultipart.addBodyPart(alternativeWrapper);
+
+            updateAttachments((Multipart) receivedMessage.getContent(),relatedMultipart);
+
+            // Adding multipart/related data to email
+            message.setContent(relatedMultipart);
+
+            // Saving all the changes
+            message.saveChanges();
+
+            // Sending email
+            Transport.send(message);
+        }catch(Exception e){
+            ServiceException.logException(e);
+        }
+    }
+
+    String[] extractTexts(Multipart receivedMultipart) throws Exception {
+        StringBuilder textBody = new StringBuilder();
+        StringBuilder htmlBody = new StringBuilder();
+        for (int i = 0; i < receivedMultipart.getCount(); i++) {
+
+            BodyPart part = receivedMultipart.getBodyPart(i);
+
+            if (part.isMimeType("multipart/*")) {
+                String[] response= extractTexts((Multipart) part.getContent());
+                textBody.append(response[0]);
+                htmlBody.append(response[1]);
+                continue;
+            }
+
+            String disposition = part.getDisposition();
+
+            // Setting HTML body
+            if (part.isMimeType("text/html") && disposition == null)
+                htmlBody = new StringBuilder(part.getContent().toString());
+
+
+            // Setting Plain text body
+            else if (part.isMimeType("text/plain") && disposition == null)
+                textBody = new StringBuilder(part.getContent().toString());
+        }
+        return new String[]{textBody.toString(), htmlBody.toString()};
+    }
+
+    private void updateAttachments(
+            Multipart receivedMultipart,Multipart multipart) throws Exception {
+
+        for (int i = 0; i < receivedMultipart.getCount(); i++) {
+
+            BodyPart part = receivedMultipart.getBodyPart(i);
+
+            if (part.isMimeType("multipart/*")) {
+                updateAttachments((Multipart) part.getContent(),multipart);
+                continue;
+            }
+
+            String contentType = part.getContentType().split(";")[0];
+            String disposition = part.getDisposition();
+
+
+            // Attachments / Inline
+            if (MimeBodyPart.ATTACHMENT.equalsIgnoreCase(disposition)
+                    || MimeBodyPart.INLINE.equalsIgnoreCase(disposition)
+                    || part.getFileName() != null) {
+
+                // Get binary data
+                byte[] fileContent = part.getInputStream().readAllBytes();
+
+                DataSource dataSource = new ByteArrayDataSource(
+                        fileContent, contentType);
+
+                String fileName = part.getFileName();
+
+                if (MimeBodyPart.INLINE.equalsIgnoreCase(disposition)) {
+                    MimeBodyPart inlinePart = new MimeBodyPart();
+                    String cid=part.getHeader("Content-ID") != null ?
+                            part.getHeader("Content-ID")[0] : "";
+
+                    inlinePart.setDataHandler(new DataHandler(dataSource));
+                    // CID already have "<" and ">"
+                    inlinePart.setHeader("Content-ID", cid );
+                    inlinePart.setDisposition(MimeBodyPart.INLINE);
+                    inlinePart.setFileName(fileName);
+
+                    multipart.addBodyPart(inlinePart);
+                } else {
+
+                    MimeBodyPart normalPart = new MimeBodyPart();
+
+                    normalPart.setDataHandler(new DataHandler(dataSource));
+                    normalPart.setDisposition(MimeBodyPart.ATTACHMENT);
+                    normalPart.setFileName(fileName);
+
+                    multipart.addBodyPart(normalPart);
+                }
+            }
+        }
+    }
 }
