@@ -13,7 +13,7 @@ import prateek_gupta.SampleProject.utils.Util;
 @RestController
 @RequestMapping("/open_search")
 public class OpenSearchController {
-    @Autowired
+    @Autowired(required = false)
     OpenSearch service;
 
     @GetMapping("get_index")
