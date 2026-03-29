@@ -29,11 +29,11 @@ public class BeanConfiguration {
     @Value("${AWS_SECRET_KEY:}")
     String AWS_SECRET_KEY = "";
 
-    @Value("${AWS_BUCKET_NAME:}")
-    String AWS_BUCKET_NAME = "";
-
     @Value("${AWS_REGION_NAME:}")
     String AWS_REGION_NAME = "";
+
+    @Value("${S3_BUCKET_NAME:}")
+    String S3_BUCKET_NAME = "";
 
     @Value("${REDIS_HOST:}")
     String REDIS_HOST="";
@@ -96,7 +96,7 @@ public class BeanConfiguration {
 
     @Bean
     public S3 s3() throws ServiceException {
-        return new S3Impl(AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_BUCKET_NAME,AWS_REGION_NAME);
+        return new S3Impl(AWS_ACCESS_KEY,AWS_SECRET_KEY, S3_BUCKET_NAME,AWS_REGION_NAME);
     }
 
 
@@ -202,6 +202,12 @@ public class BeanConfiguration {
         return new CryptographyImpl();
     }
 
+    @Bean
+    @Conditional(SQSCondition.class)
+    public SQS sqs() {
+        return new SQSImpl(AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_REGION_NAME);
+    }
+
     static class RedisCondition implements Condition {
         @Override
         public boolean matches(@NonNull ConditionContext context,
@@ -235,6 +241,15 @@ public class BeanConfiguration {
                                @NonNull AnnotatedTypeMetadata metadata) {
             return StringUtils.isNotBlank(
                     context.getEnvironment().getProperty("EMAILS_ENABLED"));
+        }
+    }
+
+    static class SQSCondition implements Condition {
+        @Override
+        public boolean matches(@NonNull ConditionContext context,
+                               @NonNull AnnotatedTypeMetadata metadata) {
+            return StringUtils.isNotBlank(
+                    context.getEnvironment().getProperty("SQS_ENABLE"));
         }
     }
 }

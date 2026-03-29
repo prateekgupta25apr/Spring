@@ -212,6 +212,13 @@
             <version>1.18.3</version>
         </dependency>
 
+        <!--SQS-->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>2.26.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>
