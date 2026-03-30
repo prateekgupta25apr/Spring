@@ -14,6 +14,7 @@ import prateek_gupta.SampleProject.utils.Util;
 @RequestMapping("/sqs")
 public class SQSController {
 
+
     @Autowired(required = false)
     SQS sqs;
 
@@ -40,16 +41,37 @@ public class SQSController {
         return response;
     }
 
-    @PostMapping("receive_message")
-    ResponseEntity<ObjectNode> receiveMessage(
+    @PostMapping("add_queue_name")
+    ResponseEntity<ObjectNode> addQueueName(
             @RequestParam String queueName) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("SQS_ENABLE", true);
 
             if (StringUtils.isNotBlank(queueName)) {
-                sqs.receiveMessage(queueName);
-                response=Util.getSuccessResponse("Successfully received message");
+                sqs.updateQueueNames(queueName, true);
+                response=Util.getSuccessResponse("Successfully added queue name");
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
+        }
+        return response;
+    }
+
+    @PostMapping("remove_queue_name")
+    ResponseEntity<ObjectNode> removeQueueName(
+            @RequestParam String queueName) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("SQS_ENABLE", true);
+
+            if (StringUtils.isNotBlank(queueName)) {
+                sqs.updateQueueNames(queueName, false);
+                response=Util.getSuccessResponse("Successfully removed queue name");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
