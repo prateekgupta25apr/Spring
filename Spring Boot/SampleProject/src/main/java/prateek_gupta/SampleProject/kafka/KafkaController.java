@@ -213,5 +213,47 @@ public class KafkaController {
         log.info("Committing the message offset {}", record.offset());
         acknowledgment.acknowledge();
     }
+
+    @PostMapping("add_topic")
+    ResponseEntity<ObjectNode> addTopic(
+            @RequestParam String topic) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
+
+            if (StringUtils.isNotBlank(topic)) {
+                kafka.updateTopics(topic, true);
+                response=Util.getSuccessResponse("Successfully added topic");
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
+        }
+        return response;
+    }
+
+    @PostMapping("remove_topic")
+    ResponseEntity<ObjectNode> removeTopic(
+            @RequestParam String topic) {
+        ResponseEntity<ObjectNode> response;
+        try {
+            ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
+
+            if (StringUtils.isNotBlank(topic)) {
+                kafka.updateTopics(topic, false);
+                response=Util.getSuccessResponse("Successfully removed topic");
+            } else
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+        } catch (ServiceException exception) {
+            return Util.getErrorResponse(exception);
+        } catch (Exception exception) {
+            return Util.getErrorResponse(new ServiceException());
+        }
+        return response;
+    }
 }
 

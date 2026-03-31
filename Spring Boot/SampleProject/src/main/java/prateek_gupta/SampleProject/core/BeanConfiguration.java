@@ -150,6 +150,7 @@ public class BeanConfiguration {
                 "org.apache.kafka.common.serialization.StringDeserializer");
 
         kafkaConfig.put("enable.auto.commit", "false");
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "pg_group");
         return kafkaConfig;
     }
 

@@ -22,6 +22,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 
 public class KafkaImpl implements Kafka {
@@ -33,10 +37,21 @@ public class KafkaImpl implements Kafka {
 
     DefaultKafkaConsumerFactory<String, String> consumerFactory;
 
+    Map<String, ScheduledFuture<?>> Topic_ScheduledConsumer_Map =
+            new HashMap<>();
+
+    static List<String> topics =new ArrayList<>();
+
+    ScheduledExecutorService scheduledExecutorService=
+            Executors.newScheduledThreadPool(5);
+
     public KafkaImpl(Map<String, Object> kafkaConfig) {
         adminClient=AdminClient.create(kafkaConfig);
         consumerFactory=new DefaultKafkaConsumerFactory<>(kafkaConfig) ;
         kafkaTemplate=new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(kafkaConfig));
+
+        for(String topic:topics)
+            scheduleMessagesPolling(topic,true);
     }
 
     @Override
@@ -53,13 +68,14 @@ public class KafkaImpl implements Kafka {
                                     metadata.topic());
                         }
                     },
-                    failure -> log.info("Message sending failed: {}", failure.getMessage())
+                    failure -> log.info(
+                            "Message sending failed: {}", failure.getMessage())
             );
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
         }
-        log.info("Entering sendMessage()");
+        log.info("Exiting sendMessage()");
     }
 
     @Override
@@ -343,5 +359,80 @@ public class KafkaImpl implements Kafka {
             throw new ServiceException();
         }
         return responseData;
+    }
+
+    public void pollMessages(KafkaConsumer<?, ?> consumer) {
+        try {
+            // Poll with a timeout (avoids tight loop)
+            ConsumerRecords<?, ?> consumerRecords = consumer.poll(Duration.ofMillis(1000));
+
+            for (ConsumerRecord<?, ?> consumerRecord : consumerRecords) {
+
+                try {
+                    log.info("Received message ::  KEY : {} PARTITION : {} OFFSET : {} VALUE : {}",
+                            consumerRecord.key(), consumerRecord.partition(),
+                            consumerRecord.offset(), consumerRecord.value());
+
+                    // Commit offsets only after successful processing
+                    consumer.commitSync();
+
+                } catch (Exception e) {
+                    ServiceException.logException(e);
+                    log.error("Error processing message. Key: {} ; Value: {}",
+                            consumerRecord.key(), consumerRecord.value());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error polling consumer", e);
+        }
+    }
+
+    /**
+     * We are using scheduled future concept for polling message because it provides better
+     * control for polling messages over while loop as I can cancel the task anytime using
+     * the method cancel()
+     */
+    void scheduleMessagesPolling(
+            String topic, boolean isAdded) {
+        log.info("Entering Service : scheduleMessagesPolling()");
+
+        if (isAdded) {
+            try{
+                KafkaConsumer<?, ?> consumer =
+                        (KafkaConsumer<?, ?>) consumerFactory.createConsumer();
+                consumer.subscribe(Collections.singletonList(topic));
+                Set<TopicPartition> assignedPartitions = consumer.assignment();
+                while (assignedPartitions.isEmpty()) {
+                    consumer.poll(Duration.ofMillis(100));
+                    assignedPartitions = consumer.assignment();
+                }
+                ScheduledFuture<?> scheduledFuture =
+                        scheduledExecutorService.scheduleWithFixedDelay(
+                                () -> pollMessages(consumer), 0, 1, TimeUnit.SECONDS
+                        );
+                Topic_ScheduledConsumer_Map.put(topic, scheduledFuture);
+            } catch (Exception e) {
+                ServiceException.logException(e);
+            }
+        }
+        else {
+            ScheduledFuture<?> scheduledConsumer =
+                    Topic_ScheduledConsumer_Map.get(topic);
+            scheduledConsumer.cancel(true);
+            Topic_ScheduledConsumer_Map.remove(topic);
+        }
+        log.info("Exiting Service : scheduleMessagesPolling()");
+    }
+
+    @Override
+    public void updateTopics(String topic, boolean isAdded) {
+        if (isAdded){
+            topics.add(topic);
+            scheduleMessagesPolling(topic,true);
+        }
+        else {
+            topics.remove(topic);
+            scheduleMessagesPolling(topic,false);
+        }
     }
 }

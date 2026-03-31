@@ -25,4 +25,6 @@ public interface Kafka {
             throws ServiceException;
     JSONObject getMessages(JSONObject data)
             throws ServiceException;
+
+    void updateTopics(String topic, boolean isAdded);
 }
