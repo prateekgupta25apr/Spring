@@ -150,6 +150,8 @@ public class KafkaImpl implements Kafka {
             Config configResult = describeConfigsResult.all().get().get(topicResource);
 
             responseData.put("retention.ms", configResult.get("retention.ms").value());
+            responseData.put("min.insync.replicas",
+                    configResult.get("min.insync.replicas").value());
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
