@@ -200,6 +200,9 @@ public class KafkaController {
         return response;
     }
 
+    /**
+     * Kafka Listener is only for topic test
+     */
     @KafkaListener(topics = "test", groupId = "my-group")
     public void test(ConsumerRecord<String, String> record,
                      Acknowledgment acknowledgment) {

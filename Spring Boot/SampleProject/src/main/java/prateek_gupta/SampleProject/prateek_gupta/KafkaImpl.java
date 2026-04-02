@@ -371,7 +371,7 @@ public class KafkaImpl implements Kafka {
             for (ConsumerRecord<?, ?> consumerRecord : consumerRecords) {
 
                 try {
-                    log.info("Received message ::  KEY : {} PARTITION : {} OFFSET : {} VALUE : {}",
+                    log.info("Received message ::  KEY: {}; PARTITION: {}; OFFSET: {}; VALUE: {};",
                             consumerRecord.key(), consumerRecord.partition(),
                             consumerRecord.offset(), consumerRecord.value());
 
@@ -431,10 +431,12 @@ public class KafkaImpl implements Kafka {
         if (isAdded){
             topics.add(topic);
             scheduleMessagesPolling(topic,true);
+            log.info("Started listening for messages to the topic : {}", topic);
         }
         else {
             topics.remove(topic);
             scheduleMessagesPolling(topic,false);
+            log.info("Stopped listening for messages to the topic : {}", topic);
         }
     }
 }
