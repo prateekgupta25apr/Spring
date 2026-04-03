@@ -1,5 +1,7 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
@@ -38,16 +41,21 @@ public class SQSImpl implements SQS{
     public SQSImpl(
             String accessKey, String secretKey, String regionName) {
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
+        Region region;
+        if (StringUtils.isNotEmpty(regionName))
+            region = Region.of(regionName);
+        else
+            region = DefaultAwsRegionProviderChain.builder().build().getRegion();
 
         if (credentialsProvider.resolveCredentials() != null)
             sqsClient = SqsClient.builder()
-                    .region(Region.of(regionName))
+                    .region(region)
                     .credentialsProvider(credentialsProvider)
                     .build();
 
         if (sqsClient == null)
             sqsClient = SqsClient.builder()
-                    .region(Region.of(regionName))
+                    .region(region)
                     .credentialsProvider(StaticCredentialsProvider.create(
                             AwsBasicCredentials.create(accessKey, secretKey)))
                     .build();
@@ -157,5 +165,150 @@ public class SQSImpl implements SQS{
             queueNames.remove(queueName);
             scheduleMessagesPolling(queueName,false);
         }
+    }
+
+    @Override
+    public List<String> getAllQueues() throws ServiceException {
+        List<String> queues = new ArrayList<>();
+        try{
+            ListQueuesResponse response = sqsClient.listQueues(
+                    ListQueuesRequest.builder().build()
+            );
+
+            for (String queueUrl : response.queueUrls()) {
+                // Extract name from URL
+                String queueName = queueUrl.substring(
+                        queueUrl.lastIndexOf("/") + 1);
+                queues.add(queueName);
+            }
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+        return queues;
+    }
+
+    @Override
+    public JSONObject getQueue(String queueName) throws ServiceException {
+        JSONObject queue=new JSONObject();
+        try{
+            String queueUrl = getQueueUrl(queueName);
+            GetQueueAttributesRequest request = GetQueueAttributesRequest.builder()
+                    .queueUrl(queueUrl)
+                    .attributeNames(QueueAttributeName.ALL)
+                    .build();
+
+            GetQueueAttributesResponse response = sqsClient.getQueueAttributes(request);
+
+            queue.putAll(response.attributes());
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+        return queue;
+    }
+
+    @Override
+    public void createQueue(
+            String queueName,String visibilityTimeOut,String retentionPeriod)
+            throws ServiceException {
+        try{
+            if (StringUtils.isBlank(visibilityTimeOut))
+                visibilityTimeOut="30";
+
+            if (StringUtils.isBlank(retentionPeriod))
+                retentionPeriod="86400"; // 1 day
+
+            Map<QueueAttributeName, String> attributes = new HashMap<>();
+            attributes.put(QueueAttributeName.VISIBILITY_TIMEOUT, visibilityTimeOut);
+            attributes.put(QueueAttributeName.MESSAGE_RETENTION_PERIOD, retentionPeriod);
+
+            CreateQueueRequest request = CreateQueueRequest.builder()
+                    .queueName(queueName)
+                    .attributes(attributes)
+                    .build();
+
+            CreateQueueResponse response = sqsClient.createQueue(request);
+
+            String queueUrl = response.queueUrl();
+            QueueName_QueueURL_Map.put(queueName,queueUrl);
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateQueue(String queueName, String attributeName, String attributeValue)
+            throws ServiceException {
+        try{
+            String queueUrl = getQueueUrl(queueName);
+            Map<QueueAttributeName, String> attributes = new HashMap<>();
+            attributes.put(QueueAttributeName.valueOf(attributeName), attributeValue);
+
+            SetQueueAttributesRequest request = SetQueueAttributesRequest.builder()
+                    .queueUrl(queueUrl)
+                    .attributes(attributes)
+                    .build();
+
+            sqsClient.setQueueAttributes(request);
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteQueue(String queueName) throws ServiceException {
+        try{
+            String queueUrl = getQueueUrl(queueName);
+
+            DeleteQueueRequest request = DeleteQueueRequest.builder()
+                    .queueUrl(queueUrl)
+                    .build();
+
+            sqsClient.deleteQueue(request);
+
+            QueueName_QueueURL_Map.remove(queueName);
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public JSONArray getMessages(String queueName) throws ServiceException {
+        JSONArray messages=new JSONArray();
+        try{
+            String queueUrl = getQueueUrl(queueName);
+
+            ReceiveMessageRequest request = ReceiveMessageRequest.builder()
+                    .queueUrl(queueUrl)
+                    .maxNumberOfMessages(10)
+                    .waitTimeSeconds(20)
+                    .build();
+
+            ReceiveMessageResponse response = sqsClient.receiveMessage(request);
+            List<Message> responseMessages = response.messages();
+            JSONObject message;
+
+            while(!responseMessages.isEmpty()){
+                for (Message msg : responseMessages) {
+                    message=new JSONObject();
+                    message.put("message_id",msg.messageId());
+                    message.put("body", msg.body());
+                    messages.add(message);
+                }
+
+                response = sqsClient.receiveMessage(request);
+                responseMessages = response.messages();
+            }
+
+
+        }catch(Exception e){
+            ServiceException.logException(e);
+            throw new ServiceException(e.getMessage());
+        }
+        return messages;
     }
 }

@@ -1,5 +1,6 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -9,6 +10,7 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -40,27 +42,33 @@ public class S3Impl implements S3 {
             throws ServiceException {
 
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
+        Region region;
+        if (StringUtils.isNotEmpty(regionName))
+            region = Region.of(regionName);
+        else
+            region = DefaultAwsRegionProviderChain.builder().build().getRegion();
+
         if (credentialsProvider.resolveCredentials() != null) {
             s3Client = S3Client.builder()
                     .credentialsProvider(credentialsProvider)
-                    .region(Region.of(regionName))
+                    .region(region)
                     .build();
 
             preSigner = S3Presigner.builder()
-                    .region(Region.of(regionName))
+                    .region(region)
                     .credentialsProvider(DefaultCredentialsProvider.create())
                     .build();
         }
 //        if (s3Client == null && StringUtils.isNotBlank(accessKey)
 //                && StringUtils.isNotBlank(secretKey)) {
         s3Client = S3Client.builder()
-                .region(Region.of(regionName))
+                .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
 
         preSigner = S3Presigner.builder()
-                .region(Region.of(regionName))
+                .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
