@@ -6,6 +6,7 @@ import net.sf.json.JSONObject;
 import java.util.List;
 
 public interface SQS {
+    boolean isQueueExist(String queueName);
     String sendMessage(String queueName, String message) throws ServiceException;
     void pollMessages(String queueName);
     void updateQueueNames(String queueName, boolean isAdded) throws ServiceException;

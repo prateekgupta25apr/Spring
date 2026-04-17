@@ -80,6 +80,17 @@ public class SQSImpl implements SQS{
         return queueUrl;
     }
 
+    public boolean isQueueExist(String queueName) {
+        boolean result;
+        try{
+            String queueUrl = getQueueUrl(queueName);
+            result=StringUtils.isNotBlank(queueUrl);
+        }catch (Exception e){
+            result=false;
+        }
+        return result;
+    }
+
     @Override
     public String sendMessage(
             String queueName, String message) throws ServiceException {
@@ -118,7 +129,7 @@ public class SQSImpl implements SQS{
 
             for (Message msg : messages) {
 
-                System.out.println("Received: " + msg.body());
+                System.out.println("Received message :: " + msg.body());
 
                 // delete message after processing
                 DeleteMessageRequest deleteRequest = DeleteMessageRequest.builder()
