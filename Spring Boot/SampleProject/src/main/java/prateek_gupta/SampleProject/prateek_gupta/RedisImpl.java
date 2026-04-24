@@ -31,13 +31,16 @@ public class RedisImpl implements Redis {
 
     String mapName = "mapped_key_values";
 
-    public RedisImpl(String host, String port, String password,
-                     String ssl) {
+    public RedisImpl(
+            String host, String port, String username, String password, String ssl) {
         RedisStandaloneConfiguration redisStandaloneConfiguration =
                 new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(Integer.parseInt(port));
-        redisStandaloneConfiguration.setPassword(password);
+        if (StringUtils.isNotBlank(password))
+            redisStandaloneConfiguration.setPassword(password);
+        if (StringUtils.isNotBlank(username))
+            redisStandaloneConfiguration.setUsername(username);
 
 
         JedisConnectionFactory jedisConnectionFactory;
@@ -80,8 +83,12 @@ public class RedisImpl implements Redis {
                 "rediss://" + host + ":" + port:
                 "redis://" + host + ":" + port );
 
-        if(StringUtils.isNotBlank(password))
+        if(StringUtils.isNotBlank(password)) {
             singleServerConfig.setPassword(password);
+        }
+
+        if (StringUtils.isNotBlank(username))
+            singleServerConfig.setUsername(username);
         redissonClient= Redisson.create(config);
     }
 
@@ -131,7 +138,7 @@ public class RedisImpl implements Redis {
         try {
             for (String key : redissonClient.getKeys().getKeysByPattern(pattern)) {
                 if (redissonClient.getKeys().getType(key) == RType.MAP) {
-                    RMap<String, Object> map = redissonClient.getMap(mapName);
+                    RMap<String, Object> map = redissonClient.getMap(key);
                     if (map != null && !map.isEmpty())
                         response.put(key, map.readAllMap());
                 } else {

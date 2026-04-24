@@ -36,16 +36,19 @@ public class BeanConfiguration {
     String S3_BUCKET_NAME = "";
 
     @Value("${REDIS_HOST:}")
-    String REDIS_HOST="";
+    String REDIS_HOST = "";
 
     @Value("${REDIS_PORT:}")
-    String REDIS_PORT="";
+    String REDIS_PORT = "";
 
     @Value("${REDIS_SSL:}")
-    String REDIS_SSL="";
+    String REDIS_SSL = "";
+
+    @Value("${REDIS_USERNAME:}")
+    String REDIS_USERNAME = "";
 
     @Value("${REDIS_PASSWORD:}")
-    String REDIS_PASSWORD="";
+    String REDIS_PASSWORD = "";
 
     @Value("${KAFKA_BROKER:}")
     String kafkaBrokers;
@@ -96,14 +99,14 @@ public class BeanConfiguration {
 
     @Bean
     public S3 s3() throws ServiceException {
-        return new S3Impl(AWS_ACCESS_KEY,AWS_SECRET_KEY, S3_BUCKET_NAME,AWS_REGION_NAME);
+        return new S3Impl(AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_BUCKET_NAME, AWS_REGION_NAME);
     }
 
 
     @Bean
     @Conditional(RedisCondition.class)
     public Redis redisService() {
-        return new RedisImpl(REDIS_HOST,REDIS_PORT,REDIS_PASSWORD,REDIS_SSL);
+        return new RedisImpl(REDIS_HOST, REDIS_PORT,REDIS_USERNAME, REDIS_PASSWORD, REDIS_SSL);
     }
 
     @Bean
@@ -132,10 +135,10 @@ public class BeanConfiguration {
         if (StringUtils.isNotBlank(securityProtocol))
             kafkaConfig.put("security.protocol", securityProtocol);
 
-        if(StringUtils.isNotBlank(saslMechanism))
+        if (StringUtils.isNotBlank(saslMechanism))
             kafkaConfig.put("sasl.mechanism", saslMechanism);
 
-        if(StringUtils.isNotBlank(saslConfig))
+        if (StringUtils.isNotBlank(saslConfig))
             kafkaConfig.put("sasl.jaas.config", saslConfig);
 
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -158,9 +161,9 @@ public class BeanConfiguration {
     @Conditional(EmailCondition.class)
     public Email email() {
         return new EmailImpl(
-                EMAILS_SMTP_SERVER,EMAILS_SMTP_PORT,EMAILS_SMTP_USERNAME,EMAILS_SMTP_PASSWORD,
-                EMAILS_SEND_GRID_ENABLED,EMAILS_SEND_GRID_SERVER,EMAILS_SEND_GRID_PORT,
-                EMAILS_SEND_GRID_USERNAME,EMAILS_SEND_GRID_PASSWORD
+                EMAILS_SMTP_SERVER, EMAILS_SMTP_PORT, EMAILS_SMTP_USERNAME, EMAILS_SMTP_PASSWORD,
+                EMAILS_SEND_GRID_ENABLED, EMAILS_SEND_GRID_SERVER, EMAILS_SEND_GRID_PORT,
+                EMAILS_SEND_GRID_USERNAME, EMAILS_SEND_GRID_PASSWORD
         );
     }
 
@@ -188,13 +191,13 @@ public class BeanConfiguration {
 
         javaMailProperties.put("mail.smtp.auth", "true");
         javaMailProperties.put("mail.smtp.starttls.enable", "true");
-        return  mailSender;
+        return mailSender;
     }
 
     @Bean
     @Conditional(OpenSearchCondition.class)
-    public OpenSearch openSearchService(){
-        return new OpenSearchImpl(openSearchHost,openSearchPort);
+    public OpenSearch openSearchService() {
+        return new OpenSearchImpl(openSearchHost, openSearchPort);
     }
 
 
@@ -206,7 +209,7 @@ public class BeanConfiguration {
     @Bean
     @Conditional(SQSCondition.class)
     public SQS sqs() {
-        return new SQSImpl(AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_REGION_NAME);
+        return new SQSImpl(AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION_NAME);
     }
 
     static class RedisCondition implements Condition {
