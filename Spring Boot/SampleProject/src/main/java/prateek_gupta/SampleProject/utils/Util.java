@@ -21,9 +21,9 @@ import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
-import javax.activation.DataSource;
-import javax.mail.internet.MimeMessage;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataSource;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
@@ -180,7 +180,7 @@ public class Util {
                                     fileUrl, HttpMethod.GET,
                                     null, byte[].class);
 
-                            if (response.getStatusCodeValue()==200)
+                            if (response.getStatusCode().value()==200)
                                 fileContent = response.getBody();
                         }
 
@@ -222,7 +222,7 @@ public class Util {
                                     fileUrl, HttpMethod.GET,
                                     null, byte[].class);
 
-                            if (response.getStatusCodeValue()==200)
+                            if (response.getStatusCode().value()==200)
                                 fileContent = response.getBody();
                         }
 

@@ -15,7 +15,7 @@ import static prateek_gupta.SampleProject.multitenancy.TenantContext.
         DEFAULT_SCHEMA_NAME;
 
 @Component
-public class TenantConnectionProvider implements MultiTenantConnectionProvider {
+public class TenantConnectionProvider implements MultiTenantConnectionProvider<String> {
     private final Logger log =
             LoggerFactory.getLogger(TenantConnectionProvider.class);
 

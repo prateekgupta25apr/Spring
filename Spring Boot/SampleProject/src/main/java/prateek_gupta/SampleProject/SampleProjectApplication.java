@@ -6,9 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import prateek_gupta.SampleProject.prateek_gupta.Init;
-import prateek_gupta.SampleProject.prateek_gupta.PreConstructMethod;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import java.util.logging.LogManager;
 
@@ -21,6 +20,14 @@ import static prateek_gupta.SampleProject.prateek_gupta.ProjectSettings.
 public class SampleProjectApplication {
 
 	public static void main(String[] args) {
+		// Redirecting java.util.logging to SLF4J, not using @PreConstructMethod because in
+		// Java 21 and Spring Boot 3.2.5, following code needs to be executed before run method
+		// and static block execution( execution of @PreConstructMethod annotated methods)
+		// won't work
+		LogManager.getLogManager().reset();
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
+
 		SpringApplication.run(SampleProjectApplication.class, args);
 		System.out.println("Good to go");
 	}
@@ -31,13 +38,5 @@ public class SampleProjectApplication {
 		Init.postConstructMethodExecution();
 	}
 
-	@PreConstructMethod
-	@SuppressWarnings("unused")
-	public void julToSLF4J(){
-		// Redirecting java.util.logging to SLF4J
-            LogManager.getLogManager().reset();
-            SLF4JBridgeHandler.removeHandlersForRootLogger();
-            SLF4JBridgeHandler.install();
-	}
 
 }

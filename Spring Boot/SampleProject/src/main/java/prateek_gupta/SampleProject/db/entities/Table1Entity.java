@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import prateek_gupta.SampleProject.db.vo.Table1VO;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

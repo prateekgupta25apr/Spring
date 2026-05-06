@@ -10,9 +10,9 @@ import prateek_gupta.SampleProject.db.entities.Table1Entity;
 import prateek_gupta.SampleProject.db.service.impl.DBServiceImpl;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
 @Repository
 @Transactional

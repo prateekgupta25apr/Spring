@@ -1,6 +1,6 @@
 package prateek_gupta.SampleProject.multitenancy;
 
-import org.hibernate.MultiTenancyStrategy;
+
 import org.hibernate.cfg.Environment;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class TenantRegistration implements WebMvcConfigurer {
+public class TenantInterceptorAndDBConnectionProviderRegistration implements WebMvcConfigurer {
     @Autowired
     private TenantInterceptor tenantInterceptor;
 
@@ -35,11 +35,11 @@ public class TenantRegistration implements WebMvcConfigurer {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             DataSource dataSource,
-            MultiTenantConnectionProvider multiTenantConnectionProvider,
+            MultiTenantConnectionProvider<String> multiTenantConnectionProvider,
             CurrentTenantIdentifierResolver currentTenantIdentifierResolverImpl) {
         Map<String, Object> properties = new HashMap<>();
-        // Setting the strategy for MultiTenancy as by using schemas
-        properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.SCHEMA);
+        // Hibernate 6: strategy enum removed; schema multi-tenancy is driven by following 2
+        // providers only.
 
         // Setting TenantConnectionProvider (implementation) to be used for
         // connecting to schema

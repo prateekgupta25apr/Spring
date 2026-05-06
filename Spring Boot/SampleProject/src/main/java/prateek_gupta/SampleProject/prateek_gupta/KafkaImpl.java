@@ -18,14 +18,10 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 
 public class KafkaImpl implements Kafka {
@@ -59,17 +55,19 @@ public class KafkaImpl implements Kafka {
             ServiceException {
         log.info("Entering sendMessage()");
         try {
-            ListenableFuture<SendResult<String, String>> response =
+            CompletableFuture<SendResult<String, String>> response =
                     kafkaTemplate.send(topic, message);
-            response.addCallback(success -> {
+
+            response.whenComplete(
+                    (success, failure) -> {
                         if (success != null) {
                             RecordMetadata metadata = success.getRecordMetadata();
                             log.info("Message sent successfully to the topic : {}",
                                     metadata.topic());
                         }
-                    },
-                    failure -> log.info(
-                            "Message sending failed: {}", failure.getMessage())
+                        else if (failure != null)
+                            log.info("Message sending failed: {}", failure.getMessage());
+                    }
             );
         } catch (Exception e) {
             ServiceException.logException(e);
@@ -141,7 +139,7 @@ public class KafkaImpl implements Kafka {
             responseData.put("partitions", partitions);
 
             responseData.put("replication.factor",
-                    topicDescription.partitions().get(0).replicas().size());
+                    topicDescription.partitions().getFirst().replicas().size());
 
             ConfigResource topicResource =
                     new ConfigResource(ConfigResource.Type.TOPIC, topicName);
@@ -301,7 +299,7 @@ public class KafkaImpl implements Kafka {
             // Seeking partitions to their correct positions
             for (Map.Entry<TopicPartition, List<Integer>> entry :
                     partitionMapping.entrySet())
-                consumer.seek(entry.getKey(), entry.getValue().get(0));
+                consumer.seek(entry.getKey(), entry.getValue().getFirst());
 
             // Polling messages
             JSONArray messages;

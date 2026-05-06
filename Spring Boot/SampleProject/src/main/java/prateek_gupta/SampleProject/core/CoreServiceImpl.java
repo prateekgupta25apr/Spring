@@ -9,8 +9,8 @@ import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.*;
 import prateek_gupta.SampleProject.utils.Util;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
