@@ -13,6 +13,7 @@ import prateek_gupta.SampleProject.db.entities.Table1Entity;
 import prateek_gupta.SampleProject.db.service.DBService;
 import prateek_gupta.SampleProject.db.service.impl.DBServiceImpl;
 import prateek_gupta.SampleProject.db.vo.Table1VO;
+import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 public class DBServiceTest {
 
@@ -31,7 +32,7 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetData_ValidPrimaryKey_ReturnsVO() {
+    public void testGetData_ValidPrimaryKey_ReturnsVO() throws ServiceException {
         // Arrange (Set up mock behavior and test data)
         Integer primaryKey = 1;
         Table1Entity mockEntity = Mockito.mock(Table1Entity.class);
@@ -50,7 +51,7 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetData_InvalidPrimaryKey_ReturnsNull() {
+    public void testGetData_InvalidPrimaryKey_ReturnsNull() throws ServiceException {
         // Arrange
         Integer invalidPrimaryKey = 999;
         Mockito.when(table1Repository.findByPrimaryKey(invalidPrimaryKey)).thenReturn(null);
@@ -65,7 +66,7 @@ public class DBServiceTest {
     }
 
     @Test
-    public void testGetData_ExceptionHandling_ReturnsNull() {
+    public void testGetData_ExceptionHandling_ReturnsNull() throws ServiceException {
         // Arrange
         Integer primaryKey = 1;
         Mockito.when(table1Repository.findByPrimaryKey(primaryKey)).thenThrow(
