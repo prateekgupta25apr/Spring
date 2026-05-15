@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prateek_gupta.SampleProject.prateek_gupta.Cryptography;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import java.util.HexFormat;
 
@@ -39,12 +39,12 @@ public class CryptographyController {
                 JSONObject data = new JSONObject();
                 data.put("Encrypted Data(Hex)", hex);
 
-                response = Util.getSuccessResponse("Successfully encrypted data",data);
+                response = Init.getSuccessResponse("Successfully encrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         return response;
     }
@@ -62,14 +62,14 @@ public class CryptographyController {
                 JSONObject data = new JSONObject();
                 data.put("Decrypted Data", plainText);
 
-                response = Util.getSuccessResponse("Successfully decrypted data",data);
+                response = Init.getSuccessResponse("Successfully decrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(
+            return Init.getErrorResponse(
                     new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
         }
         log.info("Exiting Controller : desDecrypt()");
@@ -87,14 +87,14 @@ public class CryptographyController {
                 String hex=cryptography.hashSHA256(plain_text);
                 JSONObject data = new JSONObject();
                 data.put("Hashed Data(Hex)", hex);
-                response = Util.getSuccessResponse("Successfully hashed data",data);
+                response = Init.getSuccessResponse("Successfully hashed data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(
+            return Init.getErrorResponse(
                     new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
         }
         log.info("Exiting Controller : hashSHA256()");
@@ -112,14 +112,14 @@ public class CryptographyController {
                 String hex=cryptography.hMacSHA256(plain_text);
                 JSONObject data = new JSONObject();
                 data.put("HMac(Hex)", hex);
-                response = Util.getSuccessResponse("Successfully generated HMac",data);
+                response = Init.getSuccessResponse("Successfully generated HMac",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(
+            return Init.getErrorResponse(
                     new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
         }
         log.info("Exiting Controller : hMacSHA256()");
@@ -138,12 +138,12 @@ public class CryptographyController {
                 JSONObject data = new JSONObject();
                 data.put("Encrypted Data(Hex)", hex);
 
-                response = Util.getSuccessResponse("Successfully encrypted data",data);
+                response = Init.getSuccessResponse("Successfully encrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         return response;
     }
@@ -161,14 +161,14 @@ public class CryptographyController {
                 JSONObject data = new JSONObject();
                 data.put("Decrypted Data", plainText);
 
-                response = Util.getSuccessResponse("Successfully decrypted data",data);
+                response = Init.getSuccessResponse("Successfully decrypted data",data);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(
+            return Init.getErrorResponse(
                     new ServiceException(ServiceException.ExceptionType.UNKNOWN_ERROR));
         }
         log.info("Exiting Controller : aesDecrypt()");

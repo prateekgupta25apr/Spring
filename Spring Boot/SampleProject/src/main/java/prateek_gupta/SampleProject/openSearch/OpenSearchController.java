@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.prateek_gupta.OpenSearch;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 @RestController
 @RequestMapping("/open_search")
@@ -25,7 +25,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getIndex(indexName);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully fetched the index details",
                             indexDetails);
                 } else
@@ -35,9 +35,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -54,7 +54,7 @@ public class OpenSearchController {
                 JSONObject indexDetails = service.createIndex(
                         indexName, source, aliases, settings, mappings);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully create the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -63,9 +63,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -83,7 +83,7 @@ public class OpenSearchController {
                 JSONObject indexDetails = service.updateIndex(
                         indexName, settings, addAlias, removeAlias, mappings);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully updated the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -92,9 +92,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -108,7 +108,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteIndex(indexName);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully deleted the index", indexDetails);
                 } else
                     throw new ServiceException(
@@ -117,9 +117,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -134,7 +134,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.getRecord(indexName, docId);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully fetched the record", indexDetails);
                 } else
                     throw new ServiceException(
@@ -143,9 +143,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -160,7 +160,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.upsertRecord(indexName, docId, data, bulk);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully inserted the record", indexDetails);
                 } else
                     throw new ServiceException(
@@ -169,9 +169,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -188,7 +188,7 @@ public class OpenSearchController {
                 JSONObject indexDetails = service.partialUpdateRecord(indexName,
                         docId, data, bulk);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully updated the record", indexDetails);
                 } else
                     throw new ServiceException(
@@ -197,9 +197,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -214,7 +214,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 JSONObject indexDetails = service.deleteRecord(indexName, docId, bulk);
                 if (indexDetails != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully deleted the record", indexDetails);
                 } else
                     throw new ServiceException(
@@ -223,9 +223,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -240,7 +240,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 data = service.searchRecord(indexName, searchJSON);
                 if (data != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully searched the record", data);
                 } else
                     throw new ServiceException(
@@ -249,9 +249,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -265,7 +265,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 Object data = service.countRecord(indexName, searchJSON);
                 if (data != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully fetched the record count", data);
                 } else
                     throw new ServiceException(
@@ -274,9 +274,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -292,7 +292,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 Object data = service.deleteByQueryRecord(indexName, searchJSON);
                 if (data != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully deleted the records", data);
                 } else
                     throw new ServiceException(
@@ -301,9 +301,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -318,7 +318,7 @@ public class OpenSearchController {
             if (StringUtils.isNotBlank(indexName)) {
                 Object data = service.aggregateRecord(indexName, searchJSON);
                 if (data != null) {
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully aggregated the record", data);
                 } else
                     throw new ServiceException(
@@ -327,9 +327,9 @@ public class OpenSearchController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }

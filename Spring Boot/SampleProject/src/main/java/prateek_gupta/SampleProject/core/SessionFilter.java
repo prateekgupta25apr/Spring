@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import prateek_gupta.SampleProject.base.Context;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
@@ -34,7 +34,7 @@ public class SessionFilter implements Filter {
                 if (cookie.getName().equals(COOKIE_NAME)) {
 
                     // Decoding JWT
-                    cookieData = Util.getObjectMapper().valueToTree(Jwts.parser().verifyWith(
+                    cookieData = Init.getObjectMapper().valueToTree(Jwts.parser().verifyWith(
                                     Keys.hmacShaKeyFor(COOKIE_SECRET.getBytes()))
                             .build().parse(cookie.getValue()).getPayload());
 

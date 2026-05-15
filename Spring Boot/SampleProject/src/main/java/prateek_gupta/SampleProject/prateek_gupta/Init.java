@@ -5,7 +5,6 @@ import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.boot.system.ApplicationHome;
-import prateek_gupta.SampleProject.utils.Util;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -67,10 +66,10 @@ public class Init {
 
         for (Method method:methods) {
             if(method.getParameters().length>0)
-                method.invoke(Util.getClassObject(method),
+                method.invoke(prateek_gupta.SampleProject.project_utils.Init.getClassObject(method),
                     method.getAnnotation(PreConstructMethod.class).value());
             else
-                method.invoke(Util.getClassObject(method));
+                method.invoke(prateek_gupta.SampleProject.project_utils.Init.getClassObject(method));
         }
 
     }
@@ -82,7 +81,7 @@ public class Init {
         System.out.println("PostConstructMethods : "+methods);
 
         for (Method method:methods)
-            method.invoke(Util.getClassObject(method),
+            method.invoke(prateek_gupta.SampleProject.project_utils.Init.getClassObject(method),
                     method.getAnnotation(PostConstructMethod.class).value());
 
     }

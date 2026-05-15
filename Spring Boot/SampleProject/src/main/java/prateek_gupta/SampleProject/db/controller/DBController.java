@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 import prateek_gupta.SampleProject.db.service.DBService;
 import prateek_gupta.SampleProject.db.vo.Table1VO;
 
@@ -40,7 +40,7 @@ public class DBController {
                 if (table1VO != null) {
                     JSONObject data = new JSONObject();
                     data.put("table1", table1VO);
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "Successfully fetched the data", data);
                 } else
                     throw new ServiceException(
@@ -49,7 +49,7 @@ public class DBController {
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         return response;
     }
@@ -61,12 +61,12 @@ public class DBController {
         try {
             if (data != null) {
                 dbService.saveData(data);
-                response = Util.getSuccessResponse("Successfully saved the data");
+                response = Init.getSuccessResponse("Successfully saved the data");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         log.info("Exiting Controller : saveData()");
         return response;
@@ -107,11 +107,11 @@ public class DBController {
             }
 
             dbService.updateData(primaryKey,col1,col2);
-            response = Util.getSuccessResponse("Successfully updated the data");
+            response = Init.getSuccessResponse("Successfully updated the data");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         log.info("Exiting Controller : updateData()");
         return response;
@@ -155,11 +155,11 @@ public class DBController {
             }
 
             dbService.partialUpdateData(primaryKey,col1,col2);
-            response = Util.getSuccessResponse("Successfully updated the data");
+            response = Init.getSuccessResponse("Successfully updated the data");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         log.info("Exiting Controller : partialUpdateData()");
         return response;
@@ -171,12 +171,12 @@ public class DBController {
         try {
             if (primaryKey != null && primaryKey > 0) {
                 dbService.deleteData(primaryKey);
-                response = Util.getSuccessResponse("Successfully deleted the data");
+                response = Init.getSuccessResponse("Successfully deleted the data");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         return response;
     }
@@ -192,11 +192,11 @@ public class DBController {
                     attachment.getOriginalFilename();
             s3.uploadFile(attachment.getBytes(), fileKey,attachment.getContentType());
             dbService.addAttachment(table1PrimaryKey, fileKey);
-            response = Util.getSuccessResponse("Attachment added successfully");
+            response = Init.getSuccessResponse("Attachment added successfully");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -220,9 +220,9 @@ public class DBController {
             output.flush();
 
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }catch (Exception exception) {
-            return Util.getErrorResponse(new Exception());
+            return Init.getErrorResponse(new Exception());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.*;
-import prateek_gupta.SampleProject.utils.Util;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static prateek_gupta.SampleProject.utils.Util.getJsonNode;
+import static prateek_gupta.SampleProject.project_utils.Init.getJsonNode;
 
 @Service
 public class CoreServiceImpl implements CoreService {
@@ -31,7 +30,7 @@ public class CoreServiceImpl implements CoreService {
 
     @Override
     public ObjectNode test(String testData) throws ServiceException {
-        ObjectNode response = Util.getObjectMapper().createObjectNode();
+        ObjectNode response = prateek_gupta.SampleProject.project_utils.Init.getObjectMapper().createObjectNode();
         try {
             Object result = entityManager.createNativeQuery("select schema();")
                     .getSingleResult();

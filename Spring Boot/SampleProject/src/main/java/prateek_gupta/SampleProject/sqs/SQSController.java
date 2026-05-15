@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.prateek_gupta.SQS;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import java.util.List;
 
@@ -32,14 +32,14 @@ public class SQSController {
                 String messageId=sqs.sendMessage(queueName, message);
                 JSONObject obj = new JSONObject();
                 obj.put("messageId", messageId);
-                response=Util.getSuccessResponse("Successfully sent message",obj);
+                response=Init.getSuccessResponse("Successfully sent message",obj);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -53,14 +53,14 @@ public class SQSController {
 
             if (StringUtils.isNotBlank(queueName)) {
                 sqs.updateQueueNames(queueName, true);
-                response=Util.getSuccessResponse("Successfully added queue name");
+                response=Init.getSuccessResponse("Successfully added queue name");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -74,14 +74,14 @@ public class SQSController {
 
             if (StringUtils.isNotBlank(queueName)) {
                 sqs.updateQueueNames(queueName, false);
-                response=Util.getSuccessResponse("Successfully removed queue name");
+                response=Init.getSuccessResponse("Successfully removed queue name");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -94,11 +94,11 @@ public class SQSController {
                 List<String> queues=sqs.getAllQueues();
                 JSONObject data = new JSONObject();
                 data.put("queues", queues);
-                response=Util.getSuccessResponse("Successfully removed queue name",data);
+                response=Init.getSuccessResponse("Successfully removed queue name",data);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -111,11 +111,11 @@ public class SQSController {
             JSONObject queue=sqs.getQueue(queueName);
             JSONObject data = new JSONObject();
             data.put("queue", queue);
-            response=Util.getSuccessResponse("Successfully queue details",data);
+            response=Init.getSuccessResponse("Successfully queue details",data);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -129,11 +129,11 @@ public class SQSController {
         try {
             ServiceException.moduleLockCheck("SQS_ENABLE", true);
             sqs.createQueue(queueName,visibilityTimeOut,retentionPeriod);
-            response=Util.getSuccessResponse("Successfully created queue");
+            response=Init.getSuccessResponse("Successfully created queue");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -148,11 +148,11 @@ public class SQSController {
         try {
             ServiceException.moduleLockCheck("SQS_ENABLE", true);
             sqs.updateQueue(queueName,attributeName,attributeValue);
-            response=Util.getSuccessResponse("Successfully updated queue");
+            response=Init.getSuccessResponse("Successfully updated queue");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -163,11 +163,11 @@ public class SQSController {
         try {
             ServiceException.moduleLockCheck("SQS_ENABLE", true);
             sqs.deleteQueue(queueName);
-            response=Util.getSuccessResponse("Successfully queue delete");
+            response=Init.getSuccessResponse("Successfully queue delete");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -181,11 +181,11 @@ public class SQSController {
             JSONObject data = new JSONObject();
             data.put("count", messages.size());
             data.put("messages", messages);
-            response=Util.getSuccessResponse("Successfully fetched messages",data);
+            response=Init.getSuccessResponse("Successfully fetched messages",data);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }

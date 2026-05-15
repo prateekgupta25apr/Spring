@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,15 +42,15 @@ public class S3Controller {
                     output.write(fileContent);
                     output.flush();
                 } else
-                    return Util.getErrorResponse(new ServiceException(
+                    return Init.getErrorResponse(new ServiceException(
                             HttpStatus.BAD_REQUEST, "File doesn't exists"));
             else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
-            return Util.getErrorResponse(e);
+            return Init.getErrorResponse(e);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -67,18 +67,18 @@ public class S3Controller {
             String fileKey = s3.updateFileName(
                     file.getOriginalFilename(), StringUtils.isNotBlank(prefix) ? prefix : "");
             fileKey = s3.uploadFile(file.getBytes(), fileKey,file.getContentType());
-            ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+            ObjectNode responseData = Init.getObjectMapper().createObjectNode();
             responseData.put("file_name", fileName);
             responseData.put("file_key", fileKey);
             responseData.put("pre_signed_url",
                     s3.generatePreSignedUrl(fileKey, "GET"));
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully uploaded the file : " + fileName,
                     responseData);
         } catch (ServiceException e) {
-            return Util.getErrorResponse(e);
+            return Init.getErrorResponse(e);
         }catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -92,12 +92,12 @@ public class S3Controller {
             String fileName = request.getParameter("fileName");
             if (StringUtils.isNotBlank(fileName)) {
                 s3.deleteFile(fileName);
-                response = Util.getSuccessResponse("File deleted successfully");
+                response = Init.getSuccessResponse("File deleted successfully");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
-            return Util.getErrorResponse(e);
+            return Init.getErrorResponse(e);
         }
         return response;
     }
@@ -115,19 +115,19 @@ public class S3Controller {
                     if (StringUtils.isBlank(method))
                         method = "GET";
                     String url = s3.generatePreSignedUrl(fileName, method);
-                    ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+                    ObjectNode responseData = Init.getObjectMapper().createObjectNode();
                     responseData.put("method", method);
                     responseData.put("preSingedUrl", url);
-                    response = Util.getSuccessResponse(
+                    response = Init.getSuccessResponse(
                             "File deleted successfully", responseData);
                 } else
-                    return Util.getErrorResponse(new ServiceException(
+                    return Init.getErrorResponse(new ServiceException(
                             HttpStatus.BAD_REQUEST, "File doesn't exists"));
             else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
-            return Util.getErrorResponse(e);
+            return Init.getErrorResponse(e);
         }
         return response;
     }
@@ -141,15 +141,15 @@ public class S3Controller {
             String filePath = request.getParameter("file_path");
             if (StringUtils.isNotBlank(filePath)) {
                 String fileName = s3.extractFileName(filePath, true);
-                ObjectNode responseData = Util.getObjectMapper().createObjectNode();
+                ObjectNode responseData = Init.getObjectMapper().createObjectNode();
                 responseData.put("file_name", fileName);
-                response = Util.getSuccessResponse(
+                response = Init.getSuccessResponse(
                         "Extracted file name successfully", responseData);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException e) {
-            return Util.getErrorResponse(e);
+            return Init.getErrorResponse(e);
         }
         return response;
     }

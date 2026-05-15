@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.utils;
+package prateek_gupta.SampleProject.project_utils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

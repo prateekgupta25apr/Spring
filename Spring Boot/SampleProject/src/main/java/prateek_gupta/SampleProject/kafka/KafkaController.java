@@ -14,7 +14,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.prateek_gupta.Kafka;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -35,12 +35,12 @@ public class KafkaController {
 
             if (StringUtils.isNotBlank(topic) && StringUtils.isNotBlank(message)) {
                 kafka.sendMessage(topic, message);
-                response = Util.getSuccessResponse("Message sent to topic: " + topic);
+                response = Init.getSuccessResponse("Message sent to topic: " + topic);
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         return response;
     }
@@ -53,12 +53,12 @@ public class KafkaController {
 
             JSONObject responseData = new JSONObject();
             responseData.put("topics", kafka.getAllTopics());
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully fetched topics", responseData);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -70,13 +70,13 @@ public class KafkaController {
             ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             JSONObject responseData = kafka.getTopic(topicName);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully retrieve details for the topic : " + topicName,
                     responseData);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -89,12 +89,12 @@ public class KafkaController {
             ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.createTopic(topicName, partitions, replicationFactor);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully created the topic : " + topicName);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -107,12 +107,12 @@ public class KafkaController {
             ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.updateTopicIncreasePartition(topicName, partitions);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully updated the topic's partition to : " + partitions);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -125,12 +125,12 @@ public class KafkaController {
             ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.updateTopic(topicName, configKey, configValue);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully updated the topic : " + topicName);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
 
         return response;
@@ -143,12 +143,12 @@ public class KafkaController {
             ServiceException.moduleLockCheck("KAFKA_ENABLE", true);
 
             kafka.deleteTopic(topicName);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully deleted the topic : " + topicName);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -163,18 +163,18 @@ public class KafkaController {
             OffsetAndMetadata offsetAndMetadata = kafka.getCommittedOffset(
                     topicName, partitionId, consumerGroupName);
             if (offsetAndMetadata != null) {
-                response = Util.getSuccessResponse(
+                response = Init.getSuccessResponse(
                         "Successfully retrieved the commited offset as : " +
                                 offsetAndMetadata.offset());
             } else {
-                response = Util.getSuccessResponse(
+                response = Init.getSuccessResponse(
                         "No committed offset found for the specified partition.");
 
             }
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -189,10 +189,10 @@ public class KafkaController {
             String dataStr = request.getParameter("data");
             JSONObject data = JSONObject.fromObject(dataStr);
             JSONObject responseData = kafka.getMessages(data);
-            response = Util.getSuccessResponse(
+            response = Init.getSuccessResponse(
                     "Successfully fetched the messages", responseData);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving topics", e);
         }
@@ -226,14 +226,14 @@ public class KafkaController {
 
             if (StringUtils.isNotBlank(topic)) {
                 kafka.updateTopics(topic, true);
-                response=Util.getSuccessResponse("Successfully added topic");
+                response=Init.getSuccessResponse("Successfully added topic");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }
@@ -247,14 +247,14 @@ public class KafkaController {
 
             if (StringUtils.isNotBlank(topic)) {
                 kafka.updateTopics(topic, false);
-                response=Util.getSuccessResponse("Successfully removed topic");
+                response=Init.getSuccessResponse("Successfully removed topic");
             } else
                 throw new ServiceException(
                         ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         } catch (Exception exception) {
-            return Util.getErrorResponse(new ServiceException());
+            return Init.getErrorResponse(new ServiceException());
         }
         return response;
     }

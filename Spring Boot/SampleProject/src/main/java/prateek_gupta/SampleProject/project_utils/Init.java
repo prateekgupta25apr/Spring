@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.utils;
+package prateek_gupta.SampleProject.project_utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Component
-public class Util {
+public class Init {
 
     public static Object getClassObject(Method method)
             throws Exception {
@@ -64,7 +64,7 @@ public class Util {
             message=exception.getMessage();
             status=HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        return Util.getResponse(message,null,status);
+        return Init.getResponse(message,null,status);
     }
 
     public static ResponseEntity<ObjectNode> getResponse(

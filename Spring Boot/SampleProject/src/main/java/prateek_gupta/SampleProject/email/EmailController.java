@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 @RestController
 @RequestMapping("emails")
@@ -21,7 +21,7 @@ public class EmailController {
     Email email;
 
     @Autowired(required = false)
-    Util util;
+    Init init;
 
 
     @GetMapping("/get_email_content")
@@ -39,10 +39,10 @@ public class EmailController {
             emailContent= email.getEmailContent(
                         messageId, filePath, fetchFileUrl);
 
-            response = Util.getSuccessResponse("Successfully fetched email data",
+            response = Init.getSuccessResponse("Successfully fetched email data",
                     emailContent);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         log.info("Exiting Controller : getEmailContent()");
         return response;
@@ -65,7 +65,7 @@ public class EmailController {
             JSONArray failedAttachments;
 
             if (nativeEnabled)
-                failedAttachments = util.sendEmail(
+                failedAttachments = init.sendEmail(
                         fromEmail, toEmail, subject, content, JSONArray.fromObject(attachments));
             else
                 failedAttachments = email.send(
@@ -73,9 +73,9 @@ public class EmailController {
             JSONObject data = new JSONObject();
             data.put("failedAttachments", failedAttachments);
 
-            response = Util.getSuccessResponse("Successfully sent email", data);
+            response = Init.getSuccessResponse("Successfully sent email", data);
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         log.info("Exiting Controller : send()");
         return response;
@@ -94,9 +94,9 @@ public class EmailController {
 
             email.processEmail(messageId, filePath, toEmail);
 
-            response = Util.getSuccessResponse("Successfully processed email");
+            response = Init.getSuccessResponse("Successfully processed email");
         } catch (ServiceException exception) {
-            return Util.getErrorResponse(exception);
+            return Init.getErrorResponse(exception);
         }
         log.info("Exiting Controller : processEmail()");
         return response;

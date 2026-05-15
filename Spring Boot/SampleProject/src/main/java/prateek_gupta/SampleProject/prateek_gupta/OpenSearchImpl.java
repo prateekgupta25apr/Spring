@@ -35,7 +35,7 @@ import org.opensearch.index.reindex.BulkByScrollResponse;
 import org.opensearch.index.reindex.DeleteByQueryRequest;
 import org.opensearch.search.SearchModule;
 import org.opensearch.search.builder.SearchSourceBuilder;
-import prateek_gupta.SampleProject.utils.Util;
+import prateek_gupta.SampleProject.project_utils.Init;
 
 import java.util.ArrayList;
 
@@ -331,7 +331,7 @@ public class OpenSearchImpl implements
 
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            return Util.getObjectMapper().readTree(response.toString());
+            return Init.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
@@ -347,7 +347,7 @@ public class OpenSearchImpl implements
             countRequest.query(QueryBuilders.wrapperQuery(queryJSON));
 
             CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
-            return Util.getObjectMapper().valueToTree(countResponse);
+            return Init.getObjectMapper().valueToTree(countResponse);
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
@@ -365,7 +365,7 @@ public class OpenSearchImpl implements
 
             BulkByScrollResponse response = client.deleteByQuery(request,
                     RequestOptions.DEFAULT);
-            return Util.getObjectMapper().valueToTree(response);
+            return Init.getObjectMapper().valueToTree(response);
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
@@ -402,7 +402,7 @@ public class OpenSearchImpl implements
             SearchResponse response = client.search(searchRequest,
                     RequestOptions.DEFAULT);
 
-            return Util.getObjectMapper().readTree(response.toString());
+            return Init.getObjectMapper().readTree(response.toString());
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
