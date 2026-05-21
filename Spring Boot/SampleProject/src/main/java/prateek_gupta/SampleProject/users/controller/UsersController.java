@@ -65,6 +65,22 @@ public class UsersController {
         return response;
     }
 
+    @PostMapping("reset_password")
+    ResponseEntity<ObjectNode> resetPassword(
+            @RequestParam(value = "pg", required = false) String pg,
+            @RequestParam(value = "password", required = false) String password) {
+        logger.info("Entering resetPassword() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            JSONObject result = usersService.resetPassword(pg, password);
+            response = Init.getSuccessResponse(result);
+        } catch (Exception exception) {
+            return Init.getErrorResponse(exception);
+        }
+        logger.info("Exiting resetPassword() Controller");
+        return response;
+    }
+
     @PostMapping("logout")
     ResponseEntity<ObjectNode> logout() {
         logger.info("Entering logout() Controller");

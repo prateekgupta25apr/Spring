@@ -16,8 +16,10 @@ import prateek_gupta.SampleProject.users.entities.Users;
 import prateek_gupta.SampleProject.users.service.UsersService;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -175,6 +177,79 @@ public class UsersServiceImpl implements UsersService {
         }
         log.info("Exiting Service : forgotPassword()");
         return response;
+    }
+
+    @Override
+    public JSONObject resetPassword(String pg, String password) throws ServiceException {
+        JSONObject response = new JSONObject();
+        log.info("Entering Service : resetPassword()");
+        try {
+            Users user;
+            try {
+                if (pg == null || pg.isBlank()) {
+                    throw new ServiceException();
+                }
+
+                JSONObject pgDecoded = decoder(pg);
+
+                if (pgDecoded == null || !pgDecoded.has("id")) {
+                    throw new ServiceException();
+                }
+
+                int userId = pgDecoded.getInt("id");
+                user = usersRepository.findByUserId(userId);
+
+                if (user == null || !user.isForgotPasswordRequest()) {
+                    throw new ServiceException();
+                }
+            } catch (Exception e) {
+                response.put("status", 2);
+                response.put("message", "Sorry, this page has expired");
+                log.info("Exiting Service : resetPassword()");
+                return response;
+            }
+
+            if (password == null || password.isBlank()) {
+                throw new ServiceException();
+            }
+
+            user.setPassword(PasswordUtils.encryptPassword(password));
+            user.setForgotPasswordRequest(false);
+            usersRepository.save(user);
+
+            response.put("status", 1);
+            response.put("message", "Password reset successfully");
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        log.info("Exiting Service : resetPassword()");
+        return response;
+    }
+
+    private static JSONObject decoder(String code) {
+        // Converting the code to a JSON Object
+        List<Integer> rawJson = new ArrayList<>();
+        String remaining = code;
+        while (!remaining.isEmpty()) {
+            String threeDigit = remaining.length() >= 3 ?
+                    remaining.substring(0, 3) : remaining;
+            if (Integer.parseInt(threeDigit) > 256) {
+                String twoDigit = remaining.length() >= 2 ?
+                        remaining.substring(0, 2) : remaining;
+                rawJson.add(Integer.parseInt(twoDigit));
+                remaining = remaining.substring(twoDigit.length());
+            } else {
+                rawJson.add(Integer.parseInt(threeDigit));
+                remaining = remaining.substring(threeDigit.length());
+            }
+        }
+        byte[] bytes = new byte[rawJson.size()];
+        for (int i = 0; i < rawJson.size(); i++) {
+            bytes[i] = rawJson.get(i).byteValue();
+        }
+        return JSONObject.fromObject(new String(bytes, StandardCharsets.UTF_8));
     }
 
     Users addUser(

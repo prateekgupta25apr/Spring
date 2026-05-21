@@ -13,4 +13,6 @@ public interface UsersService {
 
     JSONObject forgotPassword(JSONObject data) throws ServiceException;
 
+    JSONObject resetPassword(String pg, String password) throws ServiceException;
+
 }
