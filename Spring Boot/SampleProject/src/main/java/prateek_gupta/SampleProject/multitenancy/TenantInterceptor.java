@@ -33,17 +33,17 @@ public class TenantInterceptor implements HandlerInterceptor {
                 try {
                     int tenantId = Integer.parseInt(tenantIdStr);
                     TenantContext.setCurrentTenant("sample_project_" + tenantId);
-
-                    TenantContext.getCurrentTenant().baseUrl =
-                            Init.getConfiguration("base_url").toString();
-                    TenantContext.getCurrentTenant().apiUrl =
-                            Init.getConfiguration("api_url").toString();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
             }
             else
                 TenantContext.setCurrentTenant(TenantContext.getDefaultSchemaName());
+
+            TenantContext.getCurrentTenant().baseUrl =
+                    Init.getConfiguration("base_url").toString();
+            TenantContext.getCurrentTenant().apiUrl =
+                    Init.getConfiguration("api_url").toString();
         }
         return true;
     }

@@ -32,10 +32,10 @@ public class Users {
     byte[] password;
 
     @Column(name = "forgot_password_request")
-    Boolean forgotPasswordRequest;
+    boolean forgotPasswordRequest;
 
     @Column(name = "dark_mode")
-    Boolean darkMode;
+    boolean darkMode;
 
     public UsersVO toVO() {
         UsersVO vo = new UsersVO();
@@ -44,9 +44,8 @@ public class Users {
         vo.setLastName(lastName != null ? lastName : "");
         vo.setEmail(email);
         vo.setPassword(password);
-        vo.setForgotPasswordRequest(
-                forgotPasswordRequest != null ? forgotPasswordRequest : false);
-        vo.setDarkMode(darkMode != null ? darkMode : false);
+        vo.setForgotPasswordRequest(forgotPasswordRequest);
+        vo.setDarkMode(darkMode);
         return vo;
     }
 

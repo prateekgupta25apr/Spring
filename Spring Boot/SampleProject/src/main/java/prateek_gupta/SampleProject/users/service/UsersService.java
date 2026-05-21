@@ -8,5 +8,9 @@ public interface UsersService {
 
     JSONObject login(
             JSONObject data, HttpServletResponse httpServletResponse) throws ServiceException;
+    JSONObject signUp(
+            JSONObject data, HttpServletResponse httpServletResponse) throws ServiceException;
+
+    JSONObject forgotPassword(JSONObject data) throws ServiceException;
 
 }
