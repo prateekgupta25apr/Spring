@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class TenantInterceptorAndDBConnectionProviderRegistration implements WebMvcConfigurer {
+public class TenantInterceptor_And_DBConnectionProvider_Registration implements WebMvcConfigurer {
     @Autowired
     private TenantInterceptor tenantInterceptor;
 

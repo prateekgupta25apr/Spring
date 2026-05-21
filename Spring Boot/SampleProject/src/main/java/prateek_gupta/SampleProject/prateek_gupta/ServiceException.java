@@ -14,7 +14,8 @@ public class ServiceException extends Exception {
         MISSING_REQUIRED_PARAMETERS(HttpStatus.BAD_REQUEST),
         MODULE_LOCK(HttpStatus.FORBIDDEN),
         FORBIDDEN(HttpStatus.FORBIDDEN),
-        LOGIN_REQUIRED(HttpStatus.OK)
+        LOGIN_REQUIRED(HttpStatus.OK),
+        UNAUTHORIZED(HttpStatus.UNAUTHORIZED)
         ;
 
         final HttpStatus status;

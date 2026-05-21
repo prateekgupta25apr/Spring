@@ -246,8 +246,9 @@ public class CryptographyImpl implements Cryptography {
 
         // Reading IV first as it was inserted first while encrypting
         byte[] iv = new byte[16];
+
+        @SuppressWarnings("unused")
         int ivSize = byteArrayInputStream.read(iv, 0, 16);
-        log.info("IVSize : {}", ivSize);
 
         // Generating IV from random string
         IvParameterSpec ivSpec = new IvParameterSpec(iv);

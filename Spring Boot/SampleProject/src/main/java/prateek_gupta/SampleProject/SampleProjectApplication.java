@@ -32,7 +32,7 @@ public class SampleProjectApplication {
 		System.out.println("Good to go");
 	}
 
-	@SuppressWarnings("unused")
+
     @PostConstruct
 	public void onLoad() throws Exception {
 		Init.postConstructMethodExecution();

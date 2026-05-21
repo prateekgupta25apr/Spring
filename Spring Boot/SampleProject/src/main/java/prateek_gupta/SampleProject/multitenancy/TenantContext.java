@@ -1,6 +1,7 @@
 package prateek_gupta.SampleProject.multitenancy;
 
 import lombok.Getter;
+import prateek_gupta.SampleProject.prateek_gupta.Init;
 
 /**
  * Class to store current tenant's details
@@ -18,8 +19,6 @@ public class TenantContext {
     String baseUrl;
     String apiUrl;
 
-    public static final String DEFAULT_SCHEMA_NAME = "sample_project_1";
-
     public TenantContext(String schemaName) {
         this.schemaName = schemaName;
     }
@@ -34,5 +33,9 @@ public class TenantContext {
 
     public static void clear() {
         currentTenant.remove();
+    }
+
+    public static String getDefaultSchemaName() {
+        return Init.getConfiguration("db_default_schema").toString();
     }
 }

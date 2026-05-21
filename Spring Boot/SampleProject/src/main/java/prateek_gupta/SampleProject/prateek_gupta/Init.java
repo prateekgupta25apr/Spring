@@ -40,6 +40,10 @@ public class Init {
         return configuration_properties.getOrDefault(key,value);
     }
 
+    public static Object getConfiguration(String key){
+        return configuration_properties.get(key);
+    }
+
     public static ConfigurationBuilder getScanConfiguration(){
         ConfigurationBuilder configurationBuilder;
         if(!scanned_files.isEmpty()){

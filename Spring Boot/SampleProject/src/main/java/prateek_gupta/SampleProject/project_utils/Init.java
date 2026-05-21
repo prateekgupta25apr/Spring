@@ -16,7 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import prateek_gupta.SampleProject.base.Context;
+import prateek_gupta.SampleProject.core.UserContext;
 import prateek_gupta.SampleProject.prateek_gupta.S3;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
@@ -52,6 +52,11 @@ public class Init {
         return getResponse(message,null,HttpStatus.OK);
     }
 
+    public static ResponseEntity<ObjectNode>
+    getSuccessResponse(Object data){
+        return getResponse(null,data,HttpStatus.OK);
+    }
+
     public static ResponseEntity<ObjectNode> getErrorResponse(
             Exception exception){
         String message;
@@ -76,7 +81,8 @@ public class Init {
             String message, Object data,HttpStatus status){
         ObjectMapper objectMapper=getObjectMapper();
         ObjectNode responseJSON = objectMapper.createObjectNode();
-        responseJSON.put("message", message);
+        if (StringUtils.isNotBlank(message))
+            responseJSON.put("message", message);
         JsonNode dataNode=getObjectMapper().createObjectNode();
         if (data!=null)
             if (data instanceof String)
@@ -123,7 +129,7 @@ public class Init {
     }
 
     public static void validateUserLogin() throws ServiceException {
-        if (Context.getCurrentContext().userId<=0)
+        if (UserContext.getCurrentUser().userId<=0)
             throw new ServiceException(ServiceException.ExceptionType.LOGIN_REQUIRED);
     }
 

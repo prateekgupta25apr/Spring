@@ -1,5 +1,8 @@
 package prateek_gupta.SampleProject.prateek_gupta;
 
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +15,46 @@ import java.util.*;
 public class Utils {
     private static final Logger logger = LogManager.getLogger(
             Utils.class);
+
+    public static Map<String,Object> processCookie(
+            boolean decode,String secretKey,String cookie) {
+        //noinspection unchecked
+        return (Map<String, Object>) processCookie(decode,secretKey,cookie,null);
+    }
+
+    public static Object processCookie(
+            boolean decode,String secretKey,Map<String,Object> cookieData) {
+        return processCookie(decode,secretKey,null,cookieData);
+    }
+    public static Object processCookie(
+            boolean decode,String secretKey,String cookie,Map<String,Object> cookieData){
+
+        if(decode){
+            Map<String,Object> responseData;
+            if (StringUtils.isNotBlank(cookie))
+                responseData= Jwts.parser().verifyWith(
+                                Keys.hmacShaKeyFor(secretKey.getBytes()))
+                        .build().parseSignedClaims(cookie).getPayload();
+            else
+                responseData=new  HashMap<>();
+            return responseData;
+        }
+        else {
+            String preparedCookie;
+            if(cookieData!=null) {
+                JwtBuilder builder = Jwts.builder();
+                for (Map.Entry<String, Object> entry : cookieData.entrySet())
+                    builder.claim(entry.getKey(), entry.getValue());
+                preparedCookie= builder.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                        .compact();
+            }
+            else
+                preparedCookie="";
+
+            return preparedCookie;
+        }
+
+    }
 
     public static Map<String,Object>
     loadPropertiesFromFile(String filePath,List<String> requiredFields,

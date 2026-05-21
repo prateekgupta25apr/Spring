@@ -1,5 +1,6 @@
 package prateek_gupta.SampleProject.multitenancy;
 
+import jakarta.annotation.Nonnull;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.slf4j.Logger;
@@ -10,9 +11,6 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static prateek_gupta.SampleProject.multitenancy.TenantContext.
-        DEFAULT_SCHEMA_NAME;
 
 @Component
 public class TenantConnectionProvider implements MultiTenantConnectionProvider<String> {
@@ -56,8 +54,10 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
 
 
             if(useDefaultSchema) {
-                TenantContext.setCurrentTenant(DEFAULT_SCHEMA_NAME);
-                connection.createStatement().execute("USE " + DEFAULT_SCHEMA_NAME);
+                TenantContext.setCurrentTenant(
+                        TenantContext.getDefaultSchemaName());
+                connection.createStatement().execute(
+                        "USE " + TenantContext.getDefaultSchemaName());
             }
         }
         catch ( SQLException e ) {
@@ -72,7 +72,8 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
     public void releaseConnection(String schemaName, Connection connection)
             throws SQLException {
         try {
-            connection.createStatement().execute( "USE " + DEFAULT_SCHEMA_NAME );
+            connection.createStatement().execute(
+                    "USE " + TenantContext.getDefaultSchemaName());
         }
         catch ( SQLException e ) {
             throw new HibernateException(
@@ -88,12 +89,12 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
     }
 
     @Override
-    public boolean isUnwrappableAs(Class aClass) {
+    public boolean isUnwrappableAs(@Nonnull Class aClass) {
         return false;
     }
 
     @Override
-    public <T> T unwrap(Class<T> aClass) {
+    public <T> T unwrap(@Nonnull Class<T> aClass) {
         return null;
     }
 }

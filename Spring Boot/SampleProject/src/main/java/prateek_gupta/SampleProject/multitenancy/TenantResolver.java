@@ -3,10 +3,8 @@ package prateek_gupta.SampleProject.multitenancy;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.stereotype.Component;
 
-import static prateek_gupta.SampleProject.multitenancy.TenantContext.DEFAULT_SCHEMA_NAME;
-
 @Component
-public class TenantResolver implements CurrentTenantIdentifierResolver {
+public class TenantResolver implements CurrentTenantIdentifierResolver<String> {
 
     /**
      * This method will return the name of the schema to connect to
@@ -18,7 +16,7 @@ public class TenantResolver implements CurrentTenantIdentifierResolver {
         if (schemaName != null) {
             return schemaName;
         }
-        return DEFAULT_SCHEMA_NAME;
+        return TenantContext.getDefaultSchemaName();
     }
 
     @Override

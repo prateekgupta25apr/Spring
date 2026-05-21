@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import prateek_gupta.SampleProject.base.Context;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.*;
 
@@ -17,6 +16,7 @@ import java.util.List;
 
 import static prateek_gupta.SampleProject.project_utils.Init.getJsonNode;
 
+@SuppressWarnings("SqlNoDataSourceInspection")
 @Service
 public class CoreServiceImpl implements CoreService {
     @PersistenceContext
@@ -30,7 +30,8 @@ public class CoreServiceImpl implements CoreService {
 
     @Override
     public ObjectNode test(String testData) throws ServiceException {
-        ObjectNode response = prateek_gupta.SampleProject.project_utils.Init.getObjectMapper().createObjectNode();
+        ObjectNode response = prateek_gupta.SampleProject.project_utils.
+                Init.getObjectMapper().createObjectNode();
         try {
             Object result = entityManager.createNativeQuery("select schema();")
                     .getSingleResult();
@@ -40,7 +41,7 @@ public class CoreServiceImpl implements CoreService {
             response.put("tenant_schema_name",
                     TenantContext.getCurrentTenant().getSchemaName());
             response.put("context_user_id",
-                    Context.getCurrentContext().userId);
+                    UserContext.getCurrentUser().userId);
             response.set("configuration_properties",
                     getJsonNode(Init.configuration_properties));
 
