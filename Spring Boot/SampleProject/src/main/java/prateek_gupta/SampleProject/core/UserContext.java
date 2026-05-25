@@ -1,5 +1,7 @@
 package prateek_gupta.SampleProject.core;
 
+import lombok.Getter;
+
 import java.util.Map;
 
 public class UserContext {
@@ -19,6 +21,7 @@ public class UserContext {
 
     boolean darkMode;
 
+    @Getter
     boolean isMobileAPI;
 
     double userLogoutTime;

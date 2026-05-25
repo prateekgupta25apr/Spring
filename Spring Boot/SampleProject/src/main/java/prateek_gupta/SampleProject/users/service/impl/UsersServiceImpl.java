@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.core.SessionFilter;
+import prateek_gupta.SampleProject.core.UserContext;
 import prateek_gupta.SampleProject.multitenancy.TenantContext;
 import prateek_gupta.SampleProject.prateek_gupta.Email;
 import prateek_gupta.SampleProject.prateek_gupta.PasswordUtils;
@@ -225,6 +226,55 @@ public class UsersServiceImpl implements UsersService {
             throw new ServiceException();
         }
         log.info("Exiting Service : resetPassword()");
+        return response;
+    }
+
+    @Override
+    public JSONObject deleteUser() throws ServiceException {
+        JSONObject response = new JSONObject();
+        log.info("Entering Service : deleteUser()");
+        try {
+            prateek_gupta.SampleProject.project_utils.Init.validateUserLogin();
+            UserContext userContext = UserContext.getCurrentUser();
+            String message = "";
+
+            try {
+                Users user = usersRepository.findByUserId(userContext.userId);
+                if (user == null) {
+                    throw new ServiceException();
+                }
+                usersRepository.delete(user);
+
+                // Logging out the user
+                SessionFilter.updateSessionForLogout();
+
+                if (userContext.isMobileAPI()) {
+                    response.put("status", 1);
+                    response.put("message",
+                            "Successfully deleted account with id " + user.getUserId());
+                } else {
+                    message = "Successfully deleted your account";
+                }
+            } catch (Exception e) {
+                if (userContext.isMobileAPI()) {
+                    response.put("status", 2);
+                    response.put("message",
+                            "An error occurred while deleting account with Id "
+                                    + userContext.userId);
+                } else {
+                    message = "An error occurred while deleting your account";
+                }
+            }
+
+            if (!userContext.isMobileAPI()) {
+                response.put("message", message);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        log.info("Exiting Service : deleteUser()");
         return response;
     }
 

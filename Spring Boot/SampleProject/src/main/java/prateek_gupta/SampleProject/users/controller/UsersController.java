@@ -81,6 +81,20 @@ public class UsersController {
         return response;
     }
 
+    @DeleteMapping("delete_user")
+    ResponseEntity<ObjectNode> deleteUser() {
+        logger.info("Entering deleteUser() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            JSONObject result = usersService.deleteUser();
+            response = Init.getSuccessResponse(result);
+        } catch (Exception exception) {
+            return Init.getErrorResponse(exception);
+        }
+        logger.info("Exiting deleteUser() Controller");
+        return response;
+    }
+
     @PostMapping("logout")
     ResponseEntity<ObjectNode> logout() {
         logger.info("Entering logout() Controller");
