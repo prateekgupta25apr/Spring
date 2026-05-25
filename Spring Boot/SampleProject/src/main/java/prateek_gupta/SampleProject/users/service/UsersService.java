@@ -21,4 +21,7 @@ public interface UsersService {
 
     JSONObject getUserDetails() throws ServiceException;
 
+    JSONObject saveUserDetails(
+            JSONObject data, HttpServletResponse httpServletResponse) throws ServiceException;
+
 }

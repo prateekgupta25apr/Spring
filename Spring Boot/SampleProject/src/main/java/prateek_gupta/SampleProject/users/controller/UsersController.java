@@ -127,6 +127,22 @@ public class UsersController {
         return response;
     }
 
+    @PostMapping("save_user_details")
+    ResponseEntity<ObjectNode> saveUserDetails(
+            @RequestBody String data, HttpServletResponse httpServletResponse) {
+        logger.info("Entering saveUserDetails() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            JSONObject result = usersService.saveUserDetails(
+                    JSONObject.fromObject(data), httpServletResponse);
+            response = Init.getSuccessResponse(result);
+        } catch (Exception exception) {
+            return Init.getErrorResponse(exception);
+        }
+        logger.info("Exiting saveUserDetails() Controller");
+        return response;
+    }
+
     @PostMapping("logout")
     ResponseEntity<ObjectNode> logout() {
         logger.info("Entering logout() Controller");

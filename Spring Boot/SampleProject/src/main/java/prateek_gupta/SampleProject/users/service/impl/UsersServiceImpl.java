@@ -5,6 +5,7 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.core.SessionFilter;
@@ -352,6 +353,66 @@ public class UsersServiceImpl implements UsersService {
             throw new ServiceException();
         }
         log.info("Exiting Service : getUserDetails()");
+        return response;
+    }
+
+    @Override
+    public JSONObject saveUserDetails(
+            JSONObject data, HttpServletResponse httpServletResponse) throws ServiceException {
+        JSONObject response = new JSONObject();
+        log.info("Entering Service : saveUserDetails()");
+        try {
+            UserContext userContext = UserContext.getCurrentUser();
+            if (userContext == null || userContext.userId == null || userContext.userId <= 0) {
+                throw new ServiceException(HttpStatus.FORBIDDEN,
+                        "Please login and then revisit");
+            }
+
+            if (data == null || data.isEmpty()) {
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+            }
+
+            Map<String, Object> userDetails = null;
+            try {
+                Users user = usersRepository.findByUserId(userContext.userId);
+                if (user == null) {
+                    throw new ServiceException();
+                }
+
+                if (data.has("first_name")) {
+                    user.setFirstName(data.optString("first_name", user.getFirstName()));
+                }
+                if (data.has("last_name")) {
+                    user.setLastName(data.optString("last_name", user.getLastName()));
+                }
+                if (data.has("email")) {
+                    user.setEmail(data.optString("email", user.getEmail()));
+                }
+                if (data.has("dark_mode")) {
+                    user.setDarkMode(data.getBoolean("dark_mode"));
+                }
+
+                user = usersRepository.save(user);
+
+                userDetails = prepareUserDetails(user, userContext.getUserLogoutTime());
+                response.put("status", 1);
+                response.put("message", "User details saved successfully");
+                response.put("user_details", userDetails);
+            } catch (DataIntegrityViolationException e) {
+                response.put("status", 2);
+                response.put("message", "Provided email already exists");
+            }
+
+            if (userDetails != null) {
+                SessionFilter.updateSessionForLogin(userDetails, httpServletResponse);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        log.info("Exiting Service : saveUserDetails()");
         return response;
     }
 

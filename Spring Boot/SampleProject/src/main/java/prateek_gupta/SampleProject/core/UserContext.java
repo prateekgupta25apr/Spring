@@ -24,6 +24,7 @@ public class UserContext {
     @Getter
     boolean isMobileAPI;
 
+    @Getter
     double userLogoutTime;
 
 
