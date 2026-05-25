@@ -27,7 +27,8 @@ public class UsersController {
         logger.info("Entering login() Controller");
         ResponseEntity<ObjectNode> response;
         try {
-            JSONObject result = usersService.login(JSONObject.fromObject(data),httpServletResponse);
+            JSONObject result = usersService.login(
+                    JSONObject.fromObject(data),httpServletResponse);
             response = Init.getSuccessResponse(result);
         } catch (Exception exception) {
             return Init.getErrorResponse(exception);
@@ -42,7 +43,8 @@ public class UsersController {
         logger.info("Entering signUp() Controller");
         ResponseEntity<ObjectNode> response;
         try {
-            JSONObject result = usersService.signUp(JSONObject.fromObject(data),httpServletResponse);
+            JSONObject result = usersService.signUp(
+                    JSONObject.fromObject(data),httpServletResponse);
             response = Init.getSuccessResponse(result);
         } catch (Exception exception) {
             return Init.getErrorResponse(exception);
@@ -108,6 +110,20 @@ public class UsersController {
             return Init.getErrorResponse(exception);
         }
         logger.info("Exiting changePassword() Controller");
+        return response;
+    }
+
+    @GetMapping("get_user_details")
+    ResponseEntity<ObjectNode> getUserDetails() {
+        logger.info("Entering getUserDetails() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            JSONObject result = usersService.getUserDetails();
+            response = Init.getSuccessResponse(result);
+        } catch (Exception exception) {
+            return Init.getErrorResponse(exception);
+        }
+        logger.info("Exiting getUserDetails() Controller");
         return response;
     }
 

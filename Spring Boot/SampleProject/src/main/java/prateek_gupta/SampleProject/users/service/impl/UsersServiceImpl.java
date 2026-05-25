@@ -328,6 +328,33 @@ public class UsersServiceImpl implements UsersService {
         return response;
     }
 
+    @Override
+    public JSONObject getUserDetails() throws ServiceException {
+        JSONObject response = new JSONObject();
+        log.info("Entering Service : getUserDetails()");
+        try {
+            UserContext userContext = UserContext.getCurrentUser();
+            if (userContext == null || userContext.userId == null || userContext.userId <= 0) {
+                throw new ServiceException(HttpStatus.FORBIDDEN,
+                        "Please login and then revisit");
+            }
+
+            Users user = usersRepository.findByUserId(userContext.userId);
+            if (user == null) {
+                throw new ServiceException();
+            }
+
+            response.put("message", "Successfully retrieved user details");
+            response.put("user_details", prepareUserDetails(user));
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        log.info("Exiting Service : getUserDetails()");
+        return response;
+    }
+
     private static JSONObject decoder(String code) {
         // Converting the code to a JSON Object
         List<Integer> rawJson = new ArrayList<>();
