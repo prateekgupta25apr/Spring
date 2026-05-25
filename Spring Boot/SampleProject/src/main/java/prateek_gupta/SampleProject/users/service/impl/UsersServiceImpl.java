@@ -5,6 +5,7 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import prateek_gupta.SampleProject.core.SessionFilter;
 import prateek_gupta.SampleProject.core.UserContext;
@@ -275,6 +276,55 @@ public class UsersServiceImpl implements UsersService {
             throw new ServiceException();
         }
         log.info("Exiting Service : deleteUser()");
+        return response;
+    }
+
+    @Override
+    public JSONObject changePassword(
+            String password, String newPassword) throws ServiceException {
+        JSONObject response = new JSONObject();
+        log.info("Entering Service : changePassword()");
+        try {
+            if (password == null || password.isBlank()) {
+                throw new ServiceException(HttpStatus.BAD_REQUEST,
+                        "Please enter valid password");
+            }
+
+            if (newPassword == null || newPassword.isBlank()) {
+                throw new ServiceException(HttpStatus.BAD_REQUEST,
+                        "Please enter valid new password");
+            }
+
+            UserContext userContext = UserContext.getCurrentUser();
+            if (userContext == null || userContext.userId == null || userContext.userId <= 0) {
+                throw new ServiceException(HttpStatus.FORBIDDEN,
+                        "Please login and then revisit");
+            }
+
+            Users user = usersRepository.findByUserId(userContext.userId);
+            if (user == null) {
+                throw new ServiceException();
+            }
+
+            if (!PasswordUtils.validPassword(password, user.getPassword())) {
+                response.put("status", 2);
+                response.put("message", "Provided password is incorrect");
+                log.info("Exiting Service : changePassword()");
+                return response;
+            }
+
+            user.setPassword(PasswordUtils.encryptPassword(newPassword));
+            user.setForgotPasswordRequest(false);
+            usersRepository.save(user);
+
+            response.put("status", 1);
+            response.put("message", "Password changed successfully");
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException();
+        }
+        log.info("Exiting Service : changePassword()");
         return response;
     }
 

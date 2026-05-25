@@ -95,6 +95,22 @@ public class UsersController {
         return response;
     }
 
+    @PostMapping("change_password")
+    ResponseEntity<ObjectNode> changePassword(
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "new_password", required = false) String newPassword) {
+        logger.info("Entering changePassword() Controller");
+        ResponseEntity<ObjectNode> response;
+        try {
+            JSONObject result = usersService.changePassword(password, newPassword);
+            response = Init.getSuccessResponse(result);
+        } catch (Exception exception) {
+            return Init.getErrorResponse(exception);
+        }
+        logger.info("Exiting changePassword() Controller");
+        return response;
+    }
+
     @PostMapping("logout")
     ResponseEntity<ObjectNode> logout() {
         logger.info("Entering logout() Controller");

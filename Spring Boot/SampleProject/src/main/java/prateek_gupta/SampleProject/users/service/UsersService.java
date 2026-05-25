@@ -17,4 +17,6 @@ public interface UsersService {
 
     JSONObject deleteUser() throws ServiceException;
 
+    JSONObject changePassword(String password, String newPassword) throws ServiceException;
+
 }
