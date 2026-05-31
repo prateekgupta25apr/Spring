@@ -31,7 +31,7 @@ public class CoreController {
     HealthEndpoint healthEndpoint;
 
     @GetMapping("test")
-    ResponseEntity<ObjectNode> test(@RequestParam String testData) {
+    ResponseEntity<ObjectNode> test(@RequestParam("test_data") String testData) {
         logger.info("Entering test() Controller");
         ResponseEntity<ObjectNode> response;
         try {

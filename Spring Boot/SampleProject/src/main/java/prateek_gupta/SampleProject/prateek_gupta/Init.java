@@ -22,6 +22,8 @@ public class Init {
         try {
             ApplicationHome home = new ApplicationHome();
             projectDir =home.getDir().getAbsolutePath()+"\\SampleProject\\src\\main\\";
+            projectDir = projectDir.replace(
+                    "SampleProject\\SampleProject", "SampleProject");
             preConstructMethodExecution();
         } catch (Exception e) {
             ServiceException.logException(e);
