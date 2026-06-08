@@ -6,13 +6,13 @@ public class TimeLimit {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<?> future = executor.submit(() -> {
-            System.out.println(Thread.currentThread().getId()+" : Starting Thread");
+            System.out.println(Thread.currentThread().threadId()+" : Starting Thread");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 System.out.println("Interrupted Thread");
             }
-            System.out.println(Thread.currentThread().getId()+" : Stopping Thread");
+            System.out.println(Thread.currentThread().threadId()+" : Stopping Thread");
         });
 
         try {

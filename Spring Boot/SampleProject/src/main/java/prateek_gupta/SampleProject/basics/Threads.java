@@ -54,15 +54,20 @@ public class Threads extends Thread {
     }
     public static void main(String[] args) {
         startTime=System.currentTimeMillis();
-        Threads thread = new Threads("Thread-1");
+        String threadName="Thread-1";
+        Threads thread = new Threads(threadName);
 
         thread.start();
 
         try {
             synchronized (thread) {
-                Thread.sleep(2000);
                 System.out.println(getTimeDifference()+" : "+
-                        Thread.currentThread().getName() +  " notifying other threads");
+                        Thread.currentThread().getName() +
+                        " - acquired lock on the object for the thread with name "+threadName);
+                Thread.sleep(2500);
+                System.out.println(getTimeDifference()+" : "+
+                        Thread.currentThread().getName() +
+                        " - releasing the lock and notifying other threads");
                 thread.notify();
             }
         } catch (InterruptedException e) {
