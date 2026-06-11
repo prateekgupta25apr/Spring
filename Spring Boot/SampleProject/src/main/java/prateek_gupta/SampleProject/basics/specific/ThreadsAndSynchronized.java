@@ -1,9 +1,9 @@
-package prateek_gupta.SampleProject.basics;
+package prateek_gupta.SampleProject.basics.specific;
 
-public class Threads extends Thread {
+public class ThreadsAndSynchronized extends Thread {
     public static long startTime=0L;
 
-    public Threads(String name) {
+    public ThreadsAndSynchronized(String name) {
         super(name);
         System.out.println(getTimeDifference()+" : "+getName() +
                 " - 1. New state: Thread is created.");
@@ -55,7 +55,7 @@ public class Threads extends Thread {
     public static void main(String[] args) {
         startTime=System.currentTimeMillis();
         String threadName="Thread-1";
-        Threads thread = new Threads(threadName);
+        ThreadsAndSynchronized thread = new ThreadsAndSynchronized(threadName);
 
         thread.start();
 

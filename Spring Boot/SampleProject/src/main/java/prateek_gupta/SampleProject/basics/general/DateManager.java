@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.basics;
+package prateek_gupta.SampleProject.basics.general;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -12,6 +12,8 @@ import java.util.Calendar;
  * For calculating leap years in a range of years, first check number of leap years in range
  * excluding first and last year, and then check if first or last year is a leap year and
  * in counting the extra day 29th of May will be considered.
+ * <br>
+ * Topics : Math.abs(),
  */
 public class DateManager {
     public int year;
@@ -177,9 +179,9 @@ public class DateManager {
 
     public static void main(String[] args) {
         int y = 2026;
-        int m = 5;
-        int d = 4;
-        int v = -3700;
+        int m = 6;
+        int d = 9;
+        int v = 2500;
         long startTime = System.currentTimeMillis();
         Calendar date1 = Calendar.getInstance();
         date1.set(Calendar.YEAR, y);

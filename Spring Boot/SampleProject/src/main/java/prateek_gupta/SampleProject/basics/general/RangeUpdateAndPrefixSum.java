@@ -1,4 +1,4 @@
-package prateek_gupta.SampleProject.basics;
+package prateek_gupta.SampleProject.basics.general;
 
 import java.util.*;
 
