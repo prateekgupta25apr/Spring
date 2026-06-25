@@ -35,16 +35,16 @@ public class AnnotationBasedBean implements InitializingBean, DisposableBean {
     // DisposableBean method
     @Override
     public void destroy() throws Exception {
-        System.out.println("5. DisposableBean: AnnotationBasedBean is being destroyed.");
+        System.out.println("6. DisposableBean: AnnotationBasedBean is being destroyed.");
     }
 
     // Custom destroy method
     public void customDestroy() {
-        System.out.println("6. Custom Destroy Method: AnnotationBasedBean is destroyed.");
+        System.out.println("7. Custom Destroy Method: AnnotationBasedBean is destroyed.");
     }
 
     @Override
     public String toString() {
-        return "AnnotationBasedBean{name='" + name + "'}";
+        return "5. Usage of AnnotationBasedBean{name='" + name + "'}";
     }
 }
