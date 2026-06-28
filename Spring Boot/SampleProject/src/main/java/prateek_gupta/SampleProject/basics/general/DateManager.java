@@ -62,7 +62,12 @@ public class DateManager {
                 // Trying to come to starting of the month if possible
                 if (noOfDays > (noOfDaysInMonth - this.dayOfMonth)) {
                     noOfDays -= (noOfDaysInMonth - this.dayOfMonth) + 1;
-                    this.month += 1;
+                    if(this.month+1==13){
+                        this.month = 1;
+                        this.year+=1;
+                    }
+                    else
+                        this.month += 1;
                     this.dayOfMonth = 1;
                 }
                 // Updating number of days
@@ -73,7 +78,8 @@ public class DateManager {
 
             } else {
                 int noOfDaysInLastMonth;
-                if (Arrays.asList(1, 3, 5, 7, 8, 10, 12).contains(this.month - 1))
+                // Notice 0 is added to handle year change scenario
+                if (Arrays.asList(0,1, 3, 5, 7, 8, 10, 12).contains(this.month - 1))
                     noOfDaysInLastMonth = 31;
                 else if (Arrays.asList(4, 6, 9, 11).contains(this.month - 1))
                     noOfDaysInLastMonth = 30;
@@ -84,7 +90,12 @@ public class DateManager {
                 if (noOfDays < (-this.dayOfMonth)) {
                     noOfDays += this.dayOfMonth;
                     this.dayOfMonth = noOfDaysInLastMonth;
-                    this.month -= 1;
+                    if (this.month-1==0){
+                        this.month = 12;
+                        this.year-=1;
+                    }
+                    else
+                        this.month -= 1;
                 }
                 // Updating number of days
                 else {
@@ -181,7 +192,10 @@ public class DateManager {
         int y = 2026;
         int m = 6;
         int d = 9;
-        int v = 2500;
+
+        // Validate for both the below values and for both addition and substraction
+        int v = 3700;
+//        int v = 2500;
         long startTime = System.currentTimeMillis();
         Calendar date1 = Calendar.getInstance();
         date1.set(Calendar.YEAR, y);
@@ -190,16 +204,20 @@ public class DateManager {
 
         date1.add(Calendar.DAY_OF_MONTH, v);
 
-        System.out.println(date1.get(Calendar.YEAR) + "/" +
+        System.out.println("Built-in Approach");
+        System.out.println("Date : "+date1.get(Calendar.YEAR) + "/" +
                 (date1.get(Calendar.MONTH) + 1) + "/" +
                 date1.get(Calendar.DAY_OF_MONTH));
-        System.out.println("Built-in Approach time : " +
+        System.out.println("Time : " +
                 (System.currentTimeMillis() - startTime) + "ms");
+
+        System.out.println("\n");
 
         DateManager date = new DateManager(y, m, d);
         startTime = System.currentTimeMillis();
-        System.out.println(date.updateDayOfMonth(v));
-        System.out.println("My Approach time : " +
+        System.out.println("My Approach");
+        System.out.println("Date : "+date.updateDayOfMonth(v));
+        System.out.println("Time : " +
                 (System.currentTimeMillis() - startTime) + "ms");
     }
 }
