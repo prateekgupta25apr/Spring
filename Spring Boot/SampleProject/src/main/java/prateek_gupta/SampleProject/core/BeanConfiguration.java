@@ -102,6 +102,11 @@ public class BeanConfiguration {
         return new S3Impl(AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_BUCKET_NAME, AWS_REGION_NAME);
     }
 
+    @Bean
+    public Bedrock bedrock() throws ServiceException {
+        return new BedrockImpl(AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION_NAME);
+    }
+
 
     @Bean
     @Conditional(RedisCondition.class)
