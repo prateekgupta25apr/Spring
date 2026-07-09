@@ -225,6 +225,12 @@
             <version>2.26.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>http-auth-aws</artifactId>
+            <version>2.26.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>

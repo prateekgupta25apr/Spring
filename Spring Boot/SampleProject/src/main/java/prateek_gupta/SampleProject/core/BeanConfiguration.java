@@ -103,8 +103,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public Bedrock bedrock() throws ServiceException {
-        return new BedrockImpl(AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION_NAME);
+    public Bedrock bedrock(Cryptography cryptography) throws ServiceException {
+        return new BedrockImpl(AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION_NAME, cryptography);
     }
 
 

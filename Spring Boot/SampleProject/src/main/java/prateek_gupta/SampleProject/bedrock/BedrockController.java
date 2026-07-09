@@ -13,6 +13,7 @@ import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 import prateek_gupta.SampleProject.project_utils.Init;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/bedrock")
@@ -59,6 +60,80 @@ public class BedrockController {
             responseData.put("message", "Text embedding generated successfully");
             responseData.set("embedding", Init.getObjectMapper().valueToTree(embedding));
             responseData.put("embedding_dimension", embedding.size());
+            return Init.getSuccessResponse(responseData);
+        } catch (ServiceException e) {
+            return Init.getErrorResponse(e);
+        } catch (Exception e) {
+            return Init.getErrorResponse(new ServiceException());
+        }
+    }
+
+    @PostMapping("/generate_signed_headers_manually")
+    public ResponseEntity<ObjectNode> generateSignedHeadersManually(
+            @RequestParam("url") String url,
+            @RequestParam("payload") String payload,
+            @RequestParam(value = "request_method", defaultValue = "POST") String requestMethod,
+            @RequestParam(value = "request_content_type", defaultValue = "application/json")
+            String requestContentType,
+            @RequestParam(value = "service_name", defaultValue = "bedrock") String serviceName,
+            @RequestParam(value = "api_call", defaultValue = "false") String apiCall) {
+        try {
+            ServiceException.moduleLockCheck("BEDROCK_ENABLE", true);
+
+            if (StringUtils.isBlank(url) || StringUtils.isBlank(payload))
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+
+            boolean shouldCallApi = "true".equalsIgnoreCase(apiCall)
+                    || "1".equals(apiCall) || "yes".equalsIgnoreCase(apiCall);
+
+            Map<String, Object> result = bedrock.generateSignedHeadersManually(
+                    url, payload, requestMethod, requestContentType, serviceName, shouldCallApi);
+
+            ObjectNode responseData = Init.getObjectMapper().createObjectNode();
+            responseData.put("message", "Signed headers generated successfully");
+            responseData.set("signed_headers",
+                    Init.getObjectMapper().valueToTree(result.get("signed_headers")));
+            if (result.containsKey("api_response"))
+                responseData.set("api_response",
+                        Init.getObjectMapper().valueToTree(result.get("api_response")));
+            return Init.getSuccessResponse(responseData);
+        } catch (ServiceException e) {
+            return Init.getErrorResponse(e);
+        } catch (Exception e) {
+            return Init.getErrorResponse(new ServiceException());
+        }
+    }
+
+    @PostMapping("/generate_signed_headers_using_built_in")
+    public ResponseEntity<ObjectNode> generateSignedHeadersUsingBuiltIn(
+            @RequestParam("url") String url,
+            @RequestParam("payload") String payload,
+            @RequestParam(value = "request_method", defaultValue = "POST") String requestMethod,
+            @RequestParam(value = "request_content_type", defaultValue = "application/json")
+            String requestContentType,
+            @RequestParam(value = "service_name", defaultValue = "bedrock") String serviceName,
+            @RequestParam(value = "api_call", defaultValue = "false") String apiCall) {
+        try {
+            ServiceException.moduleLockCheck("BEDROCK_ENABLE", true);
+
+            if (StringUtils.isBlank(url) || StringUtils.isBlank(payload))
+                throw new ServiceException(
+                        ServiceException.ExceptionType.MISSING_REQUIRED_PARAMETERS);
+
+            boolean shouldCallApi = "true".equalsIgnoreCase(apiCall)
+                    || "1".equals(apiCall) || "yes".equalsIgnoreCase(apiCall);
+
+            Map<String, Object> result = bedrock.generateSignedHeadersUsingBuiltIn(
+                    url, payload, requestMethod, requestContentType, serviceName, shouldCallApi);
+
+            ObjectNode responseData = Init.getObjectMapper().createObjectNode();
+            responseData.put("message", "Signed headers generated successfully");
+            responseData.set("signed_headers",
+                    Init.getObjectMapper().valueToTree(result.get("signed_headers")));
+            if (result.containsKey("api_response"))
+                responseData.set("api_response",
+                        Init.getObjectMapper().valueToTree(result.get("api_response")));
             return Init.getSuccessResponse(responseData);
         } catch (ServiceException e) {
             return Init.getErrorResponse(e);

@@ -151,20 +151,24 @@ public class CryptographyImpl implements Cryptography {
     }
 
     @Override
-    public String hMacSHA256(String plaintext) throws ServiceException {
-        String hex;
+    public byte[] hMacSHA256Digest(byte[] key, String plaintext) throws ServiceException {
         try {
-            SecretKeySpec secretKeySpec=getHMacSHA256Key();
             Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(secretKeySpec);
-
-            byte[] plainTextBytes=plaintext.getBytes(StandardCharsets.UTF_8);
-            byte[] hMac = mac.doFinal(plainTextBytes);
-            hex = HexFormat.of().formatHex(hMac);
+            mac.init(new SecretKeySpec(key, "HmacSHA256"));
+            return mac.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
-        return hex;
+    }
+
+    @Override
+    public String hMacSHA256Hex(byte[] key, String plaintext) throws ServiceException {
+        return HexFormat.of().formatHex(hMacSHA256Digest(key, plaintext));
+    }
+
+    @Override
+    public String hMacSHA256(String plaintext) throws ServiceException {
+        return hMacSHA256Hex(getHMacSHA256Key().getEncoded(), plaintext);
     }
 
     /**
