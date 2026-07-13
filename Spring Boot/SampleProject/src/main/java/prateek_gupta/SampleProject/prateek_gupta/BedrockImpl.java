@@ -145,7 +145,7 @@ public class BedrockImpl implements Bedrock {
             RequestContext context = prepareRequestContext(
                     url, payload, requestMethod, requestContentType);
 
-            List<String> sortedSignedHeaders = new ArrayList<>(context.signedHeaderNames);
+            List<String> sortedSignedHeaders = new ArrayList<>(context.listOfHeadersToBeSigned);
             sortedSignedHeaders.sort(String::compareTo);
 
             StringBuilder canonicalStr = new StringBuilder();
@@ -155,7 +155,7 @@ public class BedrockImpl implements Bedrock {
 
             for (String header : sortedSignedHeaders)
                 canonicalStr.append(header).append(':')
-                        .append(context.headersConfig.get(header)).append('\n');
+                        .append(context.headersData.get(header)).append('\n');
 
             canonicalStr.append('\n');
             canonicalStr.append(String.join(";", sortedSignedHeaders)).append('\n');
@@ -172,7 +172,7 @@ public class BedrockImpl implements Bedrock {
 
             Map<String, String> signedHeadersResponse = new LinkedHashMap<>();
             for (String header : sortedSignedHeaders)
-                signedHeadersResponse.put(header, context.headersConfig.get(header));
+                signedHeadersResponse.put(header, context.headersData.get(header));
             signedHeadersResponse.put("X-Amz-Content-Sha256", context.payloadHash);
             signedHeadersResponse.put("X-Amz-Date", context.timeVal);
             signedHeadersResponse.remove("x-amz-content-sha256");
@@ -209,7 +209,7 @@ public class BedrockImpl implements Bedrock {
             RequestContext context = prepareRequestContext(
                     url, payload, requestMethod, requestContentType);
 
-            List<String> sortedSignedHeaders = new ArrayList<>(context.signedHeaderNames);
+            List<String> sortedSignedHeaders = new ArrayList<>(context.listOfHeadersToBeSigned);
             sortedSignedHeaders.sort(String::compareTo);
 
             SdkHttpRequest.Builder requestBuilder = SdkHttpRequest.builder()
@@ -217,7 +217,7 @@ public class BedrockImpl implements Bedrock {
                     .method(SdkHttpMethod.fromValue(context.requestMethod));
 
             for (String header : sortedSignedHeaders)
-                requestBuilder.putHeader(header, context.headersConfig.get(header));
+                requestBuilder.putHeader(header, context.headersData.get(header));
 
             SdkHttpRequest httpRequest = requestBuilder.build();
             ContentStreamProvider requestPayload = ContentStreamProvider.fromByteArray(
@@ -292,8 +292,8 @@ public class BedrockImpl implements Bedrock {
         context.timeVal = timeVal;
         context.dateVal = dateVal;
         context.payloadHash = payloadHash;
-        context.headersConfig = headersConfig;
-        context.signedHeaderNames = signedHeaderNames;
+        context.headersData = headersConfig;
+        context.listOfHeadersToBeSigned = signedHeaderNames;
         context.requestContentType = requestContentType;
         context.requestMethod = requestMethod;
         return context;
@@ -374,8 +374,8 @@ public class BedrockImpl implements Bedrock {
         String timeVal;
         String dateVal;
         String payloadHash;
-        Map<String, String> headersConfig;
-        List<String> signedHeaderNames;
+        Map<String, String> headersData;
+        List<String> listOfHeadersToBeSigned;
         String requestContentType;
         String requestMethod;
     }
