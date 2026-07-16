@@ -48,11 +48,17 @@
             <scope>test</scope>
         </dependency>
 
-        <!--For connecting to MySQL-->
+        <!--MySQL Driver(For connecting to MySQL)-->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!--Postgres Driver(For connecting to Postgres)-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
 
         <!--Spring Data JPA-->

@@ -43,7 +43,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
             boolean useDefaultSchema=false;
             if (schemaName != null) {
                 try{
-                    connection.createStatement().execute("USE " + schemaName);
+                    connection.setSchema(schemaName);
                 }catch (Exception e){
                     log.error("Error occurred while setting schema for the tenant "+
                             "provided hence setting default schema");
@@ -56,8 +56,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
             if(useDefaultSchema) {
                 TenantContext.setCurrentTenant(
                         TenantContext.getDefaultSchemaName());
-                connection.createStatement().execute(
-                        "USE " + TenantContext.getDefaultSchemaName());
+                connection.setSchema(TenantContext.getDefaultSchemaName());
             }
         }
         catch ( SQLException e ) {
@@ -72,8 +71,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider<S
     public void releaseConnection(String schemaName, Connection connection)
             throws SQLException {
         try {
-            connection.createStatement().execute(
-                    "USE " + TenantContext.getDefaultSchemaName());
+            connection.setSchema(TenantContext.getDefaultSchemaName());
         }
         catch ( SQLException e ) {
             throw new HibernateException(

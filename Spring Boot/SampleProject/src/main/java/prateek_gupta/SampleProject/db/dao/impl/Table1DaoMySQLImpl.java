@@ -3,11 +3,11 @@ package prateek_gupta.SampleProject.db.dao.impl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import prateek_gupta.SampleProject.db.dao.Table1Dao;
 import prateek_gupta.SampleProject.db.entities.Table1Entity;
-import prateek_gupta.SampleProject.db.service.impl.DBServiceImpl;
 import prateek_gupta.SampleProject.prateek_gupta.ServiceException;
 
 import jakarta.persistence.EntityManager;
@@ -16,9 +16,10 @@ import jakarta.persistence.Query;
 
 @Repository
 @Transactional
-public class Table1DaoImpl implements Table1Dao {
+@Profile("mysql")
+public class Table1DaoMySQLImpl implements Table1Dao {
 
-    private final Logger log = LoggerFactory.getLogger(Table1DaoImpl.class);
+    private final Logger log = LoggerFactory.getLogger(Table1DaoMySQLImpl.class);
 
     @PersistenceContext
     EntityManager entityManager;
