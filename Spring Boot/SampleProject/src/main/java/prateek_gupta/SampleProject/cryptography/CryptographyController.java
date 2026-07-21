@@ -28,13 +28,15 @@ public class CryptographyController {
 
 
     @PostMapping("/des_encrypt")
-    ResponseEntity<ObjectNode> desEncrypt(@RequestParam String plain_text) {
+    ResponseEntity<ObjectNode> desEncrypt(
+            @RequestParam String plain_text,
+            @RequestParam(required = false, defaultValue = "") String secret_key) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
             if (StringUtils.isNotBlank(plain_text)) {
-                byte[] encryptedData=cryptography.desEncrypt(plain_text);
+                byte[] encryptedData=cryptography.desEncrypt(plain_text, secret_key);
                 String hex = HexFormat.of().formatHex(encryptedData);
                 JSONObject data = new JSONObject();
                 data.put("Encrypted Data(Hex)", hex);
@@ -50,7 +52,9 @@ public class CryptographyController {
     }
 
     @PostMapping("/des_decrypt")
-    ResponseEntity<ObjectNode> desDecrypt(@RequestParam String encrypted_text) {
+    ResponseEntity<ObjectNode> desDecrypt(
+            @RequestParam String encrypted_text,
+            @RequestParam(required = false, defaultValue = "") String secret_key) {
         log.info("Entering Controller : desDecrypt()");
         ResponseEntity<ObjectNode> response;
         try {
@@ -58,7 +62,7 @@ public class CryptographyController {
 
             if (StringUtils.isNotBlank(encrypted_text)) {
                 byte[] bytes=HexFormat.of().parseHex(encrypted_text);
-                String plainText=cryptography.desDecrypt(bytes);
+                String plainText=cryptography.desDecrypt(bytes, secret_key);
                 JSONObject data = new JSONObject();
                 data.put("Decrypted Data", plainText);
 
@@ -102,14 +106,16 @@ public class CryptographyController {
     }
 
     @PostMapping("/hmac_sha_256")
-    ResponseEntity<ObjectNode> hMacSHA256(@RequestParam String plain_text) {
+    ResponseEntity<ObjectNode> hMacSHA256(
+            @RequestParam String plain_text,
+            @RequestParam(required = false, defaultValue = "") String secret_key) {
         log.info("Entering Controller : hMacSHA256()");
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
             if (StringUtils.isNotBlank(plain_text)) {
-                String hex=cryptography.hMacSHA256(plain_text);
+                String hex=cryptography.hMacSHA256(plain_text, secret_key);
                 JSONObject data = new JSONObject();
                 data.put("HMac(Hex)", hex);
                 response = Init.getSuccessResponse("Successfully generated HMac",data);
@@ -127,13 +133,15 @@ public class CryptographyController {
     }
 
     @PostMapping("/aes_encrypt")
-    ResponseEntity<ObjectNode> aesEncrypt(@RequestParam String plain_text) {
+    ResponseEntity<ObjectNode> aesEncrypt(
+            @RequestParam String plain_text,
+            @RequestParam(required = false, defaultValue = "") String secret_key) {
         ResponseEntity<ObjectNode> response;
         try {
             ServiceException.moduleLockCheck("CRYPTOGRAPHY_ENABLED", true);
 
             if (StringUtils.isNotBlank(plain_text)) {
-                byte[] encryptedData=cryptography.aesEncrypt(plain_text);
+                byte[] encryptedData=cryptography.aesEncrypt(plain_text, secret_key);
                 String hex = HexFormat.of().formatHex(encryptedData);
                 JSONObject data = new JSONObject();
                 data.put("Encrypted Data(Hex)", hex);
@@ -149,7 +157,9 @@ public class CryptographyController {
     }
 
     @PostMapping("/aes_decrypt")
-    ResponseEntity<ObjectNode> aesDecrypt(@RequestParam String encrypted_text) {
+    ResponseEntity<ObjectNode> aesDecrypt(
+            @RequestParam String encrypted_text,
+            @RequestParam(required = false, defaultValue = "") String secret_key) {
         log.info("Entering Controller : aesDecrypt()");
         ResponseEntity<ObjectNode> response;
         try {
@@ -157,7 +167,7 @@ public class CryptographyController {
 
             if (StringUtils.isNotBlank(encrypted_text)) {
                 byte[] bytes=HexFormat.of().parseHex(encrypted_text);
-                String plainText=cryptography.aesDecrypt(bytes);
+                String plainText=cryptography.aesDecrypt(bytes, secret_key);
                 JSONObject data = new JSONObject();
                 data.put("Decrypted Data", plainText);
 

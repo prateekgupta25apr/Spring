@@ -19,14 +19,24 @@ public class CryptographyImpl implements Cryptography {
     private final Logger log = LoggerFactory.getLogger(CryptographyImpl.class);
 
     /**
+     * Resolves the secret key to use. If a secret key is passed from the API payload it is
+     * used, otherwise it falls back to the value of CRYPTOGRAPHY_SECRET_KEY from the
+     * configuration.
+     */
+    private static String resolveSecretKey(String secretKey) {
+        if (secretKey != null && !secretKey.isEmpty())
+            return secretKey;
+        return Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY", "").toString();
+    }
+
+    /**
      * This method gets Secret Key in String format and return as an object of the class
      * {@link SecretKey}
      */
-    public static SecretKey getDESKey()
+    public static SecretKey getDESKey(String secretKey)
             throws Exception {
         // Getting bytes for Secret Key in String format
-        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
-        byte[] key = secretKey.getBytes();
+        byte[] key = resolveSecretKey(secretKey).getBytes();
 
         // Getting specifications for the DES keys
         DESKeySpec desKeySpec = new DESKeySpec(key);
@@ -40,11 +50,16 @@ public class CryptographyImpl implements Cryptography {
 
     @Override
     public byte[] desEncrypt(String plaintext) throws ServiceException {
+        return desEncrypt(plaintext, null);
+    }
+
+    @Override
+    public byte[] desEncrypt(String plaintext, String secretKeyStr) throws ServiceException {
         log.info("Entering desEncrypt()");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             // Getting Secret Key
-            SecretKey secretKey = getDESKey();
+            SecretKey secretKey = getDESKey(secretKeyStr);
 
             // Generating random string using the algorithm SHA1PRNG which can be
             // used as IV later
@@ -86,8 +101,13 @@ public class CryptographyImpl implements Cryptography {
 
     @Override
     public String desDecrypt(byte[] encryptedText) throws Exception {
+        return desDecrypt(encryptedText, null);
+    }
+
+    @Override
+    public String desDecrypt(byte[] encryptedText, String secretKeyStr) throws Exception {
         // Getting Secret Key
-        SecretKey secretKey = getDESKey();
+        SecretKey secretKey = getDESKey(secretKeyStr);
 
         // Setting encrypted data as input source
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encryptedText);
@@ -143,10 +163,9 @@ public class CryptographyImpl implements Cryptography {
      * This method gets Secret Key in String format and return as an object of the class
      * {@link SecretKeySpec}
      */
-    public static SecretKeySpec getHMacSHA256Key() {
+    public static SecretKeySpec getHMacSHA256Key(String secretKey) {
         // Getting bytes for Secret Key in String format
-        String secretKey= Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY","").toString();
-        byte[] key = secretKey.getBytes(StandardCharsets.UTF_8);
+        byte[] key = resolveSecretKey(secretKey).getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(key, "HmacSHA256");
     }
 
@@ -168,17 +187,22 @@ public class CryptographyImpl implements Cryptography {
 
     @Override
     public String hMacSHA256(String plaintext) throws ServiceException {
-        return hMacSHA256Hex(getHMacSHA256Key().getEncoded(), plaintext);
+        return hMacSHA256(plaintext, null);
+    }
+
+    @Override
+    public String hMacSHA256(String plaintext, String secretKey) throws ServiceException {
+        return hMacSHA256Hex(getHMacSHA256Key(secretKey).getEncoded(), plaintext);
     }
 
     /**
      * This method gets Secret Key in String format and return as an object of the class
      * {@link SecretKeySpec}
      */
-    public static SecretKeySpec getAESKey()
+    public static SecretKeySpec getAESKey(String secretKey)
             throws NoSuchAlgorithmException {
         // Getting secret key string
-        String secretKeyStr = Init.getConfiguration("CRYPTOGRAPHY_SECRET_KEY", "").toString();
+        String secretKeyStr = resolveSecretKey(secretKey);
 
         // Convert to bytes (UTF-8)
         byte[] keyBytes = secretKeyStr.getBytes(StandardCharsets.UTF_8);
@@ -196,11 +220,16 @@ public class CryptographyImpl implements Cryptography {
 
     @Override
     public byte[] aesEncrypt(String plaintext) throws ServiceException {
+        return aesEncrypt(plaintext, null);
+    }
+
+    @Override
+    public byte[] aesEncrypt(String plaintext, String secretKeyStr) throws ServiceException {
         log.info("Entering aesEncrypt()");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             // Getting Secret Key
-            SecretKey secretKey = getAESKey();
+            SecretKey secretKey = getAESKey(secretKeyStr);
 
             // Generating random string using the algorithm SHA1PRNG which can be
             // used as IV later
@@ -242,8 +271,13 @@ public class CryptographyImpl implements Cryptography {
 
     @Override
     public String aesDecrypt(byte[] encryptedText) throws Exception {
+        return aesDecrypt(encryptedText, null);
+    }
+
+    @Override
+    public String aesDecrypt(byte[] encryptedText, String secretKeyStr) throws Exception {
         // Getting Secret Key
-        SecretKey secretKey = getAESKey();
+        SecretKey secretKey = getAESKey(secretKeyStr);
 
         // Setting encrypted data as input source
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encryptedText);
