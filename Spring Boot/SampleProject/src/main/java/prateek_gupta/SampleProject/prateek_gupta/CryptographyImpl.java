@@ -91,6 +91,13 @@ public class CryptographyImpl implements Cryptography {
             cipherOutputStream.write(plaintext.getBytes(StandardCharsets.UTF_8));
             cipherOutputStream.flush();
             cipherOutputStream.close();
+
+            // Not using ObjectOutputStream because it adds extra metadata, which might
+            // create problems when we use in Python, so only we are not using.
+            // But in wolken it uses this only
+//            ObjectOutputStream objectOutputStream = new ObjectOutputStream(cipherOutputStream);
+//            objectOutputStream.writeUTF(plaintext);
+//            objectOutputStream.close();
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
