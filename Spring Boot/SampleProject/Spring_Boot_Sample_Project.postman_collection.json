@@ -1,0 +1,3153 @@
+{
+  "info": {
+    "_postman_id": "16f0151a-761f-476d-ad2d-80bd72fd5f14",
+    "name": "Spring Boot Sample Project",
+    "description": "Postman collection for the Spring Boot Sample Project.\n\nCollection variables:\n- base_url: server base (default http://localhost:8080)\n- context_path: app context path (default sample_project)\n\nEach module is a single folder of requests matching controller mappings.\nOptional Tenant-Id header is present on every request but disabled by default.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "context_path",
+      "value": "sample_project"
+    }
+  ],
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "core",
+      "item": [
+        {
+          "name": "Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/test?test_data=hello",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "test"
+              ],
+              "query": [
+                {
+                  "key": "test_data",
+                  "value": "hello",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/health_check",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "health_check"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Rotate Log Files",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/rotate_log_files",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "rotate_log_files"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "days_gap",
+                  "value": "30",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Load Config Values",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/load_config_values",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "load_config_values"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Render HTML",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/render_html",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "render_html"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "db",
+      "item": [
+        {
+          "name": "Get Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/get_data?primaryKey=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "get_data"
+              ],
+              "query": [
+                {
+                  "key": "primaryKey",
+                  "value": "1",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Save Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/save_data",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "save_data"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"primaryKey\": 1,\n  \"col1\": \"value1\",\n  \"col2\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/update_data",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "update_data"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "primaryKey",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "col1",
+                  "value": "updated",
+                  "type": "text"
+                },
+                {
+                  "key": "col2",
+                  "value": "20",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Partial Update Data",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/partial_update_data",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "partial_update_data"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "primaryKey",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "col1",
+                  "value": "partial",
+                  "type": "text"
+                },
+                {
+                  "key": "col2",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Data",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/delete_data?primaryKey=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "delete_data"
+              ],
+              "query": [
+                {
+                  "key": "primaryKey",
+                  "value": "1",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Add Attachment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/add_attachment",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "add_attachment"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "table_1_primary_key",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "attachment",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attachment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/db/get_attachment?primaryKey=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "db",
+                "get_attachment"
+              ],
+              "query": [
+                {
+                  "key": "primaryKey",
+                  "value": "1",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "s3",
+      "item": [
+        {
+          "name": "Get File",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/s3/get?fileName=example.txt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "s3",
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "fileName",
+                  "value": "example.txt",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/s3/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "s3",
+                "upload"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "prefix",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/s3/delete?fileName=example.txt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "s3",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "fileName",
+                  "value": "example.txt",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pre-Signed URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/s3/get_pre_signed_url?fileName=example.txt&method=GET",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "s3",
+                "get_pre_signed_url"
+              ],
+              "query": [
+                {
+                  "key": "fileName",
+                  "value": "example.txt",
+                  "description": ""
+                },
+                {
+                  "key": "method",
+                  "value": "GET",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Extract File Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/s3/extract_file_name",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "s3",
+                "extract_file_name"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "file_path",
+                  "value": "folder/example.txt",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "bedrock",
+      "item": [
+        {
+          "name": "Generate Embedding For Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/bedrock/generate_embedding_for_image",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "bedrock",
+                "generate_embedding_for_image"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "image_url",
+                  "value": "https://example.com/image.png",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Embedding For Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/bedrock/generate_embedding_for_text",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "bedrock",
+                "generate_embedding_for_text"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "text",
+                  "value": "hello",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Signed Headers Manually",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/bedrock/generate_signed_headers_manually",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "bedrock",
+                "generate_signed_headers_manually"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "url",
+                  "value": "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.titan-embed-text-v2:0/invoke",
+                  "type": "text"
+                },
+                {
+                  "key": "payload",
+                  "value": "{\"inputText\":\"hello\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "request_method",
+                  "value": "POST",
+                  "type": "text"
+                },
+                {
+                  "key": "request_content_type",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "service_name",
+                  "value": "bedrock",
+                  "type": "text"
+                },
+                {
+                  "key": "api_call",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Signed Headers Using Built-In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/bedrock/generate_signed_headers_using_built_in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "bedrock",
+                "generate_signed_headers_using_built_in"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "url",
+                  "value": "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.titan-embed-text-v2:0/invoke",
+                  "type": "text"
+                },
+                {
+                  "key": "payload",
+                  "value": "{\"inputText\":\"hello\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "request_method",
+                  "value": "POST",
+                  "type": "text"
+                },
+                {
+                  "key": "request_content_type",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                {
+                  "key": "service_name",
+                  "value": "bedrock",
+                  "type": "text"
+                },
+                {
+                  "key": "api_call",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "kafka",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "send"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topic",
+                  "value": "test_topic",
+                  "type": "text"
+                },
+                {
+                  "key": "message",
+                  "value": "hello",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Topics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/get_all_topics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "get_all_topics"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Topic",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/get_topic?topicName=test_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "get_topic"
+              ],
+              "query": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Topic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/create_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "create_topic"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "type": "text"
+                },
+                {
+                  "key": "partitions",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "replicationFactor",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Topic Increase Partition",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/update_topic_increase_partition",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "update_topic_increase_partition"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "type": "text"
+                },
+                {
+                  "key": "partitions",
+                  "value": "2",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Topic",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/update_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "update_topic"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "type": "text"
+                },
+                {
+                  "key": "configKey",
+                  "value": "retention.ms",
+                  "type": "text"
+                },
+                {
+                  "key": "configValue",
+                  "value": "86400000",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Topic",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/delete_topic?topicName=test_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "delete_topic"
+              ],
+              "query": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Committed Offset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/get_commited_offset?topicName=test_topic&partitionId=0&consumerGroupName=test_group",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "get_commited_offset"
+              ],
+              "query": [
+                {
+                  "key": "topicName",
+                  "value": "test_topic",
+                  "description": ""
+                },
+                {
+                  "key": "partitionId",
+                  "value": "0",
+                  "description": ""
+                },
+                {
+                  "key": "consumerGroupName",
+                  "value": "test_group",
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Path uses get_commited_offset (typo in controller mapping)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/get_messages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "get_messages"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "data",
+                  "value": "{\"topic\": \"test_topic\", \"partition\": 0, \"offset\": 0, \"count\": 10}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Topic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/add_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "add_topic"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topic",
+                  "value": "test_topic",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Topic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/kafka/remove_topic",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "kafka",
+                "remove_topic"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "topic",
+                  "value": "test_topic",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "item": [
+        {
+          "name": "Get",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/redis/get?key=my_key&useMap=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "redis",
+                "get"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "my_key",
+                  "description": ""
+                },
+                {
+                  "key": "useMap",
+                  "value": "false",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Upsert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/redis/upsert",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "redis",
+                "upsert"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "key",
+                  "value": "my_key",
+                  "type": "text"
+                },
+                {
+                  "key": "value",
+                  "value": "my_value",
+                  "type": "text"
+                },
+                {
+                  "key": "useMap",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Keys",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/redis/search_keys",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "redis",
+                "search_keys"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "pattern",
+                  "value": "*",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/redis/delete?key=my_key&useMap=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "redis",
+                "delete"
+              ],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "my_key",
+                  "description": ""
+                },
+                {
+                  "key": "useMap",
+                  "value": "false",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "open_search",
+      "item": [
+        {
+          "name": "Get Index",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/get_index?indexName=test_index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "get_index"
+              ],
+              "query": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Index",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/create_index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "create_index"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "source",
+                  "value": "{}",
+                  "type": "text"
+                },
+                {
+                  "key": "aliases",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "settings",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "mappings",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Index",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/update_index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "update_index"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "settings",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "addAlias",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "removeAlias",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "mappings",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Index",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/delete_index?indexName=test_index",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "delete_index"
+              ],
+              "query": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/get_record?indexName=test_index&docId=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "get_record"
+              ],
+              "query": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "description": ""
+                },
+                {
+                  "key": "docId",
+                  "value": "1",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Upsert Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/upsert_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "upsert_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "docId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "data",
+                  "value": "{\"field\":\"value\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "bulk",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Partial Update Record",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/partial_update_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "partial_update_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "docId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "data",
+                  "value": "{\"field\":\"updated\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "bulk",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/delete_record?indexName=test_index&docId=1&bulk=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "delete_record"
+              ],
+              "query": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "description": ""
+                },
+                {
+                  "key": "docId",
+                  "value": "1",
+                  "description": ""
+                },
+                {
+                  "key": "bulk",
+                  "value": "false",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Search Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/search_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "search_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "searchJSON",
+                  "value": "{\"query\":{\"match_all\":{}}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Count Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/count_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "count_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "searchJSON",
+                  "value": "{\"query\":{\"match_all\":{}}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete By Query Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/delete_by_query_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "delete_by_query_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "searchJSON",
+                  "value": "{\"query\":{\"match_all\":{}}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aggregate Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/open_search/aggregate_record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "open_search",
+                "aggregate_record"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "indexName",
+                  "value": "test_index",
+                  "type": "text"
+                },
+                {
+                  "key": "searchJSON",
+                  "value": "{\"aggs\":{}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "cryptography",
+      "item": [
+        {
+          "name": "DES Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/des_encrypt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "des_encrypt"
+              ]
+            },
+            "description": "secret_key is optional; falls back to CRYPTOGRAPHY_SECRET_KEY. If provided for DES, must be exactly 8 bytes.",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "plain_text",
+                  "value": "hello",
+                  "type": "text"
+                },
+                {
+                  "key": "secret_key",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DES Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/des_decrypt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "des_decrypt"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "encrypted_text",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "secret_key",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hash SHA-256",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/hash_sha_256",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "hash_sha_256"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "plain_text",
+                  "value": "hello",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "HMAC SHA-256",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/hmac_sha_256",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "hmac_sha_256"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "plain_text",
+                  "value": "hello",
+                  "type": "text"
+                },
+                {
+                  "key": "secret_key",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AES Encrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/aes_encrypt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "aes_encrypt"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "plain_text",
+                  "value": "hello",
+                  "type": "text"
+                },
+                {
+                  "key": "secret_key",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AES Decrypt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/cryptography/aes_decrypt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "cryptography",
+                "aes_decrypt"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "encrypted_text",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "secret_key",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "emails",
+      "item": [
+        {
+          "name": "Get Email Content",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/emails/get_email_content?message_id=&file_path=&fetch_file_url=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "emails",
+                "get_email_content"
+              ],
+              "query": [
+                {
+                  "key": "message_id",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "file_path",
+                  "value": "",
+                  "description": ""
+                },
+                {
+                  "key": "fetch_file_url",
+                  "value": "false",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Send Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/emails/send_email",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "emails",
+                "send_email"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "from_email",
+                  "value": "sender@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "to_email",
+                  "value": "receiver@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "subject",
+                  "value": "Test Subject",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "<p>Hello</p>",
+                  "type": "text"
+                },
+                {
+                  "key": "attachments",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "native",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Process Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/emails/process_email",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "emails",
+                "process_email"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "message_id",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "file_path",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "to_email",
+                  "value": "receiver@example.com",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "sqs",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/send_message",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "send_message"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "queueName",
+                  "value": "test_queue",
+                  "type": "text"
+                },
+                {
+                  "key": "message",
+                  "value": "hello",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Queue Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/add_queue_name",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "add_queue_name"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "queueName",
+                  "value": "test_queue",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Queue Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/remove_queue_name",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "remove_queue_name"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "queueName",
+                  "value": "test_queue",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Queues",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/get_all_queues",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "get_all_queues"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Queue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/get_queue?queue_name=test_queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "get_queue"
+              ],
+              "query": [
+                {
+                  "key": "queue_name",
+                  "value": "test_queue",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Queue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/create_queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "create_queue"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "queue_name",
+                  "value": "test_queue",
+                  "type": "text"
+                },
+                {
+                  "key": "visibility_timeout",
+                  "value": "30",
+                  "type": "text"
+                },
+                {
+                  "key": "retention_period",
+                  "value": "345600",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Queue",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/update_queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "update_queue"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "queue_name",
+                  "value": "test_queue",
+                  "type": "text"
+                },
+                {
+                  "key": "attribute_name",
+                  "value": "VisibilityTimeout",
+                  "type": "text"
+                },
+                {
+                  "key": "attribute_value",
+                  "value": "60",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Queue",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/delete_queue?queue_name=test_queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "delete_queue"
+              ],
+              "query": [
+                {
+                  "key": "queue_name",
+                  "value": "test_queue",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/sqs/get_messages?queue_name=test_queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "sqs",
+                "get_messages"
+              ],
+              "query": [
+                {
+                  "key": "queue_name",
+                  "value": "test_queue",
+                  "description": ""
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "login"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\",\n  \"remember_me\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/sign_up",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "sign_up"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password\",\n  \"remember_me\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/forgot_password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "forgot_password"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"resend\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/reset_password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "reset_password"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "pg",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "new_password",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/delete_user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "delete_user"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/change_password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "change_password"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "password",
+                  "value": "old_password",
+                  "type": "text"
+                },
+                {
+                  "key": "new_password",
+                  "value": "new_password",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/get_user_details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "get_user_details"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Save User Details",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/save_user_details",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "save_user_details"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"dark_mode\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Tenant-Id",
+                "value": "1",
+                "type": "text",
+                "disabled": true,
+                "description": "Optional multi-tenant header"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/{{context_path}}/users/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{context_path}}",
+                "users",
+                "logout"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

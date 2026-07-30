@@ -36,6 +36,6 @@ public class TenantContext {
     }
 
     public static String getDefaultSchemaName() {
-        return Init.getConfiguration("db_default_schema").toString();
+        return Init.getConfiguration("db_default_schema","").toString();
     }
 }

@@ -61,6 +61,19 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
+        <!--SQLite Driver(For connecting to SQLite)-->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.50.3.0</version>
+        </dependency>
+
+        <!--SQLite Dialect(For connecting to SQLite)-->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+        </dependency>
+
         <!--Spring Data JPA-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -25,7 +25,7 @@ public class TenantInterceptor implements HandlerInterceptor {
     public boolean preHandle(
             @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response,
             @Nonnull Object handler) {
-        String dbSchemaPrefix= Init.getConfiguration("db_schema_prefix").toString();
+        String dbSchemaPrefix= Init.getConfiguration("db_schema_prefix","").toString();
 
         if (StringUtils.isNotBlank(dbSchemaPrefix)){
             String tenantIdStr=request.getHeader("tenant_id");
