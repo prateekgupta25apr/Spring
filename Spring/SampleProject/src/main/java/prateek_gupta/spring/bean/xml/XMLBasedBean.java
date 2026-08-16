@@ -70,10 +70,10 @@ public class XMLBasedBean {
 
         System.out.println();
 
-        System.out.println("#####By Name Autowired#####");
+        System.out.println("#####Getter Setter Autowired#####");
         XMLBasedBean byNameAutowiredBasedXMLBasedBean =
                 (XMLBasedBean) new ClassPathXmlApplicationContext(
-                "ByNameAutowired.xml")
+                        "GetterSetterAutowired.xml")
                 .getBean("byNameAutowiredBasedXMLBasedBean");
         System.out.println("Value for beanName : "+
                 byNameAutowiredBasedXMLBasedBean.beanName);

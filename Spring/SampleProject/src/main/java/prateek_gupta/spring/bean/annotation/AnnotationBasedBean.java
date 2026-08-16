@@ -1,6 +1,5 @@
 package prateek_gupta.spring.bean.annotation;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ public class AnnotationBasedBean implements InitializingBean, DisposableBean {
 
     // InitializingBean method
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         System.out.println("3. InitializingBean: Properties are set.");
     }
 
@@ -34,7 +33,7 @@ public class AnnotationBasedBean implements InitializingBean, DisposableBean {
 
     // DisposableBean method
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         System.out.println("6. DisposableBean: AnnotationBasedBean is being destroyed.");
     }
 
