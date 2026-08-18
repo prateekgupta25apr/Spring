@@ -31,17 +31,18 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public Table1VO getData(Integer primaryKey) throws ServiceException {
+        Table1VO table1VO = null;
         log.info("Entering Service : getData()");
         try {
             Table1Entity entity = table1Repository.findByPrimaryKey(primaryKey);
             if (entity != null)
-                return entity.toVO();
+                table1VO= entity.toVO();
         } catch (Exception e) {
             ServiceException.logException(e);
             throw new ServiceException();
         }
         log.info("Exiting Service : getData()");
-        return null;
+        return table1VO;
     }
 
     @Override

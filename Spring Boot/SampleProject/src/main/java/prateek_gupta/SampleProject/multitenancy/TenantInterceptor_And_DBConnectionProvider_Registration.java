@@ -36,7 +36,7 @@ public class TenantInterceptor_And_DBConnectionProvider_Registration implements 
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             DataSource dataSource,
             MultiTenantConnectionProvider<String> multiTenantConnectionProvider,
-            CurrentTenantIdentifierResolver currentTenantIdentifierResolverImpl) {
+            CurrentTenantIdentifierResolver<String> currentTenantIdentifierResolverImpl) {
         Map<String, Object> properties = new HashMap<>();
         // Hibernate 6: strategy enum removed; schema multi-tenancy is driven by following 2
         // providers only.
@@ -57,11 +57,10 @@ public class TenantInterceptor_And_DBConnectionProvider_Registration implements 
         // its handled already, even its autowired in TenantConnectionProvider)
         entityManagerFactory.setDataSource(dataSource);
 
-        // Package to search for the implementations for MultiTenantConnectionProvider
-        // and CurrentTenantIdentifierResolver
+        // Package to scan for JPA entity classes
         entityManagerFactory.setPackagesToScan("prateek_gupta.SampleProject");
 
-        // Setting Adapter to for JPA
+        // Setting Hibernate as ORM Tool for the Application
         entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         // Setting properties for JPA

@@ -1,0 +1,102 @@
+package prateek_gupta.SampleProject.multitenancy;
+
+import jakarta.annotation.Nonnull;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+@Component
+@Profile({"mysql"})
+public class TenantConnectionProviderMySQL implements MultiTenantConnectionProvider<String> {
+    private final Logger log =
+            LoggerFactory.getLogger(TenantConnectionProviderMySQL.class);
+
+    /**
+     * This field is like the Driver class which is used to connect to the Database
+     */
+    @Autowired
+    private DataSource dataSource;
+
+    @Override
+    public Connection getAnyConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    @Override
+    public void releaseAnyConnection(Connection connection) throws SQLException {
+        connection.close();
+    }
+
+    /**
+     * This method will actually connect to the schema
+     */
+    @Override
+    public Connection getConnection(String schemaName) throws SQLException {
+        final Connection connection = getAnyConnection();
+        try {
+            boolean useDefaultSchema=false;
+            if (schemaName != null) {
+                try{
+                    // Using setCatalog() as for MySQL setSchema() have no effect
+                    connection.setCatalog(schemaName);
+
+                }catch (Exception e){
+                    log.error("Error occurred while setting schema for the tenant "+
+                            "provided hence setting default schema");
+                    useDefaultSchema=true;
+                }
+            } else
+                useDefaultSchema=true;
+
+
+            if(useDefaultSchema) {
+                TenantContext.setCurrentTenant(
+                        TenantContext.getDefaultSchemaName());
+                connection.setCatalog(TenantContext.getDefaultSchemaName());
+            }
+        }
+        catch ( SQLException e ) {
+            throw new HibernateException(
+                    "Could not connect to the schema " + schemaName, e
+            );
+        }
+        return connection;
+    }
+
+    @Override
+    public void releaseConnection(String schemaName, Connection connection)
+            throws SQLException {
+        try {
+            connection.setCatalog(TenantContext.getDefaultSchemaName());
+        }
+        catch ( SQLException e ) {
+            throw new HibernateException(
+                    "Could not release connection to the schema " + schemaName, e
+            );
+        }
+        connection.close();
+    }
+
+    @Override
+    public boolean supportsAggressiveRelease() {
+        return false;
+    }
+
+    @Override
+    public boolean isUnwrappableAs(@Nonnull Class aClass) {
+        return false;
+    }
+
+    @Override
+    public <T> T unwrap(@Nonnull Class<T> aClass) {
+        return null;
+    }
+}
